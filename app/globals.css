@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@import url('./styles/antd-overriders.css');
+:root {
+  --white: #ffffff;
+  --charcoal: #181d27;
+
+  --primary: #226b3e;
+  --primary-light: #dcfce7;
+  --snow: #fdfdfd;
+  --smoke: #dcdcdc;
+  --smoke-light: #e9eaeb;
+}
+
+@theme inline {
+  /* colors */
+  --color-white: var(--white);
+  --color-charcoal: var(--charcoal);
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-snow: var(--snow);
+  --color-smoke: var(--smoke);
+  --color-smoke-light: var(--smoke-light);
+
+  /* font families */
+  --font-outfit: var(--font-outfit);
+}
+
+body {
+  white: var(--white);
+  color: var(--charcoal);
+  font-family: var(--font-outfit);
+}
+
+/* ========================================================================== */
+/* ====================== Shared Classes ======================= */
+/* ========================================================================== */
+.light-shadow {
+  @apply shadow-[0_1px_4px] shadow-black/10;
+}
