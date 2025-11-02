@@ -57,20 +57,28 @@ const Sidebar = () => {
   }));
 
   return (
-    <div
-      style={positionSider}
-      className="border-smoke-light w-[263px]! bg-white! ltr:border-r ltr:border-l"
-    >
-      <div className="flex items-center gap-x-3 px-4 pt-8 pb-5">
-        <div className="bg-primary-light grid h-14 w-14 place-items-center rounded-xl">
-          <Image src="/shared/logo.svg" width={27} height={27} alt="logo" />
+    <>
+      <div
+        style={positionSider}
+        className="border-smoke-light w-[263px]! bg-white! ltr:border-r ltr:border-l"
+      >
+        <div className="flex items-center gap-x-3 px-4 pt-8 pb-5">
+          <div className="bg-primary-light grid h-14 w-14 place-items-center rounded-xl">
+            <Image src="/shared/logo.svg" width={27} height={27} alt="logo" />
+          </div>
+          <h1 className="text-primary text-2xl font-semibold">
+            <Tx>Gardenhub</Tx>
+          </h1>
         </div>
-        <h1 className="text-primary text-2xl font-semibold">
-          <Tx>Gardenhub</Tx>
-        </h1>
+        <Menu className="px-4!" mode="inline" selectedKeys={[pathname]} items={items} />
       </div>
-      <Menu className="px-4!" mode="inline" selectedKeys={[pathname]} items={items} />
-    </div>
+
+      <style jsx global>{`
+        .ant-menu-light.ant-menu-inline .ant-menu-item {
+          padding-left: 8px !important;
+        }
+      `}</style>
+    </>
   );
 };
 export default Sidebar;
