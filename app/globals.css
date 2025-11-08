@@ -2,11 +2,14 @@
 
 :root {
   --white: #ffffff;
+  --near-white: #f9fafb;
   --charcoal: #181d27;
 
   --primary: #226b3e;
   --primary-light: #dcfce7;
+
   --snow: #fdfdfd;
+
   --smoke: #dcdcdc;
   --smoke-light: #e9eaeb;
 }
@@ -14,6 +17,7 @@
 @theme inline {
   /* colors */
   --color-white: var(--white);
+  --color-near-white: var(--near-white);
   --color-charcoal: var(--charcoal);
 
   --color-primary: var(--primary);
@@ -27,7 +31,7 @@
 }
 
 body {
-  white: var(--white);
+  background-color: var(--white);
   color: var(--charcoal);
   font-family: var(--font-outfit);
 }
@@ -37,4 +41,24 @@ body {
 /* ========================================================================== */
 .light-shadow {
   @apply shadow-[0_1px_4px] shadow-black/10;
+}
+
+/* ================================================= */
+/* ====== sidebar stylings ===================== */
+/* ================================================= */
+.ant-menu-light.ant-menu-inline .ant-menu-item {
+  padding-left: 8px !important;
+}
+.ant-menu-light .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  padding-left: 8px !important;
+}
+.ant-menu-light.ant-menu-inline .ant-menu-sub.ant-menu-inline {
+  padding-left: 28px !important;
+}
+.ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
+  padding-left: 8px !important;
+}
+
+.ant-menu-inline.ant-menu-root .ant-menu-submenu-title > .ant-menu-title-content a {
+  color: #181d27 !important;
 }

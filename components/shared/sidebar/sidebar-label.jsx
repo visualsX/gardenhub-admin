@@ -8,7 +8,7 @@ export default function SidebarLabel({
   active,
 }) {
   return (
-    <Link href={href} className="flex items-center gap-x-2">
+    <Link href={href} className="font-outfit flex items-center gap-x-2">
       {Icon}
       <span>{label}</span>
     </Link>

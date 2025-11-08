@@ -7,7 +7,7 @@ import ArrowDown from '@/public/shared/down-red.svg';
 import ArrowUp from '@/public/shared/up-green.svg';
 import Plus from '@/public/shared/plus-white.svg';
 import Image from 'next/image';
-import Badge from '@/components/shared/badge';
+import Badge from '@/components/ui/badge';
 
 const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('Last Year');

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Table, Input, Select, Tag } from 'antd';
+import { Table, Input, Select, Tag, message } from 'antd';
 // import { Search, Plus, ChevronLeft, ChevronRight, Trash2, Edit2 } from 'lucide-react';
 import Search from '@/public/shared/search.svg';
 // import Plus from '@/public/shared/select-down.svg';
@@ -9,7 +9,7 @@ import Arrow from '@/public/shared/arrow-left.svg';
 import Trash2 from '@/public/shared/trash.svg';
 import Edit2 from '@/public/shared/edit.svg';
 import Plus from '@/public/shared/plus-white.svg';
-import Badge from '@/components/shared/badge';
+import Badge from '@/components/ui/badge';
 import StatsCard from '@/components/shared/stats-card';
 import Pagination from '@/components/shared/pagination';
 import DataTable from '@/components/shared/data-table';
@@ -232,7 +232,10 @@ const ProductManagement = () => {
             <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
             <p className="mt-1 text-sm text-gray-600">Manage and organise products</p>
           </div>
-          <button className="flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-white transition-colors hover:bg-green-800">
+          <button
+            onClick={() => message.success('teatestrets')}
+            className="flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-white transition-colors hover:bg-green-800"
+          >
             <Plus size={20} />
             Add New Product
           </button>

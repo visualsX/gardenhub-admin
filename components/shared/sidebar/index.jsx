@@ -1,11 +1,12 @@
 'use client';
 
 import { Menu } from 'antd';
-import ProductIcon from '@/public/shared/sidebar/products.svg';
 import SidebarLabel from './sidebar-label';
 import { usePathname } from '@/i18n/navigation';
 import Image from 'next/image';
 import Tx from '../tx';
+import { SidebarIcons, LogoutIcon } from '@/lib/const/icons';
+import { useLogout } from '@/hooks/useAuth';
 
 const positionSider = {
   overflow: 'auto',
@@ -20,49 +21,100 @@ const positionSider = {
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const logout = useLogout();
 
   const menuItems = [
     {
       key: '/',
       label: 'Dashboard',
-      icon: <ProductIcon className="h-6 w-6" />,
+      icon: <SidebarIcons.Dashboard className="h-6 w-6" />,
     },
-    { key: '/products', label: 'Products', icon: <ProductIcon className="h-6 w-6" /> },
+    {
+      key: '/products',
+      label: 'Products',
+      icon: <SidebarIcons.Products className="h-6 w-6" />,
+      children: [
+        {
+          key: '/products',
+          label: 'View Products',
+          icon: null,
+        },
+        {
+          key: '/products/add',
+          label: 'Add Product',
+          icon: null,
+        },
+      ],
+    },
     {
       key: '/category-and-subcategory',
       label: 'Category & Subcategory',
-      icon: <ProductIcon className="h-6 w-6" />,
+      icon: <SidebarIcons.Categories className="h-6 w-6" />,
     },
-    { key: '/bundles', label: 'Bundles & Deals', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/inventory', label: 'Inventory', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/orders', label: 'Orders', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/customers', label: 'Customers', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/coupons', label: 'Coupons & Promotions', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/reviews', label: 'Reviews & Feedback', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/analytics', label: 'Analytics', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/roles', label: 'Roles & Permission', icon: <ProductIcon className="h-6 w-6" /> },
-    { key: '/settings', label: 'Settings', icon: <ProductIcon className="h-6 w-6" /> },
+    {
+      key: '/bundles-and-deals',
+      label: 'Bundles & Deals',
+      icon: <SidebarIcons.Bundles className="h-6 w-6" />,
+      children: [
+        {
+          key: '/bundles-and-deals',
+          label: 'View Bundles',
+          icon: null,
+        },
+        {
+          key: '/bundles-and-deals/add',
+          label: 'Add Bundles',
+          icon: null,
+        },
+      ],
+    },
+    { key: '/inventory', label: 'Inventory', icon: <SidebarIcons.Inventory className="h-6 w-6" /> },
+    { key: '/orders', label: 'Orders', icon: <SidebarIcons.Orders className="h-6 w-6" /> },
+    { key: '/customers', label: 'Customers', icon: <SidebarIcons.Users className="h-6 w-6" /> },
+    {
+      key: '/coupons',
+      label: 'Coupons & Promotions',
+      icon: <SidebarIcons.Coupons className="h-6 w-6" />,
+    },
+    {
+      key: '/reviews',
+      label: 'Reviews & Feedback',
+      icon: <SidebarIcons.Reviews className="h-6 w-6" />,
+    },
+    {
+      key: '/analytics',
+      label: 'Reports & Analytics',
+      icon: <SidebarIcons.Reports className="h-6 w-6" />,
+    },
+    {
+      key: '/roles',
+      label: 'Roles & Permission',
+      icon: <SidebarIcons.Admin className="h-6 w-6" />,
+    },
+    { key: '/settings', label: 'Settings', icon: <SidebarIcons.Settings className="h-6 w-6" /> },
   ];
 
-  const items = menuItems.map((item) => ({
-    key: item.key,
-    label: (
-      <SidebarLabel
-        href={item.key}
-        label={item.label}
-        Icon={item.icon}
-        active={pathname === item.key}
-      />
-    ),
-  }));
+  const renderMenuItems = (items) =>
+    items.map((item) => ({
+      key: item.key,
+      label: (
+        <SidebarLabel
+          href={item.key}
+          label={item.label}
+          Icon={item.icon}
+          active={pathname === item.key}
+        />
+      ),
+      children: item.children ? renderMenuItems(item.children) : undefined,
+    }));
 
   return (
-    <>
-      <div
-        style={positionSider}
-        className="border-smoke-light w-[263px]! bg-white! ltr:border-r ltr:border-l"
-      >
-        <div className="flex items-center gap-x-3 px-4 pt-8 pb-5">
+    <div
+      style={positionSider}
+      className="border-smoke-light flex w-[263px]! flex-col justify-between bg-white! py-8 ltr:border-r ltr:border-l"
+    >
+      <div className="">
+        <div className="flex items-center gap-x-3 px-4 pb-5">
           <div className="bg-primary-light grid h-14 w-14 place-items-center rounded-xl">
             <Image src="/shared/logo.svg" width={27} height={27} alt="logo" />
           </div>
@@ -70,15 +122,25 @@ const Sidebar = () => {
             <Tx>Gardenhub</Tx>
           </h1>
         </div>
-        <Menu className="px-4!" mode="inline" selectedKeys={[pathname]} items={items} />
+
+        <Menu
+          className="px-4!"
+          mode="inline"
+          selectedKeys={[pathname]}
+          defaultOpenKeys={['/products']}
+          items={renderMenuItems(menuItems)}
+        />
       </div>
 
-      <style jsx global>{`
-        .ant-menu-light.ant-menu-inline .ant-menu-item {
-          padding-left: 8px !important;
-        }
-      `}</style>
-    </>
+      <section
+        onClick={logout}
+        className="flex cursor-pointer items-center gap-x-2 pb-20 pl-8 text-sm text-red-500"
+      >
+        <LogoutIcon />
+        <span>Logout</span>
+      </section>
+    </div>
   );
 };
+
 export default Sidebar;
