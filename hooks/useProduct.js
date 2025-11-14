@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { message } from 'antd';
+import { useRouter } from 'next/navigation';
+import { PRODUCTS_QUERIES } from '@/lib/api/queries';
+import graphqlClient from '@/lib/api/graphql-client';
+import { usePagination } from './usePagination';
+import useUiStates from '@/store/useUiStates';
 
 // Query Keys
 export const productKeys = {
@@ -12,24 +17,41 @@ export const productKeys = {
   detail: (id) => [...productKeys.details(), id],
 };
 
-// Get all products
-export const useProducts = (params = {}) => {
-  return useQuery({
-    queryKey: productKeys.list(JSON.stringify(params)),
+// Get all products with pagination
+export const useProducts = (filters = {}) => {
+  const query = useQuery({
+    queryKey: productKeys.list({ ...filters }),
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.PRODUCTS.LIST, { params });
-      return response;
-    },
-  });
-};
+      const variables = {
+        first: null,
+        after: null,
+        last: null,
+        before: null,
+        where: filters.where || null,
+        order: filters.order || null,
+      };
 
+      const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_PRODUCTS, variables);
+
+      return response.products;
+    },
+    keepPreviousData: true,
+  });
+
+  return {
+    ...query,
+  };
+};
 // Get single product
 export const useProduct = (id) => {
   return useQuery({
     queryKey: productKeys.detail(id),
     queryFn: async () => {
-      const response = await apiClient.get(API_ENDPOINTS.PRODUCTS.DETAIL(id));
-      return response.data;
+      const variables = {
+        id: id,
+      };
+      const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_PRODUCT_DETAIL, variables);
+      return response.productDetail;
     },
     enabled: !!id,
   });
@@ -38,15 +60,21 @@ export const useProduct = (id) => {
 // Create product
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async (data) => {
-      const response = await apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, data);
+      const response = await apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
       message.success('Product created successfully!');
+      router.push('/products');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to create product');
@@ -77,6 +105,7 @@ export const useUpdateProduct = () => {
 // Delete product
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
+  const { closeDeleteModal } = useUiStates();
 
   return useMutation({
     mutationFn: async (id) => {
@@ -85,6 +114,7 @@ export const useDeleteProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
       message.success('Product deleted successfully!');
+      closeDeleteModal();
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to delete product');

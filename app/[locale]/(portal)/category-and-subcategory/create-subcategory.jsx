@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import { Modal, Button, Form } from 'antd';
-import { CrossIcon, PlusWhite, PlusGray } from '@/lib/const/icons';
+import { Button, Form } from 'antd';
+import { PlusGray } from '@/lib/const/icons';
 import { FormInput, FormSwitch } from '@/components/ui/inputs';
 import { useCreateCategory } from '@/hooks/useCategories';
+import ModalWrapper from '@/components/shared/wrapper/modal-wrapper';
+import useUiStates from '@/store/useUiStates';
 
 export default function CreateSubCategoryModal({ parentId }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal, closeModal } = useUiStates();
 
   const category = useCreateCategory();
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    closeModal(false, null);
   };
 
   const onFinish = (values) => {
@@ -18,31 +19,24 @@ export default function CreateSubCategoryModal({ parentId }) {
   };
 
   return (
-    <div className="">
+    <>
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => openModal(true, null)}
         className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
       >
         <PlusGray className="h-4 w-4" />
         Add Subcategory
       </button>
 
-      <Modal
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-        closeIcon={<CrossIcon className="h-5 w-5 text-gray-400" />}
-        width={600}
-        centered
-      >
+      <ModalWrapper>
         <Form onFinish={onFinish} layout="vertical" className="py-2">
           {/* Header */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold">Create New Category</h2>
-            <p className="mt-1 text-sm text-gray-500">Add a new main category for your products</p>
+            <h2 className="text-xl font-semibold">Create New Sub Category</h2>
+            <p className="mt-1 text-sm text-gray-500">Add a new sub category for your products</p>
           </div>
 
-          <FormInput label={'Category Name *'} name={'name'} />
+          <FormInput label={'Sub Category Name *'} name={'name'} />
 
           {/* Visible to Customers Toggle */}
           <div className="mb-8 flex items-center justify-between rounded-lg border border-gray-200 p-4">
@@ -65,13 +59,13 @@ export default function CreateSubCategoryModal({ parentId }) {
               htmlType="submit"
               loading={category.isPending}
               disabled={category.isPending}
-              className="rounded-lg bg-green-600 hover:bg-green-700"
+              className="px-16!"
             >
-              Create Category
+              Create
             </Button>
           </div>
         </Form>
-      </Modal>
-    </div>
+      </ModalWrapper>
+    </>
   );
 }

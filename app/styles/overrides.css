@@ -1,0 +1,98 @@
+/* ======================================================================= */
+/* Table Stylings */
+/* ======================================================================= */
+.table-wrapper .ant-table {
+  font-size: 14px;
+}
+.table-wrapper .ant-table-thead > tr > th {
+  background: #fafafa;
+  color: #535862;
+  font-weight: 500;
+  font-size: 12px;
+  border-bottom: 1px solid #e9eaeb;
+}
+.table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #e9eaeb;
+}
+.table-wrapper .ant-table-tbody > tr:hover > td {
+  background: #f9fafb;
+}
+
+/* ======================================================================= */
+/* Uploader Stylings */
+/* ======================================================================= */
+
+.products-additionals
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.products-additionals
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item-container {
+  width: 100% !important;
+  height: 100px !important;
+  overflow: hidden !important;
+}
+
+.products-additionals
+  .ant-upload-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item {
+  padding: 0px !important;
+}
+
+.products-additionals
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item::before {
+  width: 100% !important;
+  height: 100px !important;
+  border-radius: 6px !important;
+}
+
+.products-additionals
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item-thumbnail {
+  object-fit: cover !important;
+  border-radius: 6px !important;
+}
+
+.products-additionals
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload.ant-upload-select
+  img {
+  width: 100% !important;
+  height: 100px !important;
+  height: 100px !important;
+}
+
+.products-main
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item-container {
+  width: 100% !important;
+  height: 256px !important;
+}
+.products-main .ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload.ant-upload-select {
+  width: 100% !important;
+  height: 256px !important;
+}
+
+.products-main
+  .ant-upload-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item {
+  padding: 0 !important;
+}
+.products-main
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper
+  .ant-upload-list.ant-upload-list-picture-card
+  .ant-upload-list-item::before {
+  width: 100% !important;
+  height: 100% !important;
+}

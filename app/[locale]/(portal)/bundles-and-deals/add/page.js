@@ -7,13 +7,22 @@ import { Button, Switch, Tabs, Badge, Table } from 'antd';
 // import Badge from '@/components/ui/badge';
 
 import { ArrowLeft, Edit, Trash, Dollar, TrendingUp, Plus, Stock } from '@/lib/const/icons';
+import ImageGallery from '@/components/shared/image-gallery';
+import { Box } from '@/components/wrappers/box';
 export default function BundleDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [activeStatus, setActiveStatus] = useState(true);
   const [featuredBundle, setFeaturedBundle] = useState(false);
   const [limitedTimeOffer, setLimitedTimeOffer] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const mainImage =
+    'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&h=400&fit=crop';
 
+  const galleryImages = [
+    'https://images.unsplash.com/photo-1565084888279-aca607ecce0c?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1616694677520-9d996e40a4c8?w=400&h=400&fit=crop',
+  ];
   const bundleImages = [
     'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1565084888279-aca607ecce0c?w=400&h=400&fit=crop',
@@ -173,36 +182,10 @@ export default function BundleDetailPage() {
           {/* Left Sidebar */}
           <div className="space-y-6">
             {/* Bundle Image */}
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <h3 className="mb-4 font-semibold text-gray-900">Bundle Image</h3>
-              <div className="mb-4 overflow-hidden rounded-lg">
-                <img
-                  src={bundleImages[currentImageIndex]}
-                  alt="Bundle"
-                  className="h-80 w-full object-cover"
-                />
-              </div>
-              <div className="flex gap-2 overflow-x-auto">
-                {bundleImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImageIndex(idx)}
-                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${
-                      idx === currentImageIndex ? 'border-green-600' : 'border-gray-200'
-                    }`}
-                  >
-                    <img
-                      src={img}
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="h-full w-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
+            <ImageGallery mainImage={mainImage} images={galleryImages} />
 
             {/* Pricing Details */}
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <Box>
               <h3 className="mb-4 font-semibold text-gray-900">Pricing Details</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -224,10 +207,10 @@ export default function BundleDetailPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Box>
 
             {/* Quick Stats */}
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <Box>
               <h3 className="mb-4 font-semibold text-gray-900">Quick Stats</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -252,12 +235,12 @@ export default function BundleDetailPage() {
                   <span className="font-semibold text-gray-900">8.3%</span>
                 </div>
               </div>
-            </div>
+            </Box>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <Box>
               <div className="px-4 pt-4">
                 <Tabs
                   activeKey={activeTab}
@@ -445,7 +428,7 @@ export default function BundleDetailPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </Box>
           </div>
         </div>
       </div>

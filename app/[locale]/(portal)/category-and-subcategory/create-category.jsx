@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import { Modal, Button, Form } from 'antd';
-import { CrossIcon, PlusWhite, PlusGray } from '@/lib/const/icons';
+// "use client"
+
+import { Button, Form } from 'antd';
+import { PlusWhite, PlusGray } from '@/lib/const/icons';
 import { FormInput, FormSwitch } from '@/components/ui/inputs';
 import { useCreateCategory } from '@/hooks/useCategories';
+import ModalWrapper from '@/components/shared/wrapper/modal-wrapper';
+import useUiStates from '@/store/useUiStates';
 
 export default function CreateCategoryModal() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal, closeModal } = useUiStates();
 
   const category = useCreateCategory();
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
 
   const onFinish = (values) => {
     category.mutate(values);
@@ -19,19 +18,12 @@ export default function CreateCategoryModal() {
 
   return (
     <div className="">
-      <Button type="primary" onClick={() => setIsModalOpen(true)}>
+      <Button type="primary" onClick={() => openModal(true, null)}>
         <PlusWhite />
         Add Categories
       </Button>
 
-      <Modal
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-        closeIcon={<CrossIcon className="h-5 w-5 text-gray-400" />}
-        width={600}
-        centered
-      >
+      <ModalWrapper>
         <Form onFinish={onFinish} layout="vertical" className="py-2">
           {/* Header */}
           <div className="mb-6">
@@ -42,14 +34,14 @@ export default function CreateCategoryModal() {
           <FormInput label={'Category Name *'} name={'name'} />
 
           {/* Add Subcategory Button */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <Button
               icon={<PlusGray className="h-4 w-4" />}
               className="round flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
             >
               Add Subcategory
             </Button>
-          </div>
+          </div> */}
 
           {/* Visible to Customers Toggle */}
           <div className="mb-8 flex items-center justify-between rounded-lg border border-gray-200 p-4">
@@ -63,7 +55,7 @@ export default function CreateCategoryModal() {
 
           {/* Footer Buttons */}
           <div className="flex justify-end gap-3">
-            <Button size="large" onClick={handleCancel} className="rounded-lg">
+            <Button size="large" onClick={() => closeModal(false, null)} className="rounded-lg">
               Cancel
             </Button>
             <Button
@@ -78,7 +70,7 @@ export default function CreateCategoryModal() {
             </Button>
           </div>
         </Form>
-      </Modal>
+      </ModalWrapper>
     </div>
   );
 }

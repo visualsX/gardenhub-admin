@@ -8,7 +8,12 @@ export default function middleware(req) {
   const { pathname } = req.nextUrl;
 
   // Public routes that don't require authentication
-  const publicPaths = ['/auth/login', '/auth/signup', '/auth/forgot-password'];
+  const publicPaths = [
+    '/auth/login',
+    '/auth/signup',
+    '/auth/forgot-password',
+    '/auth/client-login',
+  ];
 
   // Check if current path is public (supports any locale)
   const isPublicRoute = publicPaths.some((path) => {

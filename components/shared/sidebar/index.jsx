@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Tx from '../tx';
 import { SidebarIcons, LogoutIcon } from '@/lib/const/icons';
 import { useLogout } from '@/hooks/useAuth';
+import { LogoTemp, CrossRed, EditGreen } from '@/lib/const/icons';
 
 const positionSider = {
   overflow: 'auto',
@@ -111,13 +112,11 @@ const Sidebar = () => {
   return (
     <div
       style={positionSider}
-      className="border-smoke-light flex w-[263px]! flex-col justify-between bg-white! py-8 ltr:border-r ltr:border-l"
+      className="border-smoke-light flex w-[263px]! flex-col justify-between bg-white! pb-8 ltr:border-r ltr:border-l"
     >
       <div className="">
-        <div className="flex items-center gap-x-3 px-4 pb-5">
-          <div className="bg-primary-light grid h-14 w-14 place-items-center rounded-xl">
-            <Image src="/shared/logo.svg" width={27} height={27} alt="logo" />
-          </div>
+        <div className="border-smoke-light flex h-16 items-center gap-x-3 border-b px-6">
+          <LogoTemp />
           <h1 className="text-primary text-2xl font-semibold">
             <Tx>Gardenhub</Tx>
           </h1>

@@ -2,24 +2,23 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { message } from 'antd';
-import { CATEGORY_QUERIES } from '@/lib/api/queries';
+import { ATTRIBUTES_QUERIES, CATEGORY_QUERIES } from '@/lib/api/queries';
 import graphqlClient from '@/lib/api/graphql-client';
-import useUiStates from '@/store/useUiStates';
 
 // Query Keys
-export const categoryKeys = {
-  all: ['categories'],
-  lists: () => [...categoryKeys.all, 'list'],
-  list: (filters) => [...categoryKeys.lists(), { filters }],
-  tree: () => [...categoryKeys.all, 'tree'],
-  details: () => [...categoryKeys.all, 'detail'],
-  detail: (id) => [...categoryKeys.details(), id],
+export const attributeKeys = {
+  all: ['attributes'],
+  lists: () => [...attributeKeys.all, 'list'],
+  list: (filters) => [...attributeKeys.lists(), { filters }],
+  tree: () => [...attributeKeys.all, 'tree'],
+  details: () => [...attributeKeys.all, 'detail'],
+  detail: (id) => [...attributeKeys.details(), id],
 };
 
 // Get all categories
-export const useCategories = (params = {}) => {
+export const useAttributes = (params = {}) => {
   return useQuery({
-    queryKey: categoryKeys.list(JSON.stringify(params)),
+    queryKey: attributeKeys.list(JSON.stringify(params)),
     queryFn: async () => {
       const variables = {
         first: 10,
@@ -28,9 +27,8 @@ export const useCategories = (params = {}) => {
         before: null,
       };
 
-      const response = await graphqlClient.request(CATEGORY_QUERIES.GET_CATEGORIES);
-
-      return response.categories;
+      const response = await graphqlClient.request(ATTRIBUTES_QUERIES.GET_ATTRIBUTES);
+      return response.filterAttributes;
     },
   });
 };
@@ -38,7 +36,7 @@ export const useCategories = (params = {}) => {
 // Get category tree
 export const useCategoryTree = () => {
   return useQuery({
-    queryKey: categoryKeys.tree(),
+    queryKey: attributeKeys.tree(),
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.CATEGORIES.TREE);
       return response.data;
@@ -49,7 +47,7 @@ export const useCategoryTree = () => {
 // Get single category
 export const useCategory = (id) => {
   return useQuery({
-    queryKey: categoryKeys.detail(id),
+    queryKey: attributeKeys.detail(id),
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.CATEGORIES.DETAIL(id));
       return response.data;
@@ -61,7 +59,6 @@ export const useCategory = (id) => {
 // Create category
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
-  const { closeModal } = useUiStates();
 
   return useMutation({
     mutationFn: async (data) => {
@@ -69,10 +66,9 @@ export const useCreateCategory = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.tree() });
       message.success('Category created successfully!');
-      closeModal(false, null);
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to create category');
@@ -90,9 +86,9 @@ export const useUpdateCategory = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
-      queryClient.invalidateQueries({ queryKey: categoryKeys.detail(data.id) });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.tree() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.detail(data.id) });
       message.success('Category updated successfully!');
     },
     onError: (error) => {
@@ -110,8 +106,8 @@ export const useDeleteCategory = () => {
       await apiClient.delete(API_ENDPOINTS.CATEGORIES.DELETE(id));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: attributeKeys.tree() });
       message.success('Category deleted successfully!');
     },
     onError: (error) => {

@@ -1,11 +1,27 @@
 'use client';
 import React, { useState } from 'react';
-import { Tabs, Form, Button, Tag, Avatar, message, Typography } from 'antd';
+import {
+  Tabs,
+  Form,
+  Button,
+  Tag,
+  Avatar,
+  message,
+  Typography,
+  Skeleton,
+  Checkbox,
+  Radio,
+} from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
-import Edit from '@/public/shared/edit-white.svg';
 import X from '@/public/shared/Eye.svg';
 import Plus from '@/public/shared/plus-white.svg';
 import { FormInput, FormTextArea, FormSelect, FormSwitch } from '@/components/ui/inputs';
+import { Box } from '@/components/wrappers/box';
+import UploaderMax from '@/components/ui/uploaderM';
+import SingleImageUploader from '@/components/ui/singleUpload';
+import { useCreateProduct } from '@/hooks/useProduct';
+import { useAttributes } from '@/hooks/useAttribute';
+import Link from 'next/link';
 
 const { Title, Text } = Typography;
 
@@ -13,60 +29,50 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
 
-  const onSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      console.log('All Form Values:', values);
+  const addProduct = useCreateProduct();
+  const { data, isLoading } = useAttributes();
 
-      const formData = {
-        // General Tab
-        productName: values.productName,
-        sku: values.sku,
-        category: values.category,
-        subcategory: values.subcategory,
-        shortDescription: values.shortDescription,
-        detailedDescription: values.detailedDescription,
-        seoTitle: values.seoTitle,
-        metaDescription: values.metaDescription,
-        keywords: values.keywords,
+  const onSubmit = (values) => {
+    // Collect only fields whose names start with 'idx_'
+    const FilterOptionIds = Object.entries(values)
+      .filter(([key]) => key.startsWith('idx_'))
+      .map(([, value]) => value)
+      .flat()
+      .filter(Boolean);
 
-        // Pricing Tab
-        retailPrice: values.retailPrice,
-        costPrice: values.costPrice,
-        discount: values.discount,
+    // Step 1: Build FormData
+    const formData = new FormData();
 
-        // Specifications Tab
-        lightRequirements: values.lightRequirements,
-        petFriendly: values.petFriendly,
-        growthRate: values.growthRate,
-        careLevel: values.careLevel,
-        wateringSchedule: values.wateringSchedule,
-        weight: values.weight,
-        dimensions: values.dimensions,
+    // Step 2: Append all normal fields
+    Object.entries(values).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          if (item?.originFileObj) {
+            formData.append(key, item.originFileObj);
+          } else if (item !== null && item !== undefined) {
+            formData.append(key, String(item));
+          }
+        });
+      } else if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, String(value));
+      }
+    });
 
-        // Inventory Tab
-        currentStock: values.currentStock,
-        lowStockThreshold: values.lowStockThreshold,
-        shippingRequired: values.shippingRequired,
-        shippingWeight: values.shippingWeight,
-        boxSize: values.boxSize,
-        shippingType: values.shippingType,
-        fragileItem: values.fragileItem,
+    // Step 3: Append each FilterOptionId separately (important part)
+    FilterOptionIds.forEach((id) => {
+      formData.append('FilterOptionIds', String(id));
+    });
 
-        // Status
-        active: values.active,
-        featured: values.featured,
-      };
-
-      console.log('Formatted Form Data:', formData);
-      message.success('Product saved successfully!');
-
-      // Here you can make API call
-      // Example: await api.updateProduct(formData);
-    } catch (error) {
-      console.error('Validation Failed:', error);
-      message.error('Please fill all required fields!');
+    // Debugging
+    console.log('FormData entries:');
+    for (const [k, v] of formData.entries()) {
+      console.log(k, v);
     }
+
+    // Step 4: Submit
+    addProduct.mutate(formData);
   };
 
   const handleCancel = () => {
@@ -74,44 +80,7 @@ const ProductManagement = () => {
     message.info('Form reset to initial values');
   };
 
-  const initialValues = {
-    productName: 'Fiddle Leaf Fig',
-    sku: 'PLT-FLF-001',
-    category: 'Indoor Plants',
-    subcategory: 'Tropical Plants',
-    shortDescription:
-      'The Fiddle Leaf Fig is a popular indoor plant known for its large, violin-shaped leaves. Native to western Africa, this statement plant adds a touch of elegance to any space.',
-    detailedDescription:
-      'Perfect for brightening up living rooms, offices, or any indoor space, the Fiddle Leaf Fig has become a favorite among plant enthusiasts and interior designers alike. Its dramatic foliage and tree-like growth pattern make it an excellent focal point in modern and traditio',
-    seoTitle: 'Fiddle Leaf Fig - Premium Indoor Plant | GardenHub',
-    metaDescription:
-      'Buy beautiful Fiddle Leaf Fig plants online. Large violin-shaped leaves perfect for modern interiors. Free shipping on orders over $50.',
-    keywords: 'fiddle leaf fig, indoor plant, ficus lyrata, house plant',
-    retailPrice: '49.99',
-    costPrice: '25.99',
-    discount: '0',
-    lightRequirements: 'Bright Light, Indirect Light',
-    petFriendly: 'No',
-    growthRate: 'Moderate, centimetres in a month',
-    careLevel: 'Medium',
-    wateringSchedule: 'Weekly, when the soil is dry',
-    weight: '500',
-    currentStock: '45',
-    lowStockThreshold: '10',
-    shippingWeight: '18',
-    boxSize: 'Large',
-    shippingType: 'Oversized',
-    active: true,
-    featured: true,
-    shippingRequired: true,
-    fragileItem: true,
-    dimensions: {
-      length: '',
-      width: '',
-      height: '',
-      depth: '',
-    },
-  };
+  const initialValues = {};
 
   const colorOptions = [
     { value: 'Red', color: '#EF4444' },
@@ -123,8 +92,8 @@ const ProductManagement = () => {
   ];
 
   const categoryOptions = [
-    { value: 'Indoor Plants', label: 'Indoor Plants' },
-    { value: 'Outdoor Plants', label: 'Outdoor Plants' },
+    { value: 1, label: 'Indoor Plants' },
+    { value: 2, label: 'Outdoor Plants' },
   ];
 
   const subcategoryOptions = [
@@ -156,149 +125,113 @@ const ProductManagement = () => {
 
   const generalTab = (
     <div className="space-y-6">
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Product Information
-          </Text>
-          <div className="mt-1 text-sm text-gray-500">Basic details about the product</div>
-        </div>
+      <Box header title={'Product Information'} description={'Basic details about the product'}>
         <div className="grid grid-cols-2 gap-4">
           <FormInput
-            name="productName"
+            name="Name"
             label="Product Name"
             placeholder="Enter product name"
             rules={[{ required: true, message: 'Please enter product name' }]}
             className="mb-4"
           />
           <FormInput
-            name="sku"
+            name="Sku"
             label="Stock Keeping Unit (SKU)"
             placeholder="Enter SKU"
             rules={[{ required: true, message: 'Please enter SKU' }]}
             className="mb-4"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <FormSelect
-            name="category"
+            name="CategoryIds"
             label="Category"
             placeholder="Select category"
             options={categoryOptions}
             rules={[{ required: true, message: 'Please select category' }]}
             className="mb-4"
           />
-          <FormSelect
+          {/* <FormSelect
             name="subcategory"
             label="Subcategory"
             placeholder="Select subcategory"
             options={subcategoryOptions}
             className="mb-4"
-          />
+          /> */}
         </div>
         <FormTextArea
-          name="shortDescription"
+          name="ShortDescription"
           label="Short Description"
           placeholder="Enter short description"
           rows={3}
           className="mb-4"
         />
         <FormTextArea
-          name="detailedDescription"
+          name="DetailedDescription"
           label="Detailed Description"
           placeholder="Enter detailed description"
           rows={4}
           className="mb-0"
         />
-      </div>
+      </Box>
 
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Attributes & Tags
-          </Text>
-        </div>
-        <div className="mb-4">
-          <div className="mb-2 flex items-center justify-between">
-            <Text strong>Benefits</Text>
-            <Button type="link" danger icon={<X size={16} />} className="h-auto p-0" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Tag>High O2</Tag>
-            <Tag>Statement Plant</Tag>
-            <Tag>Air Purifying</Tag>
-            <Tag>Pet Friendly</Tag>
-          </div>
-        </div>
-        <div className="mb-0">
-          <div className="mb-2 flex items-center justify-between">
-            <Text strong>Type of Plant</Text>
-            <Button type="link" danger icon={<X size={16} />} className="h-auto p-0" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Tag>Succulents</Tag>
-            <Avatar size={40} src="/api/placeholder/40/40" />
-            <Button type="link" icon={<Plus size={16} />} className="h-auto p-0">
-              Add Attribute
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Color
-          </Text>
-        </div>
-        <div className="flex gap-4">
-          {colorOptions.map((option) => (
-            <div key={option.value} className="flex cursor-pointer flex-col items-center">
-              <div
-                className={`h-12 w-12 rounded-full border-2 ${
-                  option.value === 'Red' ? 'border-gray-800' : 'border-transparent'
-                }`}
-                style={{ backgroundColor: option.color }}
-              />
-              <Text className="mt-2 text-sm">{option.value}</Text>
-            </div>
+      <Box header title={'Attributes & Tags'}>
+        <Skeleton loading={isLoading}>
+          {data?.map((el, idx) => (
+            <Form.Item name={`idx_${idx}`} key={idx}>
+              {el.isMultiSelect ? (
+                <Checkbox.Group className="mb-4 flex flex-col">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Text strong>{el?.name}</Text>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {el?.options?.map((option, key) => (
+                      <Checkbox className="" value={option.id} key={key}>
+                        {option.value}
+                      </Checkbox>
+                    ))}
+                  </div>
+                </Checkbox.Group>
+              ) : (
+                <Radio.Group className="mb-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Text strong>{el?.name}</Text>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {el?.options?.map((option, key) => (
+                      <Radio value={option.id} key={key}>
+                        {option.value}
+                      </Radio>
+                    ))}
+                  </div>
+                </Radio.Group>
+              )}
+            </Form.Item>
           ))}
-          <div className="flex cursor-pointer flex-col items-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-gray-300">
-              <Plus size={20} />
-            </div>
-            <Text className="mt-2 text-sm">Add</Text>
-          </div>
-        </div>
-      </div>
+        </Skeleton>
+      </Box>
 
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            SEO Information
-          </Text>
-          <div className="mt-1 text-sm text-gray-500">Search engine optimization details</div>
-        </div>
+      <Box header title={'SEO Information'} description={'Search engine optimization details'}>
         <FormInput
-          name="seoTitle"
+          name="MetaTitle"
           label="SEO Title"
           placeholder="Enter SEO title"
           className="mb-4"
         />
         <FormTextArea
-          name="metaDescription"
+          name="MetaDescription"
           label="Meta Description"
           placeholder="Enter meta description"
           rows={3}
           className="mb-4"
         />
-        <FormInput name="keywords" label="Keywords" placeholder="Enter keywords" className="mb-0" />
-      </div>
+        <FormInput name="Keywords" label="Keywords" placeholder="Enter keywords" className="mb-0" />
+      </Box>
     </div>
   );
 
   const pricingTab = (
-    <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
+    <Box header title={''} description={''}>
       <div className="mb-4">
         <Text strong className="text-base">
           Pricing Information
@@ -306,7 +239,7 @@ const ProductManagement = () => {
         <div className="mt-1 text-sm text-gray-500">Set product pricing and margins</div>
       </div>
       <FormInput
-        name="retailPrice"
+        name="RegularPrice"
         label="Retail Price"
         placeholder="0.00"
         type="number"
@@ -314,7 +247,7 @@ const ProductManagement = () => {
         className="mb-4"
       />
       <FormInput
-        name="costPrice"
+        name="CostPrice"
         label="Cost Price"
         placeholder="0.00"
         type="number"
@@ -322,67 +255,21 @@ const ProductManagement = () => {
         className="mb-4"
       />
       <FormInput
-        name="discount"
+        name="Discount"
         label="Discount"
         placeholder="0"
         type="number"
         suffix="%"
         className="mb-0"
       />
-    </div>
+    </Box>
   );
 
   const specificationsTab = (
     <div className="space-y-6">
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            General Care Specs
-          </Text>
-        </div>
+      <Box header title={'Product Dimensions'} description={'Physical measurements of the product'}>
         <FormInput
-          name="lightRequirements"
-          label="Light Requirements"
-          placeholder="Enter light requirements"
-          className="mb-4"
-        />
-        <FormSelect
-          name="petFriendly"
-          label="Pet friendliness"
-          placeholder="Select option"
-          options={petFriendlyOptions}
-          className="mb-4"
-        />
-        <FormInput
-          name="growthRate"
-          label="Growth rate"
-          placeholder="Enter growth rate"
-          className="mb-4"
-        />
-        <FormSelect
-          name="careLevel"
-          label="Care Level"
-          placeholder="Select care level"
-          options={careLevelOptions}
-          className="mb-4"
-        />
-        <FormInput
-          name="wateringSchedule"
-          label="Watering schedule"
-          placeholder="Enter watering schedule"
-          className="mb-0"
-        />
-      </div>
-
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Product Dimensions
-          </Text>
-          <div className="mt-1 text-sm text-gray-500">Physical measurements of the product</div>
-        </div>
-        <FormInput
-          name="weight"
+          name="Weight"
           label="Weight"
           placeholder="0"
           type="number"
@@ -394,50 +281,39 @@ const ProductManagement = () => {
             Dimensions (meters)
           </label>
           <div className="grid grid-cols-4 gap-3">
-            <FormInput name={['dimensions', 'length']} placeholder="Length" type="number" noStyle />
-            <FormInput name={['dimensions', 'width']} placeholder="Width" type="number" noStyle />
-            <FormInput name={['dimensions', 'height']} placeholder="Height" type="number" noStyle />
-            <FormInput name={['dimensions', 'depth']} placeholder="Depth" type="number" noStyle />
+            <FormInput name={'Length'} placeholder="Length" type="number" noStyle />
+            <FormInput name={'Width'} placeholder="Width" type="number" noStyle />
+            <FormInput name={'Height'} placeholder="Height" type="number" noStyle />
+            <FormInput name={'depth'} placeholder="Depth" type="number" noStyle />
           </div>
         </div>
-      </div>
+      </Box>
     </div>
   );
 
   const inventoryTab = (
     <div className="space-y-6">
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Stock Management
-          </Text>
-          <div className="mt-1 text-sm text-gray-500">Manage inventory levels and alerts</div>
-        </div>
+      <Box header title={'Stock Management'} description={'Manage inventory levels and alerts'}>
         <div className="grid grid-cols-2 gap-4">
           <FormInput
-            name="currentStock"
+            name="StockQuantity"
             label="Current Stock"
             placeholder="0"
             type="number"
             className="mb-0"
           />
           <FormInput
-            name="lowStockThreshold"
+            name="LowStockThreshold"
             label="Low Stock Threshold"
             placeholder="0"
             type="number"
             className="mb-0"
           />
         </div>
-      </div>
+      </Box>
 
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="mb-4">
-          <Text strong className="text-base">
-            Shipping Information
-          </Text>
-        </div>
-        <FormSwitch name="shippingRequired" label="Shipping Required" className="mb-4" />
+      <Box header title={'Shipping Information'}>
+        <FormSwitch name="IsShippingRequired" label="Shipping Required" className="mb-4" />
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             name="shippingWeight"
@@ -463,9 +339,9 @@ const ProductManagement = () => {
             options={shippingTypeOptions}
             className="mb-0"
           />
-          <FormSwitch name="fragileItem" label="Fragile Item" className="mb-0" />
+          <FormSwitch name="IsFragile" label="Fragile Item" className="mb-0" />
         </div>
-      </div>
+      </Box>
     </div>
   );
 
@@ -477,122 +353,74 @@ const ProductManagement = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Button type="text" icon={<ArrowLeft size={20} />} className="p-1" />
-          <div>
-            <div className="flex items-center gap-3">
-              <Title level={4} className="m-0">
-                Fiddle Leaf Fig
-              </Title>
-              <Tag color="green" className="m-0">
-                In Stock
-              </Tag>
-            </div>
-            <Text type="secondary" className="text-sm">
-              SKU: PLT-FLF-001
-            </Text>
+    <Form form={form} onFinish={onSubmit} layout="vertical" initialValues={initialValues}>
+      <div className="flex items-center justify-between py-2">
+        <Link href={'/products'} className="flex items-center gap-x-2">
+          <div className="border-smoke rounded-full border bg-white p-1">
+            <ArrowLeft size={20} />
           </div>
-        </div>
+          <h1 className="flex items-center gap-3 text-lg font-semibold text-black">Add Product</h1>
+        </Link>
         <div className="flex gap-3">
-          <Button size="large" onClick={handleCancel}>
-            Cancel
-          </Button>
+          <Button onClick={handleCancel}>Cancel</Button>
           <Button
             type="primary"
-            size="large"
-            className="bg-green-700 hover:bg-green-800"
-            onClick={onSubmit}
+            htmlType="submit"
+            className="w-40!"
+            loading={addProduct.isPending}
+            disabled={addProduct.isPending}
           >
             Save
           </Button>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="py-6">
         <div className="flex gap-6">
-          <div className="w-80 shrink-0">
-            <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
+          <div className="w-80 shrink-0 space-y-6">
+            <Box>
               <Title level={5} className="mb-4">
                 Product Images
               </Title>
-              <div className="mb-4">
-                <Text strong className="mb-2 block">
-                  Main Image
-                </Text>
-                <div className="relative">
-                  <img
-                    src="/api/placeholder/280/280"
-                    alt="Fiddle Leaf Fig"
-                    className="w-full rounded-lg"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Button
-                      shape="circle"
-                      icon={<Edit size={16} />}
-                      className="border-0 bg-green-700 text-white hover:bg-green-800"
-                      size="small"
-                    />
-                    <Button shape="circle" icon={<X size={16} />} danger size="small" />
-                  </div>
-                </div>
-              </div>
 
-              <div>
-                <Text strong className="mb-2 block">
-                  Additional Images
-                </Text>
-                <div className="grid grid-cols-2 gap-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="relative">
-                      <img
-                        src="/api/placeholder/130/130"
-                        alt={`Additional ${i}`}
-                        className="w-full rounded-lg"
-                      />
-                      <div className="absolute top-1 right-1 flex gap-1">
-                        <Button
-                          size="small"
-                          shape="circle"
-                          icon={<Edit size={12} />}
-                          className="border-0 bg-green-700 text-white hover:bg-green-800"
-                        />
-                        <Button size="small" shape="circle" icon={<X size={12} />} danger />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+              <SingleImageUploader
+                name={'MainImage'}
+                label="Main Image"
+                className={'products-main'}
+              />
 
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
+              <UploaderMax
+                name="AdditionalImages"
+                label="Additional Images"
+                className={'products-additionals'}
+              />
+            </Box>
+
+            <Box>
               <Title level={5} className="mb-4">
                 Product Status
               </Title>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Text>Active</Text>
-                  <FormSwitch name="active" noStyle />
+                  <FormSwitch name="IsActive" noStyle />
                 </div>
                 <div className="flex items-center justify-between">
                   <Text>Featured Product</Text>
-                  <FormSwitch name="featured" noStyle />
+                  <FormSwitch name="IsFeatured" noStyle />
                 </div>
               </div>
-            </div>
+            </Box>
           </div>
 
           <div className="flex-1">
-            <div className="rounded-lg border border-gray-200 bg-white p-6">
-              <Form form={form} layout="vertical" initialValues={initialValues}>
-                <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
-              </Form>
-            </div>
+            <Box>
+              <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
+            </Box>
           </div>
         </div>
       </div>
-    </div>
+    </Form>
   );
 };
 

@@ -3,11 +3,9 @@
 import React, { useState } from 'react';
 import { Carousel } from 'antd';
 import Image from 'next/image';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ArrowLeft, ArrowRight } from '@/lib/const/icons';
 
 const ProductImageGallery = () => {
-  const [mainImage, setMainImage] = useState('/bundle-main.jpg'); // Default main bundle image
-
   // Additional product images
   const additionalImages = [
     'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&h=400&fit=crop',
@@ -22,10 +20,10 @@ const ProductImageGallery = () => {
     const { onClick } = props;
     return (
       <button
-        className="absolute top-1/2 left-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg transition hover:bg-gray-100"
+        className="border-smoke absolute top-1/2 -left-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-lg transition hover:bg-gray-100"
         onClick={onClick}
       >
-        <LeftOutlined className="text-gray-700" />
+        <ArrowLeft className="text-gray-700" />
       </button>
     );
   };
@@ -34,10 +32,10 @@ const ProductImageGallery = () => {
     const { onClick } = props;
     return (
       <button
-        className="absolute top-1/2 right-2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg transition hover:bg-gray-100"
+        className="border-smoke absolute top-1/2 -right-3 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-lg transition hover:bg-gray-100"
         onClick={onClick}
       >
-        <RightOutlined className="text-gray-700" />
+        <ArrowRight className="text-gray-700" />
       </button>
     );
   };
@@ -47,9 +45,16 @@ const ProductImageGallery = () => {
       {/* Main Bundle Image */}
       <div className="mb-6 overflow-hidden rounded-xl border border-gray-200">
         <div className="relative aspect-square w-full bg-gray-50">
-          <Image src={mainImage} alt="Product Bundle" fill className="object-cover" priority />
+          <img
+            src={
+              'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&h=400&fit=crop'
+            }
+            alt="Product Bundle"
+            fill
+            className="object-cover"
+            priority
+          />
         </div>
-        <h2 className="mt-4 text-center text-2xl font-semibold text-gray-800">Bundle Image</h2>
       </div>
 
       {/* Thumbnail Carousel */}
@@ -75,12 +80,7 @@ const ProductImageGallery = () => {
           {additionalImages.map((img, index) => (
             <div key={index} className="px-2">
               <button
-                onClick={() => setMainImage(img)}
-                className={`block w-full overflow-hidden rounded-lg border-2 transition-all ${
-                  mainImage === img
-                    ? 'scale-105 border-green-600 shadow-lg'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`border-smoke block w-full overflow-hidden rounded-lg border transition-all`}
               >
                 <div className="relative aspect-square">
                   <img src={img} alt={`Product view ${index + 1}`} fill className="object-cover" />
@@ -90,11 +90,6 @@ const ProductImageGallery = () => {
           ))}
         </Carousel>
       </div>
-
-      {/* Optional: View in 360° or Zoom hint */}
-      <p className="mt-4 text-center text-sm text-gray-500">
-        Click any image to view larger • Swipe to see more
-      </p>
     </div>
   );
 };

@@ -1,6 +1,7 @@
+import { Skeleton } from 'antd';
 import Title from '../ui/title';
 
-export function Box({ children, header = false, extra, title, description }) {
+export function Box({ children, loading = false, header = false, extra, title, description }) {
   return (
     <div className="border-smoke-light rounded-2xl border bg-white p-6">
       {header && (
@@ -9,7 +10,7 @@ export function Box({ children, header = false, extra, title, description }) {
           {extra}
         </div>
       )}
-      {children}
+      <Skeleton loading={loading}>{children}</Skeleton>
     </div>
   );
 }

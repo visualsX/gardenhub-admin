@@ -2,17 +2,10 @@
 
 import React, { useState } from 'react';
 import Pagination from '@/components/shared/pagination';
-import {
-  ChevronDown,
-  ChevronRight,
-  Eye,
-  PlusGray,
-  PlusWhite,
-  MoreVertical,
-} from '@/lib/const/icons';
+import { ChevronDown, ChevronRight, Eye, MoreVertical } from '@/lib/const/icons';
 import CreateCategoryModal from './create-category';
 import { useCategories } from '@/hooks/useCategories';
-import { Button, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import CreateSubCategoryModal from './create-subcategory';
 
 export default function CategoriesManagement() {
@@ -158,7 +151,7 @@ export default function CategoriesManagement() {
                 </div>
               ))}
             </div>
-            <div className="py-6">
+            {/* <div className="py-6">
               <Pagination
                 currentPage={currentPage}
                 totalPages={100}
@@ -166,7 +159,7 @@ export default function CategoriesManagement() {
                 onPrevious={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 onNext={() => setCurrentPage(Math.min(10, currentPage + 1))}
               />
-            </div>
+            </div> */}
           </Skeleton>
         </div>
       </div>
