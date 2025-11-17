@@ -5,7 +5,6 @@ import { message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { PRODUCTS_QUERIES } from '@/lib/api/queries';
 import graphqlClient from '@/lib/api/graphql-client';
-import { usePagination } from './usePagination';
 import useUiStates from '@/store/useUiStates';
 
 // Query Keys

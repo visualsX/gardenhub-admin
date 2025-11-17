@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 const { Option } = Select;
 
 const ProductManagement = () => {
-  const { isDeleteModalOpen, closeDeleteModal } = useUiStates();
+  const { isDeleteModalOpen } = useUiStates();
   const router = useRouter();
 
   const { data, isLoading, isFetching } = useProducts({});

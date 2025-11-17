@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Pagination from '@/components/shared/pagination';
 import { ChevronDown, ChevronRight, Eye, MoreVertical } from '@/lib/const/icons';
 import CreateCategoryModal from './create-category';
 import { useCategories } from '@/hooks/useCategories';
@@ -11,9 +10,8 @@ import CreateSubCategoryModal from './create-subcategory';
 export default function CategoriesManagement() {
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [expandedSubCategories, setExpandedSubCategories] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading } = useCategories({ page: 1, limit: 10, search: '' });
+  const { data, isLoading } = useCategories();
 
   const toggleCategory = (key) => {
     setExpandedCategories((prev) => (prev.includes(key) ? [] : [key]));
