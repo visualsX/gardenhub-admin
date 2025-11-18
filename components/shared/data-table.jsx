@@ -1,4 +1,5 @@
 import { Table } from 'antd';
+import CursorPagination from '@/components/shared/cursor-pagination';
 
 // ============================================
 //  REUSABLE DATA TABLE COMPONENT
@@ -13,6 +14,7 @@ export default function DataTable({
   rowClassName,
   onRow,
   scroll,
+  cursorPaginationProps,
   ...props
 }) {
   return (
@@ -29,6 +31,11 @@ export default function DataTable({
         scroll={scroll}
         {...props}
       />
+      {cursorPaginationProps ? (
+        <div className={'flex items-center justify-end border-t border-gray-100 px-6 py-4'}>
+          <CursorPagination {...cursorPaginationProps} />
+        </div>
+      ) : null}
     </main>
   );
 }

@@ -11,15 +11,20 @@ import { ProductCols } from '@/lib/columns/product-cols';
 import DeleteModal from '@/components/shared/delete-modal';
 import useUiStates from '@/store/useUiStates';
 import { useRouter } from 'next/navigation';
+import { DEFAULT_CURSOR_PAGE_SIZE, PAGINATION_KEYS } from '@/lib/const/pagination';
 const { Option } = Select;
 
 const ProductManagement = () => {
   const { isDeleteModalOpen } = useUiStates();
   const router = useRouter();
 
-  const { data, isLoading, isFetching } = useProducts({});
+  const { data, isLoading, isFetching, pageState } = useProducts({
+    paginationKey: PAGINATION_KEYS.PRODUCTS,
+    pageSize: DEFAULT_CURSOR_PAGE_SIZE,
+  });
 
   const deleteProduct = useDeleteProduct();
+  const pageInfo = data?.pageInfo ?? {};
 
   return (
     <div className="min-h-screen">
@@ -76,13 +81,21 @@ const ProductManagement = () => {
           {/* Table */}
           <DataTable
             loading={isFetching || isLoading}
-            rowKey="sku"
+            rowKey="id"
             columns={ProductCols()}
             data={data?.nodes}
             onRow={(record) => ({
               onClick: () => router.push(`/products/${record.id}`), // ✅ navigate on row click
               style: { cursor: 'pointer' }, // optional: show pointer cursor
             })}
+            pagination={false}
+            cursorPaginationProps={{
+              paginationKey: PAGINATION_KEYS.PRODUCTS,
+              pageInfo,
+              totalCount: data?.totalCount ?? 0,
+              pageSize: pageState.pageSize,
+              loading: isLoading || isFetching,
+            }}
           />
 
           <DeleteModal

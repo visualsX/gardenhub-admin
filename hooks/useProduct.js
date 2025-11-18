@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PRODUCTS_QUERIES } from '@/lib/api/queries';
 import graphqlClient from '@/lib/api/graphql-client';
 import useUiStates from '@/store/useUiStates';
+import useCursorPagination from '@/hooks/useCursorPagination';
 
 // Query Keys
 export const productKeys = {
@@ -18,16 +19,38 @@ export const productKeys = {
 
 // Get all products with pagination
 export const useProducts = (filters = {}) => {
+  const { paginationKey, pageSize = 10, where = null, order = null, ...paginationFilters } = filters;
+
+  const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
+
+  const {
+    first = null,
+    after = null,
+    last = null,
+    before = null,
+  } = pageState ?? paginationFilters;
+
+  const queryKeyFilters = {
+    paginationKey,
+    pageSize,
+    first,
+    after,
+    last,
+    before,
+    where,
+    order,
+  };
+
   const query = useQuery({
-    queryKey: productKeys.list({ ...filters }),
+    queryKey: productKeys.list(queryKeyFilters),
     queryFn: async () => {
       const variables = {
-        first: null,
-        after: null,
-        last: null,
-        before: null,
-        where: filters.where || null,
-        order: filters.order || null,
+        first: first ?? null,
+        after: after ?? null,
+        last: last ?? null,
+        before: before ?? null,
+        where: where || null,
+        order: order || null,
       };
 
       const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_PRODUCTS, variables);
@@ -37,8 +60,21 @@ export const useProducts = (filters = {}) => {
     keepPreviousData: true,
   });
 
+  // Expose pagination state so callers can wire UI without re-implementing setup.
+  const exposedPageState =
+    pageState ??
+    {
+      first,
+      after,
+      last,
+      before,
+      pageSize,
+      page: 1,
+    };
+
   return {
     ...query,
+    pageState: exposedPageState,
   };
 };
 // Get single product
