@@ -5,6 +5,8 @@ import { message } from 'antd';
 import { CATEGORY_QUERIES } from '@/lib/api/queries';
 import graphqlClient from '@/lib/api/graphql-client';
 import useUiStates from '@/store/useUiStates';
+import useCursorPagination from '@/hooks/useCursorPagination';
+import { DEFAULT_CURSOR_PAGE_SIZE } from '@/lib/const/pagination';
 
 // Query Keys
 export const categoryKeys = {
@@ -16,23 +18,61 @@ export const categoryKeys = {
   detail: (id) => [...categoryKeys.details(), id],
 };
 
-// Get all categories
-export const useCategories = (params = {}) => {
-  return useQuery({
-    queryKey: categoryKeys.list(JSON.stringify(params)),
+// Get all categories with cursor pagination
+export const useCategories = (filters = {}) => {
+  const { paginationKey, pageSize = DEFAULT_CURSOR_PAGE_SIZE, where = null, order = null, ...paginationFilters } =
+    filters;
+
+  const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
+
+  const { first = null, after = null, last = null, before = null } = pageState ?? paginationFilters;
+
+  const queryKeyFilters = {
+    paginationKey,
+    pageSize,
+    first,
+    after,
+    last,
+    before,
+    where,
+    order,
+  };
+
+  const query = useQuery({
+    queryKey: categoryKeys.list(queryKeyFilters),
     queryFn: async () => {
       const variables = {
-        first: 10,
-        after: null,
-        last: null,
-        before: null,
+        first: first ?? null,
+        after: after ?? null,
+        last: last ?? null,
+        before: before ?? null,
+        where: where || null,
+        order: order || null,
       };
 
-      const response = await graphqlClient.request(CATEGORY_QUERIES.GET_CATEGORIES);
+      const response = await graphqlClient.request(CATEGORY_QUERIES.GET_CATEGORIES, variables);
 
       return response.categories;
     },
+    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
+
+  const exposedPageState =
+    pageState ??
+    {
+      first,
+      after,
+      last,
+      before,
+      pageSize,
+      page: 1,
+    };
+
+  return {
+    ...query,
+    pageState: exposedPageState,
+  };
 };
 
 // Get category tree

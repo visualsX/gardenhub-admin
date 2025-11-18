@@ -6,12 +6,17 @@ import CreateCategoryModal from './create-category';
 import { useCategories } from '@/hooks/useCategories';
 import { Skeleton } from 'antd';
 import CreateSubCategoryModal from './create-subcategory';
+import CursorPagination from '@/components/shared/cursor-pagination';
+import { DEFAULT_CURSOR_PAGE_SIZE, PAGINATION_KEYS } from '@/lib/const/pagination';
 
 export default function CategoriesManagement() {
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [expandedSubCategories, setExpandedSubCategories] = useState([]);
 
-  const { data, isLoading } = useCategories();
+  const { data, isLoading, isFetching, pageState } = useCategories({
+    paginationKey: PAGINATION_KEYS.CATEGORIES,
+    pageSize: DEFAULT_CURSOR_PAGE_SIZE,
+  });
 
   const toggleCategory = (key) => {
     setExpandedCategories((prev) => (prev.includes(key) ? [] : [key]));
@@ -26,6 +31,7 @@ export default function CategoriesManagement() {
 
   const isExpanded = (key) => expandedCategories.includes(key);
   const isSubExpanded = (key) => expandedSubCategories.includes(key);
+  const pageInfo = data?.pageInfo ?? {};
 
   return (
     <div className="min-h-screen">
@@ -41,8 +47,8 @@ export default function CategoriesManagement() {
 
         {/* Categories List with 3-level nesting */}
         <div className="border-smoke rounded-xl border bg-white px-6 py-8">
-          <Skeleton loading={isLoading}>
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
+            <Skeleton loading={isLoading || isFetching}>
               {data?.nodes?.map((category) => (
                 <div
                   key={category.slug}
@@ -148,17 +154,17 @@ export default function CategoriesManagement() {
                   )}
                 </div>
               ))}
-            </div>
-            {/* <div className="py-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={100}
-                onPageChange={setCurrentPage}
-                onPrevious={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                onNext={() => setCurrentPage(Math.min(10, currentPage + 1))}
-              />
-            </div> */}
-          </Skeleton>
+            </Skeleton>
+          </div>
+          <div className="mt-4 flex items-center justify-end border-t border-gray-100 pt-4">
+            <CursorPagination
+              paginationKey={PAGINATION_KEYS.CATEGORIES}
+              pageInfo={pageInfo}
+              totalCount={data?.totalCount ?? 0}
+              pageSize={pageState.pageSize}
+              loading={isLoading || isFetching}
+            />
+          </div>
         </div>
       </div>
     </div>
