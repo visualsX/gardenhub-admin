@@ -58,6 +58,8 @@ export const useProducts = (filters = {}) => {
       return response.products;
     },
     keepPreviousData: true,
+    // Keep showing the last page while the next one loads
+    placeholderData: (previousData) => previousData,
   });
 
   // Expose pagination state so callers can wire UI without re-implementing setup.

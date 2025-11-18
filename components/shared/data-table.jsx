@@ -15,6 +15,8 @@ export default function DataTable({
   onRow,
   scroll,
   cursorPaginationProps,
+  cursorPaginationWrapperClassName = 'flex items-center justify-end border-t border-gray-100 px-6 py-4',
+  minHeight = 200,
   ...props
 }) {
   return (
@@ -29,10 +31,11 @@ export default function DataTable({
         rowClassName={rowClassName}
         onRow={onRow}
         scroll={scroll}
+        style={minHeight ? { minHeight, ...props.style } : props.style}
         {...props}
       />
       {cursorPaginationProps ? (
-        <div className={'flex items-center justify-end border-t border-gray-100 px-6 py-4'}>
+        <div className={cursorPaginationWrapperClassName}>
           <CursorPagination {...cursorPaginationProps} />
         </div>
       ) : null}

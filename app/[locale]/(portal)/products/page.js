@@ -96,6 +96,7 @@ const ProductManagement = () => {
               pageSize: pageState.pageSize,
               loading: isLoading || isFetching,
             }}
+            cursorPaginationWrapperClassName="flex items-center justify-end border-t border-gray-100 px-6 py-4"
           />
 
           <DeleteModal
