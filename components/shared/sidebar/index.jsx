@@ -132,7 +132,7 @@ const Sidebar = () => {
 
       <section
         onClick={logout}
-        className="flex cursor-pointer items-center gap-x-2 pb-20 pl-8 text-sm text-red-500"
+        className="flex cursor-pointer items-center gap-x-2 pl-8 text-sm text-red-500"
       >
         <LogoutIcon />
         <span>Logout</span>

@@ -142,10 +142,10 @@ const InventoryPage = () => {
             rowKey="id"
             columns={InventoryCols()}
             data={inventoryItems}
-            // onRow={(record) => ({
-            //   onClick: () => router.push(`/products/${record.id}`),
-            //   style: { cursor: 'pointer' },
-            // })}
+            onRow={(record) => ({
+              onClick: () => router.push(`/inventory/${record.id}`),
+              style: { cursor: 'pointer' },
+            })}
             pagination={false}
             cursorPaginationProps={{
               paginationKey: PAGINATION_KEYS.INVENTORY,
