@@ -5,14 +5,14 @@ import { useCreateCategory } from '@/hooks/useCategories';
 import { useState } from 'react';
 import { CrossIcon } from '@/lib/const/icons';
 
-export default function CreateSubCategoryModal({ parentId }) {
+export default function CreateSubSubCategory({ parentId }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const category = useCreateCategory();
 
   const handleCancel = () => {
     setIsOpen(false);
   };
+
+  const category = useCreateCategory();
 
   const onFinish = async (values) => {
     try {
@@ -30,20 +30,20 @@ export default function CreateSubCategoryModal({ parentId }) {
   return (
     <>
       <button
-        onClick={() => setIsOpen(true, null)}
+        onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
       >
         <PlusGray className="h-4 w-4" />
-        Add Subcategory
+        Add Sub Subcategory
       </button>
 
       <Modal
         open={isOpen}
         onCancel={handleCancel}
         footer={null}
-        centered
         closeIcon={<CrossIcon className="h-5 w-5 text-gray-400" />}
         destroyOnHidden
+        centered
       >
         <Form onFinish={onFinish} layout="vertical" className="py-2">
           {/* Header */}

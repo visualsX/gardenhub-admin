@@ -31,7 +31,8 @@ const Sidebar = () => {
       icon: <SidebarIcons.Dashboard className="h-6 w-6" />,
     },
     {
-      key: '/products',
+      key: 'products-menu',
+      href: '/products',
       label: 'Products',
       icon: <SidebarIcons.Products className="h-6 w-6" />,
       children: [
@@ -53,7 +54,8 @@ const Sidebar = () => {
       icon: <SidebarIcons.Categories className="h-6 w-6" />,
     },
     {
-      key: '/bundles-and-deals',
+      key: 'bundles-menu',
+      href: '/bundles-and-deals',
       label: 'Bundles & Deals',
       icon: <SidebarIcons.Bundles className="h-6 w-6" />,
       children: [
@@ -96,18 +98,15 @@ const Sidebar = () => {
   ];
 
   const renderMenuItems = (items) =>
-    items.map((item) => ({
-      key: item.key,
-      label: (
-        <SidebarLabel
-          href={item.key}
-          label={item.label}
-          Icon={item.icon}
-          active={pathname === item.key}
-        />
-      ),
-      children: item.children ? renderMenuItems(item.children) : undefined,
-    }));
+    items.map((item) => {
+      const href = item.href ?? item.key;
+      const active = pathname === href;
+      return {
+        key: item.key,
+        label: <SidebarLabel href={href} label={item.label} Icon={item.icon} active={active} />,
+        children: item.children ? renderMenuItems(item.children) : undefined,
+      };
+    });
 
   return (
     <div
@@ -126,7 +125,7 @@ const Sidebar = () => {
           className="px-4!"
           mode="inline"
           selectedKeys={[pathname]}
-          defaultOpenKeys={['/products']}
+          defaultOpenKeys={['products-menu', 'bundles-menu']}
           items={renderMenuItems(menuItems)}
         />
       </div>

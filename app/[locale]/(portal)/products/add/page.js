@@ -92,7 +92,7 @@ const ProductManagement = () => {
   ];
 
   const categoryOptions = [
-    { value: 1, label: 'Indoor Plants' },
+    { value: 34, label: 'Indoor Plants' },
     { value: 2, label: 'Outdoor Plants' },
   ];
 

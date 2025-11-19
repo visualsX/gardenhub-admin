@@ -20,8 +20,13 @@ export const categoryKeys = {
 
 // Get all categories with cursor pagination
 export const useCategories = (filters = {}) => {
-  const { paginationKey, pageSize = DEFAULT_CURSOR_PAGE_SIZE, where = null, order = null, ...paginationFilters } =
-    filters;
+  const {
+    paginationKey,
+    pageSize = DEFAULT_CURSOR_PAGE_SIZE,
+    where = null,
+    order = null,
+    ...paginationFilters
+  } = filters;
 
   const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
 
@@ -58,16 +63,14 @@ export const useCategories = (filters = {}) => {
     placeholderData: (previousData) => previousData,
   });
 
-  const exposedPageState =
-    pageState ??
-    {
-      first,
-      after,
-      last,
-      before,
-      pageSize,
-      page: 1,
-    };
+  const exposedPageState = pageState ?? {
+    first,
+    after,
+    last,
+    before,
+    pageSize,
+    page: 1,
+  };
 
   return {
     ...query,
@@ -144,6 +147,7 @@ export const useUpdateCategory = () => {
 // Delete category
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
+  const { closeDeleteModal } = useUiStates();
 
   return useMutation({
     mutationFn: async (id) => {
@@ -153,9 +157,10 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
       message.success('Category deleted successfully!');
+      closeDeleteModal(false, null);
     },
     onError: (error) => {
-      message.error(error.response?.data?.message || 'Failed to delete category');
+      message.error(error.response?.data?.Message || 'Failed to delete category');
     },
   });
 };

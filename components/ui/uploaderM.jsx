@@ -14,7 +14,7 @@ const getBase64 = (file) =>
 
 const UploaderMax = ({ name = 'images', label = 'Upload Images', required = false, className }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState(null);
   const [previewTitle, setPreviewTitle] = useState('');
 
   const handlePreview = async (file) => {
