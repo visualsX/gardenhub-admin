@@ -12,12 +12,13 @@ import { LogoTemp, CrossRed, EditGreen } from '@/lib/const/icons';
 const positionSider = {
   overflow: 'auto',
   height: '100vh',
-  position: 'sticky',
+  position: 'fixed',
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
   scrollbarWidth: 'thin',
   scrollbarGutter: 'stable',
+  zIndex: 50,
 };
 
 const Sidebar = () => {

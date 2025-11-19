@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const Header = () => {
   return (
-    <header className="border-smoke-light flex h-16 items-center justify-end border-b bg-white px-6">
+    <header className="border-smoke-light fixed top-0 right-0 left-[263px] z-40 flex h-16 items-center justify-end border-b bg-white/5 px-6 backdrop-blur-xs">
       <section className="flex items-center gap-x-10">
         <Image src={'/shared/bell.svg'} width={20} height={20} alt="bell-icon" />
         <main className="flex items-center gap-x-2">
