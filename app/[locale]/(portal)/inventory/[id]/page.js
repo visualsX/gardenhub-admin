@@ -87,7 +87,7 @@ const InventoryDetail = ({ params }) => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatBadge
           title="Current Stock"
           value={`${stock}`}
@@ -114,12 +114,6 @@ const InventoryDetail = ({ params }) => {
           helper="Updated just now"
           icon={<div className="text-2xl">✅</div>}
         />
-        <StatBadge
-          title="Reorder Alerts"
-          value="2"
-          helper="Pending requests"
-          icon={<div className="text-2xl">🔔</div>}
-        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -127,11 +121,7 @@ const InventoryDetail = ({ params }) => {
           <InventoryTabs product={product} transactions={transactions} />
           <StockProgress stock={stock} min={reorderPoint} max={100} />
         </div>
-        {/* <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          </div>
-            <p className="text-lg font-semibold text-gray-900">Stock Levels</p>
-            <p className="mt-1 text-sm text-gray-500">Current inventory thresholds</p>
-            <div className="mt-6"> */}
+
         <div className="space-y-6">
           <AdjustmentForm />
           <ActivitySummary
@@ -194,12 +184,12 @@ function StatBadge({ title, value, helper, icon }) {
   return (
     <Box>
       <p className="text-xs tracking-wider text-gray-500 uppercase">{title}</p>
-      <div className="mt-3 flex items-center gap-3">
-        <div className="rounded-full bg-gray-50 p-3">{icon}</div>
+      <div className="mt-3 flex items-center justify-between gap-3">
         <div>
           <p className="text-2xl font-semibold text-gray-900">{value}</p>
           {helper && <p className="text-sm text-gray-500">{helper}</p>}
         </div>
+        <div className="rounded-full bg-gray-50 p-3">{icon}</div>
       </div>
     </Box>
   );
