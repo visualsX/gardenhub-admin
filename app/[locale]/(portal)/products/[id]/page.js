@@ -12,22 +12,16 @@ import Star from '@/public/shared/star.svg';
 import Package from '@/public/shared/stock.svg';
 import LabelAndValue from '@/components/ui/label-value';
 import Badge from '@/components/ui/badge';
-import Title from '@/components/ui/title';
 import { Box } from '@/components/wrappers/box';
 import { useParams } from 'next/navigation';
 import { useProduct } from '@/hooks/useProduct';
 import ImageGallery from '@/components/shared/image-gallery';
 import Link from 'next/link';
 
-const { TextArea } = Input;
-
 export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('general');
-  const [isActive, setIsActive] = useState(true);
-  const [isFeatured, setIsFeatured] = useState(false);
-  const { id } = useParams(); // ✅ get route param
+  const { id } = useParams();
   const { data, isLoading } = useProduct(+id);
-  console.log('product data: ', data);
 
   const handleDelete = () => {
     message.success('Product deleted successfully');

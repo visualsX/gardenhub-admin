@@ -3,247 +3,12 @@
 import { useState } from 'react';
 import { Button, Input } from 'antd';
 import { ArrowLeft } from '@/lib/const/icons';
-
-const InfoRow = ({ label, value }) => (
-  <div>
-    <p className="text-xs text-gray-500 uppercase">{label}</p>
-    <p className="mt-1 font-medium text-gray-900">{value ?? '—'}</p>
-  </div>
-);
-
-const StatBadge = ({ title, value, helper, icon }) => (
-  <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-    <p className="text-xs tracking-wider text-gray-500 uppercase">{title}</p>
-    <div className="mt-3 flex items-center gap-3">
-      <div className="rounded-full bg-gray-50 p-3">{icon}</div>
-      <div>
-        <p className="text-2xl font-semibold text-gray-900">{value}</p>
-        {helper && <p className="text-sm text-gray-500">{helper}</p>}
-      </div>
-    </div>
-  </div>
-);
-
-const StockProgress = ({ stock = 0, min = 10, max = 100 }) => {
-  const percent = Math.min(100, Math.round((stock / max) * 100));
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
-        <span>
-          Current Stock <span className="font-medium text-gray-900">{stock} units</span>
-        </span>
-        <span>
-          Min / Max <span className="font-medium text-gray-900">{min}</span> /{' '}
-          <span className="font-medium text-gray-900">{max}</span>
-        </span>
-      </div>
-      <div className="h-3 w-full rounded-full bg-gray-100">
-        <div className="h-full rounded-full bg-emerald-500" style={{ width: `${percent}%` }} />
-      </div>
-      <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-        <div className="text-center">
-          <p className="font-medium text-gray-900">{stock}</p>
-          <p>Available</p>
-        </div>
-        <div className="text-center">
-          <p className="font-medium text-gray-900">{min}</p>
-          <p>Low Stock Alert</p>
-        </div>
-        <div className="text-center">
-          <p className="font-medium text-gray-900">{max}</p>
-          <p>Max Capacity</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AdjustmentForm = () => {
-  const [mode, setMode] = useState('add');
-  return (
-    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-      <p className="text-lg font-semibold text-gray-900">Quick Actions</p>
-      <p className="mb-6 text-sm text-gray-500">Adjust inventory levels</p>
-
-      <div className="mb-6 flex gap-3">
-        <button
-          type="button"
-          onClick={() => setMode('add')}
-          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
-            mode === 'add'
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-              : 'border-gray-200 bg-white text-gray-600'
-          }`}
-        >
-          <span className="text-lg">+</span> Add Stock
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('remove')}
-          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
-            mode === 'remove'
-              ? 'border-gray-200 bg-gray-50 text-gray-700'
-              : 'border-gray-200 bg-white text-gray-500'
-          }`}
-        >
-          <span className="text-lg">−</span> Remove Stock
-        </button>
-      </div>
-
-      <div className="space-y-5">
-        <div>
-          <p className="text-sm font-semibold text-gray-700">Quantity</p>
-          <Input
-            placeholder="Enter quantity"
-            className="mt-2 h-12 rounded-2xl border-gray-200 px-4"
-          />
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-gray-700">Reason</p>
-          <Input.TextArea
-            rows={3}
-            placeholder="Enter reason for adjustment..."
-            className="mt-2 rounded-2xl border-gray-200 px-4 py-3"
-          />
-        </div>
-
-        <Button
-          type="primary"
-          className="h-12 w-full rounded-2xl border border-green-700 bg-green-700 text-base font-semibold"
-        >
-          ✓ Apply Adjustment
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const ActivitySummary = ({ lastUpdated, transactions, totalValue }) => (
-  <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-    <p className="text-lg font-semibold text-gray-900">Activity Summary</p>
-    <div className="mt-5 space-y-5 text-sm text-gray-600">
-      <div className="flex items-center justify-between">
-        <span>Last Updated</span>
-        <span className="font-semibold text-gray-900">{lastUpdated ?? '—'}</span>
-      </div>
-      <hr />
-      <div className="flex items-center justify-between">
-        <span>Total Transactions</span>
-        <span className="font-semibold text-gray-900">{transactions ?? 0}</span>
-      </div>
-      <hr />
-      <div className="flex items-center justify-between">
-        <span>Total Value</span>
-        <span className="font-semibold text-gray-900">${totalValue?.toFixed(2) ?? '0.00'}</span>
-      </div>
-    </div>
-  </div>
-);
-
-const ProductInfo = ({ product }) => (
-  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-    <p className="text-lg font-semibold text-gray-900">Product Information</p>
-    <p className="mt-1 text-sm text-gray-500">Basic details about this inventory item</p>
-
-    <div className="mt-6 grid gap-6 md:grid-cols-2">
-      <InfoRow label="Product Name" value={product.name} />
-      <InfoRow label="SKU" value={product.sku} />
-      <InfoRow label="Category" value={product.category} />
-      <InfoRow label="Sub Category" value={product.subCategory} />
-      <InfoRow label="Retail Price" value={`$${product.retailPrice.toFixed(2)}`} />
-      <InfoRow label="Unit Price" value={`$${product.unitPrice.toFixed(2)}`} />
-      <InfoRow label="Weight" value={`${product.weight} kg`} />
-      <InfoRow label="Dimensions" value={product.dimensions} />
-    </div>
-
-    {product.description && (
-      <div className="mt-6">
-        <p className="text-xs text-gray-500 uppercase">Description</p>
-        <p className="mt-1 text-sm text-gray-700">{product.description}</p>
-      </div>
-    )}
-  </div>
-);
-
-const TransactionHistory = ({ transactions }) => (
-  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-    <p className="text-lg font-semibold text-gray-900">Transaction History</p>
-    <p className="mt-1 text-sm text-gray-500">Recent stock movements and adjustments</p>
-    <div className="mt-6 overflow-hidden rounded-xl border border-gray-100">
-      <table className="min-w-full divide-y divide-gray-100">
-        <thead className="bg-gray-50 text-left text-sm text-gray-500">
-          <tr>
-            <th className="px-4 py-3 font-medium">Type</th>
-            <th className="px-4 py-3 font-medium">Quantity</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-            <th className="px-4 py-3 font-medium">Reason</th>
-            <th className="px-4 py-3 font-medium">Performed By</th>
-            <th className="px-4 py-3 font-medium">Reference</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100 bg-white text-sm text-gray-700">
-          {transactions.map((tx) => (
-            <tr key={tx.reference}>
-              <td className="px-4 py-3">
-                <span
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tx.type === 'Stock In' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}
-                >
-                  {tx.type}
-                </span>
-              </td>
-              <td className="px-4 py-3 font-semibold">
-                <span className={tx.type === 'Stock In' ? 'text-emerald-600' : 'text-red-600'}>
-                  {tx.type === 'Stock In' ? '+' : '-'}
-                  {tx.quantity}
-                </span>
-              </td>
-              <td className="px-4 py-3">{tx.date}</td>
-              <td className="px-4 py-3">{tx.reason}</td>
-              <td className="px-4 py-3">{tx.performedBy}</td>
-              <td className="px-4 py-3">{tx.reference}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
-
-const InventoryTabs = ({ product, transactions }) => {
-  const [activeTab, setActiveTab] = useState('info');
-  const tabs = [
-    { key: 'info', label: 'Product Info' },
-    { key: 'history', label: 'Transaction History' },
-  ];
-
-  return (
-    <div>
-      <div className="mb-4 flex rounded-full bg-gray-100 p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-full px-6 py-2 text-sm font-semibold transition ${
-              activeTab === tab.key
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      {activeTab === 'info' ? (
-        <ProductInfo product={product} />
-      ) : (
-        <TransactionHistory transactions={transactions} />
-      )}
-    </div>
-  );
-};
+import { Box } from '@/components/wrappers/box';
+import { useParams } from 'next/navigation';
 
 const InventoryDetail = () => {
+  const { id } = useParams();
+
   const product = {
     name: 'Fiddle Leaf Fig',
     sku: 'FLF-001',
@@ -354,14 +119,13 @@ const InventoryDetail = () => {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <InventoryTabs product={product} transactions={transactions} />
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <StockProgress stock={stock} min={reorderPoint} max={100} />
+        </div>
+        {/* <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          </div>
             <p className="text-lg font-semibold text-gray-900">Stock Levels</p>
             <p className="mt-1 text-sm text-gray-500">Current inventory thresholds</p>
-            <div className="mt-6">
-              <StockProgress stock={stock} min={reorderPoint} max={100} />
-            </div>
-          </div>
-        </div>
+            <div className="mt-6"> */}
         <div className="space-y-6">
           <AdjustmentForm />
           <ActivitySummary
@@ -376,3 +140,249 @@ const InventoryDetail = () => {
 };
 
 export default InventoryDetail;
+
+function InventoryTabs({ product, transactions }) {
+  const [activeTab, setActiveTab] = useState('info');
+  const tabs = [
+    { key: 'info', label: 'Product Info' },
+    { key: 'history', label: 'Transaction History' },
+  ];
+
+  return (
+    <div>
+      <div className="mb-4 flex rounded-full bg-gray-100 p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-full px-6 py-2 text-sm font-semibold transition ${
+              activeTab === tab.key
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      {activeTab === 'info' ? (
+        <ProductInfo product={product} />
+      ) : (
+        <TransactionHistory transactions={transactions} />
+      )}
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div>
+      <p className="text-xs text-gray-500 uppercase">{label}</p>
+      <p className="mt-1 font-medium text-gray-900">{value ?? '—'}</p>
+    </div>
+  );
+}
+
+function StatBadge({ title, value, helper, icon }) {
+  return (
+    <Box>
+      <p className="text-xs tracking-wider text-gray-500 uppercase">{title}</p>
+      <div className="mt-3 flex items-center gap-3">
+        <div className="rounded-full bg-gray-50 p-3">{icon}</div>
+        <div>
+          <p className="text-2xl font-semibold text-gray-900">{value}</p>
+          {helper && <p className="text-sm text-gray-500">{helper}</p>}
+        </div>
+      </div>
+    </Box>
+  );
+}
+
+function StockProgress({ stock = 0, min = 10, max = 100 }) {
+  const percent = Math.min(100, Math.round((stock / max) * 100));
+  return (
+    <Box header title={'Stock Levels'} description={'Current inventory thresholds'}>
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
+          <span>
+            Current Stock <span className="font-medium text-gray-900">{stock} units</span>
+          </span>
+          <span>
+            Min / Max <span className="font-medium text-gray-900">{min}</span> /{' '}
+            <span className="font-medium text-gray-900">{max}</span>
+          </span>
+        </div>
+        <div className="h-3 w-full rounded-full bg-gray-100">
+          <div className="h-full rounded-full bg-emerald-500" style={{ width: `${percent}%` }} />
+        </div>
+        <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
+          <div className="text-center">
+            <p className="font-medium text-gray-900">{stock}</p>
+            <p>Available</p>
+          </div>
+          <div className="text-center">
+            <p className="font-medium text-gray-900">{min}</p>
+            <p>Low Stock Alert</p>
+          </div>
+          <div className="text-center">
+            <p className="font-medium text-gray-900">{max}</p>
+            <p>Max Capacity</p>
+          </div>
+        </div>
+      </div>
+    </Box>
+  );
+}
+
+function AdjustmentForm() {
+  const [mode, setMode] = useState('add');
+  return (
+    <Box header title={'Quick Actions'} description={'Adjust inventory levels'}>
+      <div className="mb-6 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setMode('add')}
+          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
+            mode === 'add'
+              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+              : 'border-gray-200 bg-white text-gray-600'
+          }`}
+        >
+          <span className="text-lg">+</span> Add Stock
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('remove')}
+          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
+            mode === 'remove'
+              ? 'border-gray-200 bg-gray-50 text-gray-700'
+              : 'border-gray-200 bg-white text-gray-500'
+          }`}
+        >
+          <span className="text-lg">−</span> Remove Stock
+        </button>
+      </div>
+
+      <div className="space-y-5">
+        <div>
+          <p className="text-sm font-semibold text-gray-700">Quantity</p>
+          <Input
+            placeholder="Enter quantity"
+            className="mt-2 h-12 rounded-2xl border-gray-200 px-4"
+          />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-700">Reason</p>
+          <Input.TextArea
+            rows={3}
+            placeholder="Enter reason for adjustment..."
+            className="mt-2 rounded-2xl border-gray-200 px-4 py-3"
+          />
+        </div>
+
+        <Button
+          type="primary"
+          className="h-12 w-full rounded-2xl border border-green-700 bg-green-700 text-base font-semibold"
+        >
+          ✓ Apply Adjustment
+        </Button>
+      </div>
+    </Box>
+  );
+}
+
+function ActivitySummary({ lastUpdated, transactions, totalValue }) {
+  return (
+    <Box header title={'Activity Summary'}>
+      <div className="mt-5 space-y-5 text-sm text-gray-600">
+        <div className="flex items-center justify-between">
+          <span>Last Updated</span>
+          <span className="font-semibold text-gray-900">{lastUpdated ?? '—'}</span>
+        </div>
+        <hr />
+        <div className="flex items-center justify-between">
+          <span>Total Transactions</span>
+          <span className="font-semibold text-gray-900">{transactions ?? 0}</span>
+        </div>
+        <hr />
+        <div className="flex items-center justify-between">
+          <span>Total Value</span>
+          <span className="font-semibold text-gray-900">${totalValue?.toFixed(2) ?? '0.00'}</span>
+        </div>
+      </div>
+    </Box>
+  );
+}
+
+function ProductInfo({ product }) {
+  return (
+    <Box
+      header
+      title={'Product Information'}
+      description={'Basic details about this inventory item'}
+    >
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <InfoRow label="Product Name" value={product.name} />
+        <InfoRow label="SKU" value={product.sku} />
+        <InfoRow label="Category" value={product.category} />
+        <InfoRow label="Sub Category" value={product.subCategory} />
+        <InfoRow label="Retail Price" value={`$${product.retailPrice.toFixed(2)}`} />
+        <InfoRow label="Unit Price" value={`$${product.unitPrice.toFixed(2)}`} />
+        <InfoRow label="Weight" value={`${product.weight} kg`} />
+        <InfoRow label="Dimensions" value={product.dimensions} />
+      </div>
+
+      {product.description && (
+        <div className="mt-6">
+          <p className="text-xs text-gray-500 uppercase">Description</p>
+          <p className="mt-1 text-sm text-gray-700">{product.description}</p>
+        </div>
+      )}
+    </Box>
+  );
+}
+
+const TransactionHistory = ({ transactions }) => {
+  return (
+    <Box title={'Transaction History'} description={'Recent stock movements and adjustments'}>
+      <div className="mt-6 overflow-hidden rounded-xl border border-gray-100">
+        <table className="min-w-full divide-y divide-gray-100">
+          <thead className="bg-gray-50 text-left text-sm text-gray-500">
+            <tr>
+              <th className="px-4 py-3 font-medium">Type</th>
+              <th className="px-4 py-3 font-medium">Quantity</th>
+              <th className="px-4 py-3 font-medium">Date</th>
+              <th className="px-4 py-3 font-medium">Reason</th>
+              <th className="px-4 py-3 font-medium">Performed By</th>
+              <th className="px-4 py-3 font-medium">Reference</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 bg-white text-sm text-gray-700">
+            {transactions.map((tx) => (
+              <tr key={tx.reference}>
+                <td className="px-4 py-3">
+                  <span
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tx.type === 'Stock In' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}
+                  >
+                    {tx.type}
+                  </span>
+                </td>
+                <td className="px-4 py-3 font-semibold">
+                  <span className={tx.type === 'Stock In' ? 'text-emerald-600' : 'text-red-600'}>
+                    {tx.type === 'Stock In' ? '+' : '-'}
+                    {tx.quantity}
+                  </span>
+                </td>
+                <td className="px-4 py-3">{tx.date}</td>
+                <td className="px-4 py-3">{tx.reason}</td>
+                <td className="px-4 py-3">{tx.performedBy}</td>
+                <td className="px-4 py-3">{tx.reference}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Box>
+  );
+};
