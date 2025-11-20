@@ -1,87 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button, Input } from 'antd';
-import { ArrowLeft } from '@/lib/const/icons';
+import { Button, Input, Skeleton } from 'antd';
+import ArrowLeft from '@/public/shared/arrow-left.svg';
+import CurrentStockIcon from '@/public/shared/current-stock.svg';
+import InventoryValueIcon from '@/public/shared/inventory-value.svg';
+import ReorderIcon from '@/public/shared/reorder-point.svg';
+import StatusSuccessIcon from '@/public/shared/status-success.svg';
+import EditIcon from '@/public/shared/edit-btn.svg';
+import ExportIcon from '@/public/shared/export-btn.svg';
+import TrashIcon from '@/public/shared/trash-red.svg';
 import { Box } from '@/components/wrappers/box';
-import { useInventoryItem } from '@/hooks/useInventory';
+import { useInventoryItem, useInventoryTransactions } from '@/hooks/useInventory';
 import { useParams } from 'next/navigation';
+import LabelAndValue from '@/components/ui/label-value';
+import GoBack from '@/components/ui/go-back';
 
 const InventoryDetail = ({ params }) => {
+  // const productId = Number(params.id);
   const { id } = useParams();
+  const { data: product, isLoading: productLoading } = useInventoryItem(+id);
+  const {
+    data: transactionData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: transactionsLoading,
+  } = useInventoryTransactions({ productId: +id, pageSize: 10, order: [{ createdAt: 'DESC' }] });
+  const loadMoreRef = useRef(null);
 
-  const { data: product, isLoading } = useInventoryItem(+id);
+  useEffect(() => {
+    if (!hasNextPage) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        fetchNextPage();
+      }
+    });
+    const node = loadMoreRef.current;
+    if (node) observer.observe(node);
+    return () => {
+      if (node) observer.unobserve(node);
+    };
+  }, [hasNextPage, fetchNextPage]);
 
-  const transactions = [
-    {
-      type: 'Stock In',
-      quantity: 20,
-      date: '2024-01-15',
-      reason: 'Stock Replenishment',
-      performedBy: 'Sarah Smith',
-      reference: 'PO-5678',
-    },
-    {
-      type: 'Stock Out',
-      quantity: 8,
-      date: '2024-01-14',
-      reason: 'Bulk Order #1240',
-      performedBy: 'John Doe',
-      reference: 'ORD-9821',
-    },
-    {
-      type: 'Stock Out',
-      quantity: 2,
-      date: '2024-01-13',
-      reason: 'Customer Order #1235',
-      performedBy: 'Mike Johnson',
-      reference: 'ORD-9785',
-    },
-    {
-      type: 'Stock In',
-      quantity: 15,
-      date: '2024-01-10',
-      reason: 'Stock Replenishment',
-      performedBy: 'Sarah Smith',
-      reference: 'PO-5623',
-    },
-  ];
-
-  if (isLoading) {
-    return <div className="p-8">Loading...</div>;
-  }
-
-  if (!product) {
-    return (
-      <div className="space-y-4 p-8 text-gray-500">
-        <p>Inventory record not found.</p>
-        <Link href="/inventory" className="text-primary underline">
-          Back to Inventory
-        </Link>
-      </div>
+  const transactions = useMemo(() => {
+    if (!transactionData?.pages) return [];
+    return transactionData.pages.flatMap((page) =>
+      (page?.edges ?? []).map((edge) => ({
+        type: edge.node.type?.replace(/_/g, ' ') ?? '—',
+        quantity: edge.node.quantityChange,
+        date: edge.node.createdAt,
+        reason: edge.node.reason,
+        performedBy: edge.node.createdBy,
+        reference: edge.node.referenceId,
+        cursor: edge.cursor,
+      }))
     );
-  }
+  }, [transactionData]);
 
-  const stock = product.currentStock ?? product.availableStock ?? 0;
-  const reorderPoint = product.lowStockThreshold ?? 10;
-  const unitPrice = product.regularPrice ?? product.costPrice ?? 0;
+  const stock = product?.currentStock ?? product?.availableStock ?? 0;
+  const reorderPoint = product?.lowStockThreshold ?? 10;
+  const unitPrice = product?.regularPrice ?? product?.costPrice ?? 0;
   const inventoryValue = stock * unitPrice;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button icon={<ArrowLeft />} className="rounded-full border-gray-200" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-            <p className="text-sm text-gray-500">SKU: {product.sku}</p>
-          </div>
-        </div>
+        <GoBack href="/inventory" title={product?.name} desc={`SKU: ${product?.sku}`} />
         <div className="flex flex-wrap gap-3">
-          <Button className="rounded-lg border-gray-200 px-4">Export History</Button>
-          <Button className="rounded-lg border-gray-200 px-4">Edit Product</Button>
-          <Button danger className="rounded-lg border border-red-200 px-4 text-red-600">
+          <Button icon={<ExportIcon />}>Export History</Button>
+          <Button icon={<EditIcon />}>Edit Product</Button>
+          <Button icon={<TrashIcon />} danger>
             Delete
           </Button>
         </div>
@@ -89,44 +79,59 @@ const InventoryDetail = ({ params }) => {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatBadge
+          loading={productLoading}
           title="Current Stock"
           value={`${stock}`}
           helper="units available"
-          icon={<div className="text-2xl">📦</div>}
+          icon={<CurrentStockIcon />}
         />
         <StatBadge
+          loading={productLoading}
           title="Reorder Point"
           value={reorderPoint}
           helper="minimum threshold"
-          icon={<div className="text-2xl">⚠️</div>}
+          icon={<ReorderIcon />}
         />
         <StatBadge
+          loading={productLoading}
           title="Inventory Value"
           value={`$${inventoryValue.toFixed(2)}`}
           helper={`at $${unitPrice.toFixed(2)} per unit`}
-          icon={<div className="text-2xl">💰</div>}
+          icon={<InventoryValueIcon />}
         />
         <StatBadge
+          loading={productLoading}
           title="Status"
           value={
-            product.stockStatus?.replace(/_/g, ' ') ?? (stock > 0 ? 'In Stock' : 'Out of Stock')
+            product?.stockStatus?.replace(/_/g, ' ') ?? (stock > 0 ? 'In Stock' : 'Out of Stock')
           }
           helper="Updated just now"
-          icon={<div className="text-2xl">✅</div>}
+          icon={<StatusSuccessIcon />}
         />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <InventoryTabs product={product} transactions={transactions} />
-          <StockProgress stock={stock} min={reorderPoint} max={100} />
+          <InventoryTabs
+            loading={productLoading || transactionsLoading}
+            product={product}
+            transactions={transactions}
+            loadMoreRef={loadMoreRef}
+            isFetchingNextPage={isFetchingNextPage}
+          />
+          <StockProgress
+            loading={productLoading}
+            stock={stock}
+            min={reorderPoint}
+            max={product?.maxCapacity ?? 100}
+          />
         </div>
 
         <div className="space-y-6">
           <AdjustmentForm />
           <ActivitySummary
-            lastUpdated="2 hours ago"
-            transactions={transactions.length}
+            lastUpdated={product?.lastUpdatedAt ?? '—'}
+            transactions={transactions?.length}
             totalValue={inventoryValue}
           />
         </div>
@@ -137,7 +142,7 @@ const InventoryDetail = ({ params }) => {
 
 export default InventoryDetail;
 
-function InventoryTabs({ product, transactions }) {
+function InventoryTabs({ product, transactions, loadMoreRef, isFetchingNextPage, loading }) {
   const [activeTab, setActiveTab] = useState('info');
   const tabs = [
     { key: 'info', label: 'Product Info' },
@@ -163,9 +168,14 @@ function InventoryTabs({ product, transactions }) {
         ))}
       </div>
       {activeTab === 'info' ? (
-        <ProductInfo product={product} />
+        <ProductInfo product={product} loading={loading} />
       ) : (
-        <TransactionHistory transactions={transactions} />
+        <TransactionHistory
+          transactions={transactions}
+          loadMoreRef={loadMoreRef}
+          isFetchingNextPage={isFetchingNextPage}
+          loading={loading}
+        />
       )}
     </div>
   );
@@ -180,51 +190,58 @@ function InfoRow({ label, value }) {
   );
 }
 
-function StatBadge({ title, value, helper, icon }) {
+function StatBadge({ title, value, helper, icon, loading }) {
   return (
     <Box>
       <p className="text-xs tracking-wider text-gray-500 uppercase">{title}</p>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-2xl font-semibold text-gray-900">{value}</p>
-          {helper && <p className="text-sm text-gray-500">{helper}</p>}
-        </div>
-        <div className="rounded-full bg-gray-50 p-3">{icon}</div>
+      <div className="pt-3">
+        <Skeleton loading={loading} paragraph={{ rows: 1 }}>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-2xl font-semibold text-gray-900">{value}</p>
+              {helper && <p className="text-sm text-gray-500">{helper}</p>}
+            </div>
+            {icon}
+          </div>
+        </Skeleton>
       </div>
     </Box>
   );
 }
 
-function StockProgress({ stock = 0, min = 10, max = 100 }) {
-  const percent = Math.min(100, Math.round((stock / max) * 100));
+function StockProgress({ stock = 0, min = 10, max = 100, loading }) {
+  const percent = Math.min(100, Math.round((stock / (max || 1)) * 100));
   return (
-    <Box header title={'Stock Levels'} description={'Current inventory thresholds'}>
-      <div className="mt-6">
-        <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
-          <span>
-            Current Stock <span className="font-medium text-gray-900">{stock} units</span>
-          </span>
-          <span>
-            Min / Max <span className="font-medium text-gray-900">{min}</span> /{' '}
-            <span className="font-medium text-gray-900">{max}</span>
-          </span>
+    <Box
+      loading={loading}
+      header
+      title={'Stock Levels'}
+      description={'Current inventory thresholds'}
+    >
+      <div className="my-2 flex items-center justify-between text-sm text-gray-600">
+        <span>
+          Current Stock <span className="font-medium text-gray-900">{stock} units</span>
+        </span>
+        <span>
+          Min / Max <span className="font-medium text-gray-900">{min}</span> /{' '}
+          <span className="font-medium text-gray-900">{max}</span>
+        </span>
+      </div>
+      <div className="h-3 w-full rounded-full bg-gray-100">
+        <div className="h-full rounded-full bg-emerald-500" style={{ width: `${percent}%` }} />
+      </div>
+      <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
+        <div className="text-center">
+          <p className="font-medium text-gray-900">{stock}</p>
+          <p>Available</p>
         </div>
-        <div className="h-3 w-full rounded-full bg-gray-100">
-          <div className="h-full rounded-full bg-emerald-500" style={{ width: `${percent}%` }} />
+        <div className="text-center">
+          <p className="font-medium text-gray-900">{min}</p>
+          <p>Low Stock Alert</p>
         </div>
-        <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-          <div className="text-center">
-            <p className="font-medium text-gray-900">{stock}</p>
-            <p>Available</p>
-          </div>
-          <div className="text-center">
-            <p className="font-medium text-gray-900">{min}</p>
-            <p>Low Stock Alert</p>
-          </div>
-          <div className="text-center">
-            <p className="font-medium text-gray-900">{max}</p>
-            <p>Max Capacity</p>
-          </div>
+        <div className="text-center">
+          <p className="font-medium text-gray-900">{max}</p>
+          <p>Max Capacity</p>
         </div>
       </div>
     </Box>
@@ -239,7 +256,7 @@ function AdjustmentForm() {
         <button
           type="button"
           onClick={() => setMode('add')}
-          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
+          className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${
             mode === 'add'
               ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
               : 'border-gray-200 bg-white text-gray-600'
@@ -250,7 +267,7 @@ function AdjustmentForm() {
         <button
           type="button"
           onClick={() => setMode('remove')}
-          className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold ${
+          className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${
             mode === 'remove'
               ? 'border-gray-200 bg-gray-50 text-gray-700'
               : 'border-gray-200 bg-white text-gray-500'
@@ -291,17 +308,15 @@ function AdjustmentForm() {
 function ActivitySummary({ lastUpdated, transactions, totalValue }) {
   return (
     <Box header title={'Activity Summary'}>
-      <div className="mt-5 space-y-5 text-sm text-gray-600">
-        <div className="flex items-center justify-between">
+      <div className="divide-smoke-light flex flex-col gap-y-4 divide-y text-sm text-gray-600">
+        <div className="flex items-center justify-between pb-4">
           <span>Last Updated</span>
           <span className="font-semibold text-gray-900">{lastUpdated ?? '—'}</span>
         </div>
-        <hr />
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-4">
           <span>Total Transactions</span>
           <span className="font-semibold text-gray-900">{transactions ?? 0}</span>
         </div>
-        <hr />
         <div className="flex items-center justify-between">
           <span>Total Value</span>
           <span className="font-semibold text-gray-900">${totalValue?.toFixed(2) ?? '0.00'}</span>
@@ -311,29 +326,33 @@ function ActivitySummary({ lastUpdated, transactions, totalValue }) {
   );
 }
 
-function ProductInfo({ product }) {
+function ProductInfo({ product, loading }) {
   return (
     <Box
       header
       title={'Product Information'}
       description={'Basic details about this inventory item'}
+      loading={loading}
     >
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <InfoRow label="Product Name" value={product.name} />
-        <InfoRow label="SKU" value={product.sku} />
-        <InfoRow label="Category" value={product.categoryName} />
-        <InfoRow label="Retail Price" value={`$${(product.regularPrice ?? 0).toFixed(2)}`} />
-        <InfoRow label="Cost Price" value={`$${(product.costPrice ?? 0).toFixed(2)}`} />
-        <InfoRow label="Available Stock" value={product.currentStock ?? product.availableStock} />
-        <InfoRow label="Low Stock Threshold" value={product.lowStockThreshold ?? '—'} />
-        <InfoRow label="Max Capacity" value={product.maxCapacity ?? '—'} />
+      <div className="mt-2 grid gap-6 md:grid-cols-2">
+        <LabelAndValue label="Product Name" value={product?.name} />
+        <LabelAndValue label="SKU" value={product?.sku} />
+        <LabelAndValue label="Category" value={product?.categoryName} />
+        <LabelAndValue label="Retail Price" value={`$${(product?.regularPrice ?? 0).toFixed(2)}`} />
+        <LabelAndValue label="Cost Price" value={`$${(product?.costPrice ?? 0).toFixed(2)}`} />
+        <LabelAndValue
+          label="Available Stock"
+          value={product?.currentStock ?? product?.availableStock}
+        />
+        <LabelAndValue label="Low Stock Threshold" value={product?.lowStockThreshold ?? '—'} />
+        <LabelAndValue label="Max Capacity" value={product?.maxCapacity ?? '—'} />
       </div>
 
-      {product.mainImageUrl && (
+      {product?.mainImageUrl && (
         <div className="mt-6">
           <img
-            src={product.mainImageUrl}
-            alt={product.name}
+            src={product?.mainImageUrl}
+            alt={product?.name}
             className="h-40 w-40 rounded-lg object-cover ring-1 ring-gray-100"
           />
         </div>
@@ -342,12 +361,17 @@ function ProductInfo({ product }) {
   );
 }
 
-const TransactionHistory = ({ transactions }) => {
+const TransactionHistory = ({ transactions, loadMoreRef, isFetchingNextPage, loading }) => {
   return (
-    <Box title={'Transaction History'} description={'Recent stock movements and adjustments'}>
-      <div className="mt-6 overflow-hidden rounded-xl border border-gray-100">
+    <Box
+      header
+      title={'Transaction History'}
+      description={'Recent stock movements and adjustments'}
+      loading={loading}
+    >
+      <div className="overflow-hidden rounded-xl border border-gray-100">
         <table className="min-w-full divide-y divide-gray-100">
-          <thead className="bg-gray-50 text-left text-sm text-gray-500">
+          <thead className="bg-white text-left text-sm text-black">
             <tr>
               <th className="px-4 py-3 font-medium">Type</th>
               <th className="px-4 py-3 font-medium">Quantity</th>
@@ -359,21 +383,21 @@ const TransactionHistory = ({ transactions }) => {
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white text-sm text-gray-700">
             {transactions.map((tx) => (
-              <tr key={tx.reference}>
+              <tr key={tx.cursor}>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tx.type === 'Stock In' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tx.type.includes('Out') ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}
                   >
                     {tx.type}
                   </span>
                 </td>
                 <td className="px-4 py-3 font-semibold">
-                  <span className={tx.type === 'Stock In' ? 'text-emerald-600' : 'text-red-600'}>
-                    {tx.type === 'Stock In' ? '+' : '-'}
+                  <span className={tx.quantity < 0 ? 'text-red-600' : 'text-emerald-600'}>
+                    {tx.quantity > 0 ? '+' : ''}
                     {tx.quantity}
                   </span>
                 </td>
-                <td className="px-4 py-3">{tx.date}</td>
+                <td className="px-4 py-3">{new Date(tx.date).toLocaleDateString()}</td>
                 <td className="px-4 py-3">{tx.reason}</td>
                 <td className="px-4 py-3">{tx.performedBy}</td>
                 <td className="px-4 py-3">{tx.reference}</td>
@@ -381,6 +405,11 @@ const TransactionHistory = ({ transactions }) => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div ref={loadMoreRef} className="h-10 w-full">
+        {isFetchingNextPage && (
+          <p className="mt-3 text-center text-sm text-gray-500">Loading more transactions...</p>
+        )}
       </div>
     </Box>
   );
