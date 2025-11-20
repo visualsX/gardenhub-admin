@@ -1,28 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button, Input } from 'antd';
 import { ArrowLeft } from '@/lib/const/icons';
 import { Box } from '@/components/wrappers/box';
+import { useInventoryItem } from '@/hooks/useInventory';
 import { useParams } from 'next/navigation';
 
-const InventoryDetail = () => {
+const InventoryDetail = ({ params }) => {
   const { id } = useParams();
 
-  const product = {
-    name: 'Fiddle Leaf Fig',
-    sku: 'FLF-001',
-    category: 'Indoor Plants',
-    subCategory: 'Low Light',
-    retailPrice: 49.99,
-    unitPrice: 49.99,
-    weight: 5,
-    dimensions: '60cm x 30cm x 30cm',
-    description:
-      'Large indoor plant with vibrant, violin-shaped leaves. Makes a stunning statement piece for any room.',
-    availableStockQuantity: 45,
-    lowStockThreshold: 10,
-  };
+  const { data: product, isLoading } = useInventoryItem(+id);
 
   const transactions = [
     {
@@ -59,9 +48,24 @@ const InventoryDetail = () => {
     },
   ];
 
-  const stock = product.availableStockQuantity;
-  const reorderPoint = product.lowStockThreshold;
-  const unitPrice = product.unitPrice;
+  if (isLoading) {
+    return <div className="p-8">Loading...</div>;
+  }
+
+  if (!product) {
+    return (
+      <div className="space-y-4 p-8 text-gray-500">
+        <p>Inventory record not found.</p>
+        <Link href="/inventory" className="text-primary underline">
+          Back to Inventory
+        </Link>
+      </div>
+    );
+  }
+
+  const stock = product.currentStock ?? product.availableStock ?? 0;
+  const reorderPoint = product.lowStockThreshold ?? 10;
+  const unitPrice = product.regularPrice ?? product.costPrice ?? 0;
   const inventoryValue = stock * unitPrice;
 
   return (
@@ -104,7 +108,9 @@ const InventoryDetail = () => {
         />
         <StatBadge
           title="Status"
-          value={stock > 0 ? 'In Stock' : 'Out of Stock'}
+          value={
+            product.stockStatus?.replace(/_/g, ' ') ?? (stock > 0 ? 'In Stock' : 'Out of Stock')
+          }
           helper="Updated just now"
           icon={<div className="text-2xl">✅</div>}
         />
@@ -325,18 +331,21 @@ function ProductInfo({ product }) {
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <InfoRow label="Product Name" value={product.name} />
         <InfoRow label="SKU" value={product.sku} />
-        <InfoRow label="Category" value={product.category} />
-        <InfoRow label="Sub Category" value={product.subCategory} />
-        <InfoRow label="Retail Price" value={`$${product.retailPrice.toFixed(2)}`} />
-        <InfoRow label="Unit Price" value={`$${product.unitPrice.toFixed(2)}`} />
-        <InfoRow label="Weight" value={`${product.weight} kg`} />
-        <InfoRow label="Dimensions" value={product.dimensions} />
+        <InfoRow label="Category" value={product.categoryName} />
+        <InfoRow label="Retail Price" value={`$${(product.regularPrice ?? 0).toFixed(2)}`} />
+        <InfoRow label="Cost Price" value={`$${(product.costPrice ?? 0).toFixed(2)}`} />
+        <InfoRow label="Available Stock" value={product.currentStock ?? product.availableStock} />
+        <InfoRow label="Low Stock Threshold" value={product.lowStockThreshold ?? '—'} />
+        <InfoRow label="Max Capacity" value={product.maxCapacity ?? '—'} />
       </div>
 
-      {product.description && (
+      {product.mainImageUrl && (
         <div className="mt-6">
-          <p className="text-xs text-gray-500 uppercase">Description</p>
-          <p className="mt-1 text-sm text-gray-700">{product.description}</p>
+          <img
+            src={product.mainImageUrl}
+            alt={product.name}
+            className="h-40 w-40 rounded-lg object-cover ring-1 ring-gray-100"
+          />
         </div>
       )}
     </Box>

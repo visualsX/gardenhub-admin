@@ -1,7 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Button, Input, Select } from 'antd';
+import { Button, Input, Select, Skeleton } from 'antd';
 import { useRouter } from 'next/navigation';
 import Search from '@/public/shared/search.svg';
 import UpIcon from '@/public/shared/up-sm.svg';
@@ -10,53 +9,44 @@ import CheckIcon from '@/public/shared/check-sm.svg';
 import CrossIcon from '@/public/shared/cross-sm.svg';
 import LowIcon from '@/public/shared/low-sm.svg';
 import DataTable from '@/components/shared/data-table';
-import { useProducts } from '@/hooks/useProduct';
+import { useInventory, useInventoryStats } from '@/hooks/useInventory';
 import { InventoryCols } from '@/lib/columns/inventory-cols';
 import { DEFAULT_CURSOR_PAGE_SIZE, PAGINATION_KEYS } from '@/lib/const/pagination';
 import { Box } from '@/components/wrappers/box';
 
 const { Option } = Select;
 
-const StatCard = ({ title, value, helper, icon, trend }) => (
+const StatCard = ({ title, value, helper, icon, trend, loading }) => (
   <Box>
     <p className="text-sm font-medium text-gray-500">{title}</p>
-    <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
-    <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-      <span>{icon}</span>
-      {/* {trend && (
-        <span className={`font-medium ${trend.positive ? 'text-emerald-600' : 'text-red-600'}`}>
-          {trend.value}
-        </span>
-      )} */}
-      <span>{helper}</span>
+    <div className="mt-2">
+      <Skeleton size="small" paragraph={{ rows: 1 }} loading={loading}>
+        <p className="text-2xl font-semibold text-gray-900">{value}</p>
+        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+          <span>{icon}</span>
+          <span>{helper}</span>
+        </div>
+      </Skeleton>
     </div>
   </Box>
 );
 
 const InventoryPage = () => {
   const router = useRouter();
-  const { data, isLoading, isFetching, pageState } = useProducts({
+  const { data, isLoading, isFetching, pageState } = useInventory({
     paginationKey: PAGINATION_KEYS.INVENTORY,
     pageSize: DEFAULT_CURSOR_PAGE_SIZE,
   });
+  const { data: statsData, isLoading: statsLoading } = useInventoryStats();
 
   const inventoryItems = data?.nodes ?? [];
   const totalCount = data?.totalCount ?? 0;
-
-  const { lowStockCount, outOfStockCount, totalValue } = useMemo(() => {
-    return inventoryItems.reduce(
-      (acc, item) => {
-        const stock = item.availableStockQuantity ?? 0;
-        const threshold = item.lowStockThreshold ?? 5;
-        if (stock > 0 && stock <= threshold) acc.lowStockCount += 1;
-        if (stock <= 0) acc.outOfStockCount += 1;
-        const price = item.salePrice ?? item.regularPrice ?? 0;
-        acc.totalValue += stock * price;
-        return acc;
-      },
-      { lowStockCount: 0, outOfStockCount: 0, totalValue: 0 }
-    );
-  }, [inventoryItems]);
+  const stats = statsData ?? {
+    totalProducts: totalCount,
+    lowStockItems: 0,
+    outOfStockItems: 0,
+    inventoryValue: 0,
+  };
 
   return (
     <div className="min-h-screen space-y-6">
@@ -75,29 +65,33 @@ const InventoryPage = () => {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
+          loading={statsLoading}
           title="Total Products"
-          value={totalCount}
+          value={stats.totalProducts ?? totalCount}
           helper="+12.5% vs last month"
           icon={<UpIcon />}
           trend={{ positive: true, value: '+12.5%' }}
         />
         <StatCard
+          loading={statsLoading}
           title="Low Stock Items"
-          value={lowStockCount}
+          value={stats.lowStockItems ?? 0}
           helper="Requires attention"
           icon={<WarnIcon />}
-          trend={{ positive: false, value: `${lowStockCount || 0}` }}
+          trend={{ positive: false, value: `${stats.lowStockItems || 0}` }}
         />
         <StatCard
+          loading={statsLoading}
           title="Out of Stock"
-          value={outOfStockCount}
-          helper={`${((outOfStockCount / Math.max(totalCount, 1)) * 100).toFixed(1)}% of inventory`}
+          value={stats.outOfStockItems}
+          helper={`${(((stats.outOfStockItems ?? 0) / Math.max(stats.totalProducts ?? totalCount, 1)) * 100).toFixed(1)}% of inventory`}
           icon={<LowIcon />}
-          trend={{ positive: false, value: `${outOfStockCount || 0}` }}
+          trend={{ positive: false, value: `${stats.outOfStockItems || 0}` }}
         />
         <StatCard
+          loading={statsLoading}
           title="Inventory Value"
-          value={`$${totalValue.toFixed(2)}`}
+          value={`$${(stats.inventoryValue ?? 0).toFixed(2)}`}
           helper="+8.2% vs last month"
           icon={<UpIcon />}
           trend={{ positive: true, value: '+8.2%' }}
