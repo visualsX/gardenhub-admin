@@ -57,7 +57,11 @@ const InventoryPage = () => {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Button className="rounded-lg border-gray-200 px-5 py-2 text-gray-700">Export</Button>
-          <Button type="primary" className="rounded-lg bg-green-600 px-5 py-2 text-white">
+          <Button
+            type="primary"
+            className="rounded-lg bg-green-600 px-5 py-2 text-white"
+            onClick={() => router.push('/inventory/update')}
+          >
             Update Stock
           </Button>
         </div>

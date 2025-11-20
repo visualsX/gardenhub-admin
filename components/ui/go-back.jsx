@@ -4,14 +4,16 @@ import ArrowLeft from '@/public/shared/arrow-left.svg';
 
 export default function GoBack({ href = '#', title, desc }) {
   return (
-    <div className="flex items-center gap-4">
-      <Link href={href}>
-        <Button icon={<ArrowLeft />} className="rounded-full border-gray-200" />
-      </Link>
+    <Link className="flex items-center gap-4" href={href}>
+      {href !== '#' && (
+        <div className="border-smoke rounded-full border bg-white p-2.5">
+          <ArrowLeft />
+        </div>
+      )}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-        <p className="text-sm text-gray-500">{desc}</p>
+        <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+        <p className="text-base text-gray-500">{desc}</p>
       </div>
-    </div>
+    </Link>
   );
 }

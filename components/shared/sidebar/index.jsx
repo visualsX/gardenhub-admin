@@ -112,28 +112,29 @@ const Sidebar = () => {
   return (
     <div
       style={positionSider}
-      className="border-smoke-light flex w-[263px]! flex-col justify-between bg-white! pb-8 ltr:border-r ltr:border-l"
+      className="border-smoke-light flex w-[263px]! flex-col justify-between bg-white pb-6 ltr:border-r ltr:border-l"
     >
-      <div className="">
-        <div className="border-smoke-light flex h-16 items-center gap-x-3 border-b px-6">
+      <div className="flex flex-col">
+        <div className="border-smoke-light sticky top-0 z-10 flex h-16 items-center gap-x-3 border-b bg-transparent px-6 backdrop-blur-[3px]">
           <LogoTemp />
           <h1 className="text-primary text-2xl font-semibold">
             <Tx>Gardenhub</Tx>
           </h1>
         </div>
-
-        <Menu
-          className="px-4!"
-          mode="inline"
-          selectedKeys={[pathname]}
-          defaultOpenKeys={['products-menu', 'bundles-menu']}
-          items={renderMenuItems(menuItems)}
-        />
+        <div className="flex-1 overflow-y-auto">
+          <Menu
+            className="px-4!"
+            mode="inline"
+            selectedKeys={[pathname]}
+            defaultOpenKeys={['products-menu', 'bundles-menu']}
+            items={renderMenuItems(menuItems)}
+          />
+        </div>
       </div>
 
       <section
         onClick={logout}
-        className="flex cursor-pointer items-center gap-x-2 pl-8 text-sm text-red-500"
+        className="flex cursor-pointer items-center gap-x-2 px-8 pt-4 text-sm text-red-500"
       >
         <LogoutIcon />
         <span>Logout</span>
