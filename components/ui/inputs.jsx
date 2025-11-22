@@ -1,3 +1,4 @@
+import { validate } from '@/lib/const/validations';
 import {
   Form,
   Input,
@@ -12,10 +13,9 @@ import {
   Rate,
   Upload,
   Cascader,
-  TreeSelect,
   AutoComplete,
 } from 'antd';
-
+import DownIcon from '@/public/shared/select-down.svg';
 const { TextArea, Password, Search } = Input;
 const { RangePicker } = DatePicker;
 
@@ -28,8 +28,13 @@ export const FormInput = ({
   suffix,
   prefix,
   disabled = false,
-  rules,
+  rules = validate(label, {
+    required: true,
+    type: name == 'email' && 'email',
+  }),
   className,
+  labelClassName = 'font-outfit font-medium text-black',
+  inputClassName,
   noStyle = false,
   maxLength,
   showCount = false,
@@ -39,7 +44,7 @@ export const FormInput = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -48,6 +53,7 @@ export const FormInput = ({
       <Input
         placeholder={placeholder}
         type={type}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
         suffix={suffix}
         prefix={prefix}
         disabled={disabled}
@@ -65,21 +71,27 @@ export const FormPassword = ({
   label,
   placeholder,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true, type: 'password' }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   ...formItemProps
 }) => {
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
       {...formItemProps}
     >
-      <Password placeholder={placeholder} disabled={disabled} />
+      <Password
+        placeholder={placeholder}
+        disabled={disabled}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
+      />
     </Form.Item>
   );
 };
@@ -93,6 +105,8 @@ export const FormSearch = ({
   onSearch,
   rules,
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   enterButton = false,
   ...formItemProps
@@ -100,7 +114,7 @@ export const FormSearch = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -111,6 +125,7 @@ export const FormSearch = ({
         disabled={disabled}
         onSearch={onSearch}
         enterButton={enterButton}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -123,8 +138,10 @@ export const FormTextArea = ({
   placeholder,
   rows = 3,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true, minLength: 12, maxLength: 200 }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   maxLength,
   showCount = false,
@@ -134,7 +151,7 @@ export const FormTextArea = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -147,6 +164,7 @@ export const FormTextArea = ({
         maxLength={maxLength}
         showCount={showCount}
         autoSize={autoSize}
+        className={`w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -161,8 +179,10 @@ export const FormInputNumber = ({
   max,
   step = 1,
   disabled = false,
-  rules,
+  rules = validate(label, { type: 'number', required: true }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   prefix,
   suffix,
@@ -173,7 +193,7 @@ export const FormInputNumber = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -190,6 +210,8 @@ export const FormInputNumber = ({
         formatter={formatter}
         parser={parser}
         style={{ width: '100%' }}
+        size="large"
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -202,8 +224,10 @@ export const FormSelect = ({
   placeholder,
   options,
   disabled = false,
-  rules,
+  rules = label && validate(label, { required: true }),
   className,
+  labelClassName,
+  inputClassName,
   onChange,
   noStyle = false,
   mode, // 'multiple' | 'tags'
@@ -215,7 +239,7 @@ export const FormSelect = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -226,9 +250,11 @@ export const FormSelect = ({
         disabled={disabled}
         onChange={onChange}
         mode={mode}
+        suffixIcon={<DownIcon />}
         allowClear={allowClear}
         showSearch={showSearch}
         filterOption={filterOption}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       >
         {options.map((option) => (
           <Select.Option key={option.value} value={option.value}>
@@ -247,8 +273,10 @@ export const FormAutoComplete = ({
   placeholder,
   options,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   onSearch,
   onSelect,
@@ -257,7 +285,7 @@ export const FormAutoComplete = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -269,6 +297,7 @@ export const FormAutoComplete = ({
         options={options}
         onSearch={onSearch}
         onSelect={onSelect}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
         filterOption={(inputValue, option) =>
           option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         }
@@ -284,8 +313,10 @@ export const FormCascader = ({
   placeholder,
   options,
   disabled = false,
-  rules,
+  rules = label && validate(label, { required: true }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   onChange,
   changeOnSelect = false,
@@ -294,7 +325,7 @@ export const FormCascader = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -306,6 +337,7 @@ export const FormCascader = ({
         options={options}
         onChange={onChange}
         changeOnSelect={changeOnSelect}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -326,7 +358,7 @@ export const FormSwitch = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       valuePropName="checked"
       className={className}
       noStyle={noStyle}
@@ -348,6 +380,7 @@ export const FormCheckbox = ({
   label,
   disabled = false,
   className,
+  labelClassName,
   onChange,
   noStyle = false,
   children,
@@ -356,7 +389,7 @@ export const FormCheckbox = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       valuePropName="checked"
       className={className}
       noStyle={noStyle}
@@ -381,7 +414,13 @@ export const FormCheckboxGroup = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item name={name} label={label} className={className} noStyle={noStyle} {...formItemProps}>
+    <Form.Item
+      name={name}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
+      className={className}
+      noStyle={noStyle}
+      {...formItemProps}
+    >
       <Checkbox.Group options={options} disabled={disabled} onChange={onChange} />
     </Form.Item>
   );
@@ -394,6 +433,7 @@ export const FormRadioGroup = ({
   options,
   disabled = false,
   className,
+  labelClassName,
   onChange,
   noStyle = false,
   buttonStyle = 'outline', // 'outline' | 'solid'
@@ -401,7 +441,13 @@ export const FormRadioGroup = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item name={name} label={label} className={className} noStyle={noStyle} {...formItemProps}>
+    <Form.Item
+      name={name}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
+      className={className}
+      noStyle={noStyle}
+      {...formItemProps}
+    >
       <Radio.Group
         options={options}
         disabled={disabled}
@@ -419,8 +465,10 @@ export const FormDatePicker = ({
   label,
   placeholder,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true }),
   className,
+  inputClassName,
+  labelClassName,
   noStyle = false,
   format = 'YYYY-MM-DD',
   showTime = false,
@@ -430,7 +478,7 @@ export const FormDatePicker = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -443,6 +491,7 @@ export const FormDatePicker = ({
         showTime={showTime}
         picker={picker}
         style={{ width: '100%' }}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -454,8 +503,10 @@ export const FormRangePicker = ({
   label,
   placeholder = ['Start Date', 'End Date'],
   disabled = false,
-  rules,
+  rules = validate(label, { required: true }),
   className,
+  labelClassName,
+  inputClassName,
   noStyle = false,
   format = 'YYYY-MM-DD',
   showTime = false,
@@ -464,7 +515,7 @@ export const FormRangePicker = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -476,6 +527,7 @@ export const FormRangePicker = ({
         format={format}
         showTime={showTime}
         style={{ width: '100%' }}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -487,17 +539,19 @@ export const FormTimePicker = ({
   label,
   placeholder,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true }),
+  labelClassName,
   className,
   noStyle = false,
   format = 'HH:mm:ss',
   use12Hours = false,
+  inputClassName,
   ...formItemProps
 }) => {
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}
@@ -509,6 +563,7 @@ export const FormTimePicker = ({
         format={format}
         use12Hours={use12Hours}
         style={{ width: '100%' }}
+        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>
   );
@@ -522,6 +577,7 @@ export const FormSlider = ({
   max = 100,
   step = 1,
   disabled = false,
+  labelClassName,
   className,
   noStyle = false,
   marks,
@@ -529,7 +585,13 @@ export const FormSlider = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item name={name} label={label} className={className} noStyle={noStyle} {...formItemProps}>
+    <Form.Item
+      name={name}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
+      className={className}
+      noStyle={noStyle}
+      {...formItemProps}
+    >
       <Slider min={min} max={max} step={step} disabled={disabled} marks={marks} range={range} />
     </Form.Item>
   );
@@ -542,12 +604,19 @@ export const FormRate = ({
   count = 5,
   disabled = false,
   allowHalf = false,
+  labelClassName,
   className,
   noStyle = false,
   ...formItemProps
 }) => {
   return (
-    <Form.Item name={name} label={label} className={className} noStyle={noStyle} {...formItemProps}>
+    <Form.Item
+      name={name}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
+      className={className}
+      noStyle={noStyle}
+      {...formItemProps}
+    >
       <Rate count={count} disabled={disabled} allowHalf={allowHalf} />
     </Form.Item>
   );
@@ -558,7 +627,8 @@ export const FormUpload = ({
   name,
   label,
   disabled = false,
-  rules,
+  rules = validate(label, { required: true }),
+  labelClassName,
   className,
   noStyle = false,
   listType = 'text', // 'text' | 'picture' | 'picture-card'
@@ -572,7 +642,7 @@ export const FormUpload = ({
   return (
     <Form.Item
       name={name}
-      label={label}
+      label={label ? <span className={labelClassName}>{label}</span> : undefined}
       rules={rules}
       className={className}
       noStyle={noStyle}

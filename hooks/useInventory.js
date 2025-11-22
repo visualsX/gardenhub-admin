@@ -1,9 +1,12 @@
 'use client';
 
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import graphqlClient from '@/lib/api/graphql-client';
 import { INVENTORY_QUERIES } from '@/lib/api/queries';
 import useCursorPagination from '@/hooks/useCursorPagination';
+import apiClient from '@/lib/api/client';
+import { API_ENDPOINTS } from '@/lib/api/endpoints';
+import { message } from 'antd';
 
 export const inventoryKeys = {
   all: ['inventory'],
@@ -15,15 +18,16 @@ export const inventoryKeys = {
 };
 
 export const useInventory = (filters = {}) => {
-  const { paginationKey, pageSize = 10, where = null, order = null, ...paginationFilters } = filters;
+  const {
+    paginationKey,
+    pageSize = 10,
+    where = null,
+    order = null,
+    ...paginationFilters
+  } = filters;
   const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
 
-  const {
-    first = null,
-    after = null,
-    last = null,
-    before = null,
-  } = pageState ?? paginationFilters;
+  const { first = null, after = null, last = null, before = null } = pageState ?? paginationFilters;
 
   const queryKeyFilters = {
     paginationKey,
@@ -55,16 +59,14 @@ export const useInventory = (filters = {}) => {
     placeholderData: (previousData) => previousData,
   });
 
-  const exposedPageState =
-    pageState ??
-    {
-      first,
-      after,
-      last,
-      before,
-      pageSize,
-      page: 1,
-    };
+  const exposedPageState = pageState ?? {
+    first,
+    after,
+    last,
+    before,
+    pageSize,
+    page: 1,
+  };
 
   return {
     ...query,
@@ -116,6 +118,43 @@ export const useInventoryTransactions = ({ productId, pageSize = 10, order = nul
       const edges = lastPage?.edges ?? [];
       if (!edges.length || edges.length < pageSize) return undefined;
       return edges[edges.length - 1]?.cursor ?? undefined;
+    },
+  });
+};
+
+export const useAdjustInventory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload) => {
+      const response = await apiClient.post(API_ENDPOINTS.INVENTORY.UPDATE_STOCK, payload);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      const productId = variables?.products[0].productId;
+      console.log('variables', productId);
+      queryClient.invalidateQueries({ queryKey: inventoryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: inventoryKeys.lists() });
+      if (productId) {
+        queryClient.invalidateQueries({ queryKey: inventoryKeys.detail(productId) });
+        queryClient.invalidateQueries({ queryKey: inventoryKeys.transactions(productId) });
+      }
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to delete category');
+    },
+  });
+};
+export const useUpdateInventory = () => {
+  return useMutation({
+    mutationFn: async (payload) => {
+      const response = await apiClient.post(API_ENDPOINTS.INVENTORY.UPDATE_STOCK, payload);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      message.success('Inventory stocks updated successfully');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to delete category');
     },
   });
 };

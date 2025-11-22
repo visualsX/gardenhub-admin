@@ -96,3 +96,10 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ======================================================================= */
+/* form item label padding */
+/* ======================================================================= */
+.ant-form-item-vertical .ant-form-item-label {
+  padding-bottom: 2px !important;
+}

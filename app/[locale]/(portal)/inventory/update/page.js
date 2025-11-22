@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Button, Input, Table } from 'antd';
+import { useState } from 'react';
+import { Button, Form, Input, message } from 'antd';
 import Search from '@/public/shared/search.svg';
 import PlusIcon from '@/public/shared/plus-green.svg';
 import MinusIcon from '@/public/shared/minus-red.svg';
@@ -9,57 +9,14 @@ import SetValueIcon from '@/public/shared/blue-restart.svg';
 import GoBack from '@/components/ui/go-back.jsx';
 import Badge from '@/components/ui/badge';
 import { Box } from '@/components/wrappers/box';
+import DataTable from '@/components/shared/data-table';
+import { FormInputNumber, FormTextArea } from '@/components/ui/inputs';
+import { useInventory, useUpdateInventory } from '@/hooks/useInventory';
+import SelectInventoryAdjustments from '@/components/ui/select-dropdowns/SelectInventoryAdjustments';
+import InputSearch from '@/components/ui/input-search';
 
-const inventoryData = [
-  {
-    key: '1',
-    name: 'Fiddle Leaf Fig',
-    sku: 'FLF-001',
-    category: 'Indoor Plants',
-    stock: 45,
-    status: 'In Stock',
-  },
-  {
-    key: '2',
-    name: 'Snake Plant',
-    sku: 'SNP-002',
-    category: 'Indoor Plants',
-    stock: 8,
-    status: 'Low Stock',
-  },
-  {
-    key: '3',
-    name: 'Monstera Deliciosa',
-    sku: 'MON-003',
-    category: 'Indoor Plants',
-    stock: 0,
-    status: 'Out of Stock',
-  },
-  {
-    key: '4',
-    name: 'Succulent Mix Pack',
-    sku: 'SUC-004',
-    category: 'Succulents',
-    stock: 89,
-    status: 'In Stock',
-  },
-  {
-    key: '5',
-    name: 'Pothos Plant',
-    sku: 'POT-005',
-    category: 'Indoor Plants',
-    stock: 34,
-    status: 'In Stock',
-  },
-  {
-    key: '6',
-    name: 'Peace Lily',
-    sku: 'PEL-006',
-    category: 'Indoor Plants',
-    stock: 5,
-    status: 'Low Stock',
-  },
-];
+const PAGINATION_KEY = 'inventory-update-table';
+const PAGE_SIZE = 8;
 
 const statusBadge = (status) => {
   if (status === 'In Stock') return <Badge variant="success">In Stock</Badge>;
@@ -107,39 +64,56 @@ const columns = [
   },
 ];
 
-const UpdateTypeButton = ({ label, helper, value, active, icon: Icon, onClick, tone }) => (
-  <button
-    type="button"
-    onClick={() => onClick(value)}
-    className={`flex w-full items-center gap-3 rounded-3xl border px-4 py-3 text-left transition ${
-      active
-        ? tone === 'danger'
-          ? 'border-red-500 bg-red-50'
-          : tone === 'info'
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-emerald-500 bg-emerald-50'
-        : 'border-gray-200 bg-white hover:border-gray-300'
-    }`}
-  >
-    <span className="rounded-full bg-white p-2 shadow-sm">
-      <Icon />
-    </span>
-    <div>
-      <p className="text-sm font-semibold text-gray-900">{label}</p>
-      <p className="text-xs text-gray-500">{helper}</p>
-    </div>
-  </button>
-);
-
 const UpdateStockPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [updateType, setUpdateType] = useState('add');
-  const [quantity, setQuantity] = useState('');
-  const [reason, setReason] = useState('');
+  const [form] = Form.useForm();
+  const adjustInventory = useUpdateInventory();
+  const { data, isLoading, isFetching, pageState } = useInventory({
+    paginationKey: PAGINATION_KEY,
+    pageSize: PAGE_SIZE,
+  });
+
+  const adjustmentType = Form.useWatch('adjustmentType', form);
+  const isManual = adjustmentType === 'ManualCorrection';
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (keys) => setSelectedRowKeys(keys),
+    onChange: (keys) => {
+      setSelectedRowKeys(keys);
+    },
+  };
+
+  const handleValuesChange = (changed) => {
+    if (changed.adjustmentType) {
+      if (changed.adjustmentType === 'ManualCorrection') {
+        form.setFieldsValue({ adjustmentQuantity: undefined });
+      } else {
+        form.setFieldsValue({ newStockValue: undefined });
+      }
+    }
+  };
+
+  const onFinishHandle = (values) => {
+    if (!selectedRowKeys.length) {
+      message.error('Please select at least one product.');
+      return;
+    }
+
+    const payload = {
+      products: selectedRowKeys.map((key) => ({ productId: key })),
+      adjustmentType: values.adjustmentType,
+      adjustmentQuantity: isManual ? 0 : Number(values.adjustmentQuantity ?? 0),
+      newStockValue: isManual ? Number(values.newStockValue ?? null) : null,
+      reason: values.reason ?? '',
+      referenceId: null,
+    };
+
+    adjustInventory.mutate(payload, {
+      onSuccess: () => {
+        form.resetFields();
+        setSelectedRowKeys([]);
+      },
+    });
   };
 
   return (
@@ -147,83 +121,72 @@ const UpdateStockPage = () => {
       <GoBack title="Update Stock" desc="Bulk update inventory levels across products" />
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <Box
-          header
-          title={'Select Products'}
-          description={'Choose products to update stock levels'}
-        >
-          <Input
+        <Box header title="Select Products" description="Choose products to update stock levels">
+          <InputSearch
+            className="mb-6"
             placeholder="Search products by name or SKU"
-            prefix={<Search className="text-gray-400" />}
-            className="mb-4 h-11 rounded-2xl"
+            onSearchChange={(value) => console.log('Search value:', value)}
           />
           <div className="overflow-hidden rounded-2xl border border-gray-100">
-            <Table
+            <DataTable
               rowSelection={rowSelection}
               columns={columns}
-              dataSource={inventoryData}
+              data={data?.nodes?.map((item) => ({ key: item.id, ...item }))}
+              loading={isLoading || isFetching}
               pagination={false}
+              cursorPaginationProps={{
+                paginationKey: PAGINATION_KEY,
+                pageInfo: data?.pageInfo ?? {},
+                totalCount: data?.totalCount,
+                pageSize: pageState.pageSize,
+                loading: isLoading || isFetching,
+              }}
+              minHeight={400}
             />
           </div>
         </Box>
 
-        <Box header title={'Update Settings'} description={'Configure stock adjustment parameters'}>
-          <div className="mb-6 space-y-3">
-            <UpdateTypeButton
-              label="Add Stock"
-              helper="Increase inventory levels"
-              value="add"
-              icon={PlusIcon}
-              tone="success"
-              active={updateType === 'add'}
-              onClick={setUpdateType}
-            />
-            <UpdateTypeButton
-              label="Remove Stock"
-              helper="Decrease inventory levels"
-              value="remove"
-              icon={MinusIcon}
-              tone="danger"
-              active={updateType === 'remove'}
-              onClick={setUpdateType}
-            />
-            <UpdateTypeButton
-              label="Set to Value"
-              helper="Set exact stock level"
-              value="set"
-              icon={SetValueIcon}
-              tone="info"
-              active={updateType === 'set'}
-              onClick={setUpdateType}
-            />
-          </div>
+        <Box header title="Update Settings" description="Configure stock adjustment parameters">
+          <Form
+            layout="vertical"
+            form={form}
+            onFinish={onFinishHandle}
+            onValuesChange={handleValuesChange}
+            requiredMark={false}
+          >
+            <SelectInventoryAdjustments name="adjustmentType" label="Inventory Adjustment Type" />
 
-          <div className="mb-5">
-            <p className="text-sm font-semibold text-gray-700">Adjustment Quantity</p>
-            <Input
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Enter quantity"
-              className="mt-2 h-12 rounded-2xl border-gray-200"
-            />
-            <p className="mt-2 text-xs text-gray-500">Amount to add to current stock</p>
-          </div>
+            {isManual ? (
+              <FormInputNumber
+                label="New Stock Value"
+                name="newStockValue"
+                placeholder="Enter stock value"
+                type="number"
+              />
+            ) : (
+              <FormInputNumber
+                label="Quantity"
+                name="adjustmentQuantity"
+                placeholder="Enter quantity"
+                type="number"
+              />
+            )}
 
-          <div className="mb-6">
-            <p className="text-sm font-semibold text-gray-700">Reason for Update</p>
-            <Input.TextArea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Enter reason for stock adjustment..."
-              rows={4}
-              className="mt-2 rounded-2xl border-gray-200"
+            <FormTextArea
+              name="reason"
+              label="Reason"
+              placeholder="Enter reason for adjustment..."
             />
-            <p className="mt-2 text-xs text-gray-500">This will be recorded in the audit log</p>
-          </div>
 
-          <Button type="primary" className="mt-4 h-12 w-full rounded-2xl bg-green-700 text-white">
-            Update Changes
-          </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={adjustInventory.isPending}
+              className="h-12 w-full rounded-2xl border border-green-700 bg-green-700 text-base font-semibold"
+            >
+              Update Changes
+            </Button>
+          </Form>
         </Box>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { Button, Form } from 'antd';
 import { PlusWhite, PlusGray } from '@/lib/const/icons';
 import { FormInput, FormSwitch } from '@/components/ui/inputs';
 import { useCreateCategory } from '@/hooks/useCategories';
-import ModalWrapper from '@/components/shared/wrapper/modal-wrapper';
+import ModalWrapper from '@/components/wrappers/modal-wrapper';
 import useUiStates from '@/store/useUiStates';
 
 export default function CreateCategoryModal() {

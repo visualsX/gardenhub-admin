@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button, Input, Skeleton } from 'antd';
+import { Button, Form, Input, Skeleton } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
 import CurrentStockIcon from '@/public/shared/current-stock.svg';
 import InventoryValueIcon from '@/public/shared/inventory-value.svg';
@@ -12,10 +12,16 @@ import EditIcon from '@/public/shared/edit-btn.svg';
 import ExportIcon from '@/public/shared/export-btn.svg';
 import TrashIcon from '@/public/shared/trash-red.svg';
 import { Box } from '@/components/wrappers/box';
-import { useInventoryItem, useInventoryTransactions } from '@/hooks/useInventory';
+import {
+  useInventoryItem,
+  useInventoryTransactions,
+  useAdjustInventory,
+} from '@/hooks/useInventory';
 import { useParams } from 'next/navigation';
 import LabelAndValue from '@/components/ui/label-value';
 import GoBack from '@/components/ui/go-back';
+import SelectInventoryAdjustments from '@/components/ui/select-dropdowns/SelectInventoryAdjustments';
+import { FormInput, FormInputNumber, FormTextArea } from '@/components/ui/inputs';
 
 const InventoryDetail = ({ params }) => {
   // const productId = Number(params.id);
@@ -128,7 +134,7 @@ const InventoryDetail = ({ params }) => {
         </div>
 
         <div className="space-y-6">
-          <AdjustmentForm />
+          <AdjustmentForm stock={stock} />
           <ActivitySummary
             lastUpdated={product?.lastUpdatedAt ?? '—'}
             transactions={transactions?.length}
@@ -248,59 +254,82 @@ function StockProgress({ stock = 0, min = 10, max = 100, loading }) {
   );
 }
 
-function AdjustmentForm() {
-  const [mode, setMode] = useState('add');
+function AdjustmentForm({ stock }) {
+  const { id } = useParams();
+  const [form] = Form.useForm();
+  const adjustInventory = useAdjustInventory();
+  const adjustmentType = Form.useWatch('adjustmentType', form);
+
+  const isManual = adjustmentType === 'ManualCorrection';
+
+  function onValuesChange(changed, allValues) {
+    if (changed.adjustmentType) {
+      if (changed.adjustmentType === 'ManualCorrection') {
+        // switching TO manual → clear quantity
+        form.setFieldsValue({ adjustmentQuantity: undefined });
+      } else {
+        // switching AWAY from manual → clear new stock
+        form.setFieldsValue({ newStockValue: undefined });
+      }
+    }
+  }
+
+  function onFinishHandle(values) {
+    const payload = {
+      products: [{ productId: +id }],
+      adjustmentType: values.adjustmentType,
+      adjustmentQuantity: isManual ? 0 : Number(values.adjustmentQuantity ?? 0),
+      newStockValue: isManual ? Number(values.newStockValue ?? null) : null,
+      reason: values.reason ?? '',
+      referenceId: null,
+    };
+
+    adjustInventory.mutate(payload, {
+      onSuccess: () => {
+        form.resetFields();
+      },
+    });
+  }
+
   return (
     <Box header title={'Quick Actions'} description={'Adjust inventory levels'}>
-      <div className="mb-6 flex gap-3">
-        <button
-          type="button"
-          onClick={() => setMode('add')}
-          className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${
-            mode === 'add'
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-              : 'border-gray-200 bg-white text-gray-600'
-          }`}
-        >
-          <span className="text-lg">+</span> Add Stock
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('remove')}
-          className={`flex h-9 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${
-            mode === 'remove'
-              ? 'border-gray-200 bg-gray-50 text-gray-700'
-              : 'border-gray-200 bg-white text-gray-500'
-          }`}
-        >
-          <span className="text-lg">−</span> Remove Stock
-        </button>
-      </div>
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={onFinishHandle}
+        onValuesChange={onValuesChange}
+        requiredMark={false}
+        // initialValues={{ adjustmentType: 'StockReplenishment' }}
+      >
+        <SelectInventoryAdjustments name="adjustmentType" label="Inventory Adjustment Type" />
 
-      <div className="space-y-5">
-        <div>
-          <p className="text-sm font-semibold text-gray-700">Quantity</p>
-          <Input
+        {isManual ? (
+          <FormInputNumber
+            label="New Stock Value"
+            name="newStockValue"
+            placeholder="Enter stock value"
+            type="number"
+          />
+        ) : (
+          <FormInputNumber
+            label="Quantity"
+            name="adjustmentQuantity"
             placeholder="Enter quantity"
-            className="mt-2 h-12 rounded-2xl border-gray-200 px-4"
+            type="number"
           />
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-gray-700">Reason</p>
-          <Input.TextArea
-            rows={3}
-            placeholder="Enter reason for adjustment..."
-            className="mt-2 rounded-2xl border-gray-200 px-4 py-3"
-          />
-        </div>
+        )}
+
+        <FormTextArea name="reason" label="Reason" placeholder="Enter reason for adjustment..." />
 
         <Button
           type="primary"
+          htmlType="submit"
+          loading={adjustInventory.isPending}
           className="h-12 w-full rounded-2xl border border-green-700 bg-green-700 text-base font-semibold"
         >
           ✓ Apply Adjustment
         </Button>
-      </div>
+      </Form>
     </Box>
   );
 }
