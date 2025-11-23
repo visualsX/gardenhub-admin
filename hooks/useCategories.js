@@ -16,6 +16,7 @@ export const categoryKeys = {
   tree: () => [...categoryKeys.all, 'tree'],
   details: () => [...categoryKeys.all, 'detail'],
   detail: (id) => [...categoryKeys.details(), id],
+  dropdown: () => [...categoryKeys.all, 'dropdown'],
 };
 
 // Get all categories with cursor pagination
@@ -85,6 +86,16 @@ export const useCategoryTree = () => {
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.CATEGORIES.TREE);
       return response.data;
+    },
+  });
+};
+
+export const useCategoryDropdown = () => {
+  return useQuery({
+    queryKey: categoryKeys.dropdown(),
+    queryFn: async () => {
+      const response = await graphqlClient.request(CATEGORY_QUERIES.GET_CATEGORIES_DD);
+      return response.categories?.nodes ?? [];
     },
   });
 };

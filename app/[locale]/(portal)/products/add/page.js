@@ -1,27 +1,22 @@
 'use client';
 import React, { useState } from 'react';
-import {
-  Tabs,
-  Form,
-  Button,
-  Tag,
-  Avatar,
-  message,
-  Typography,
-  Skeleton,
-  Checkbox,
-  Radio,
-} from 'antd';
+import { Tabs, Form, Button, message, Typography, Skeleton, Checkbox, Radio } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
-import X from '@/public/shared/Eye.svg';
-import Plus from '@/public/shared/plus-white.svg';
-import { FormInput, FormTextArea, FormSelect, FormSwitch } from '@/components/ui/inputs';
+import {
+  FormInput,
+  FormTextArea,
+  FormSelect,
+  FormSwitch,
+  FormInputNumber,
+} from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
 import { useCreateProduct } from '@/hooks/useProduct';
 import { useAttributes } from '@/hooks/useAttribute';
 import Link from 'next/link';
+import CategoryCascader from '@/components/ui/select-dropdowns/CategoryCascader';
+import { getLastIdx } from '@/lib/utils/helpers';
 
 const { Title, Text } = Typography;
 
@@ -33,6 +28,8 @@ const ProductManagement = () => {
   const { data, isLoading } = useAttributes();
 
   const onSubmit = (values) => {
+    values['CategoryIds'] = getLastIdx(values.CategoryIds);
+
     // Collect only fields whose names start with 'idx_'
     const FilterOptionIds = Object.entries(values)
       .filter(([key]) => key.startsWith('idx_'))
@@ -82,34 +79,9 @@ const ProductManagement = () => {
 
   const initialValues = {};
 
-  const colorOptions = [
-    { value: 'Red', color: '#EF4444' },
-    { value: 'Orange', color: '#F59E0B' },
-    { value: 'Yellow', color: '#EAB308' },
-    { value: 'Green', color: '#22C55E' },
-    { value: 'Teal', color: '#14B8A6' },
-    { value: 'Blue', color: '#3B82F6' },
-  ];
-
   const categoryOptions = [
     { value: 34, label: 'Indoor Plants' },
     { value: 2, label: 'Outdoor Plants' },
-  ];
-
-  const subcategoryOptions = [
-    { value: 'Tropical Plants', label: 'Tropical Plants' },
-    { value: 'Succulents', label: 'Succulents' },
-  ];
-
-  const petFriendlyOptions = [
-    { value: 'Yes', label: 'Yes' },
-    { value: 'No', label: 'No' },
-  ];
-
-  const careLevelOptions = [
-    { value: 'Easy', label: 'Easy' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'Hard', label: 'Hard' },
   ];
 
   const boxSizeOptions = [
@@ -143,21 +115,7 @@ const ProductManagement = () => {
           />
         </div>
         <div className="grid grid-cols-1 gap-4">
-          <FormSelect
-            name="CategoryIds"
-            label="Category"
-            placeholder="Select category"
-            options={categoryOptions}
-            rules={[{ required: true, message: 'Please select category' }]}
-            className="mb-4"
-          />
-          {/* <FormSelect
-            name="subcategory"
-            label="Subcategory"
-            placeholder="Select subcategory"
-            options={subcategoryOptions}
-            className="mb-4"
-          /> */}
+          <CategoryCascader name="CategoryIds" label="Category" />
         </div>
         <FormTextArea
           name="ShortDescription"
@@ -268,11 +226,10 @@ const ProductManagement = () => {
   const specificationsTab = (
     <div className="space-y-6">
       <Box header title={'Product Dimensions'} description={'Physical measurements of the product'}>
-        <FormInput
+        <FormInputNumber
           name="Weight"
           label="Weight"
           placeholder="0"
-          type="number"
           suffix="grams"
           className="mb-4"
         />
@@ -280,11 +237,11 @@ const ProductManagement = () => {
           <label className="mb-1 block text-sm font-medium text-gray-700">
             Dimensions (meters)
           </label>
-          <div className="grid grid-cols-4 gap-3">
-            <FormInput name={'Length'} placeholder="Length" type="number" noStyle />
-            <FormInput name={'Width'} placeholder="Width" type="number" noStyle />
-            <FormInput name={'Height'} placeholder="Height" type="number" noStyle />
-            <FormInput name={'depth'} placeholder="Depth" type="number" noStyle />
+          <div className="grid grid-cols-3 gap-3">
+            <FormInputNumber name={'Length'} placeholder="Length" />
+            <FormInputNumber name={'Width'} placeholder="Width" />
+            <FormInputNumber name={'Height'} placeholder="Height" />
+            {/* <FormInput name={'depth'} placeholder="Depth" type="number"  /> */}
           </div>
         </div>
       </Box>
@@ -295,18 +252,16 @@ const ProductManagement = () => {
     <div className="space-y-6">
       <Box header title={'Stock Management'} description={'Manage inventory levels and alerts'}>
         <div className="grid grid-cols-2 gap-4">
-          <FormInput
+          <FormInputNumber
             name="StockQuantity"
             label="Current Stock"
             placeholder="0"
-            type="number"
             className="mb-0"
           />
-          <FormInput
+          <FormInputNumber
             name="LowStockThreshold"
             label="Low Stock Threshold"
             placeholder="0"
-            type="number"
             className="mb-0"
           />
         </div>
@@ -315,11 +270,10 @@ const ProductManagement = () => {
       <Box header title={'Shipping Information'}>
         <FormSwitch name="IsShippingRequired" label="Shipping Required" className="mb-4" />
         <div className="grid grid-cols-2 gap-4">
-          <FormInput
+          <FormInputNumber
             name="shippingWeight"
             label="Shipping Weight"
             placeholder="0"
-            type="number"
             suffix="lbs"
             className="mb-4"
           />
@@ -353,7 +307,13 @@ const ProductManagement = () => {
   ];
 
   return (
-    <Form form={form} onFinish={onSubmit} layout="vertical" initialValues={initialValues}>
+    <Form
+      requiredMark={false}
+      form={form}
+      onFinish={onSubmit}
+      layout="vertical"
+      initialValues={initialValues}
+    >
       <div className="flex items-center justify-between py-2">
         <Link href={'/products'} className="flex items-center gap-x-2">
           <div className="border-smoke rounded-full border bg-white p-1">

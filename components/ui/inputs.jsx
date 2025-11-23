@@ -320,6 +320,7 @@ export const FormCascader = ({
   noStyle = false,
   onChange,
   changeOnSelect = false,
+  showSearch,
   ...formItemProps
 }) => {
   return (
@@ -335,9 +336,12 @@ export const FormCascader = ({
         placeholder={placeholder}
         disabled={disabled}
         options={options}
+        suffixIcon={<DownIcon />}
+        expandIcon={<DownIcon className="-rotate-90" />}
         onChange={onChange}
         changeOnSelect={changeOnSelect}
         className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
+        showSearch={showSearch}
       />
     </Form.Item>
   );
@@ -351,6 +355,7 @@ export const FormSwitch = ({
   className,
   onChange,
   noStyle = false,
+  labelClassName,
   checkedChildren,
   unCheckedChildren,
   ...formItemProps
