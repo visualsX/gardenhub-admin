@@ -8,17 +8,23 @@ import {
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useCreateProduct } from '@/hooks/useProduct';
+import { useCreateProduct, useProduct, useProductEdit } from '@/hooks/useProduct';
 import { useAttributes } from '@/hooks/useAttribute';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
+import { useSearchParams } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  console.log("id: ",id)
+    const { data: productsById, isLoading: productsLoading } = useProductEdit(+id);
+  
 
   const addProduct = useCreateProduct();
   const { data, isLoading } = useAttributes();
@@ -73,10 +79,39 @@ const ProductManagement = () => {
     message.info('Form reset to initial values');
   };
 
-  const initialValues = {};
+  var initialValues = {};
 
+  if (productsById) {
+      initialValues = {
+        Name: productsById.name,
+        Slug: productsById.slug,
+        Sku: productsById.sku,
+        ShortDescription: productsById.shortDescription,
+        DetailedDescription: productsById.detailedDescription,
+        MetaTitle: productsById.metaTitle,
+        MetaDescription: productsById.metaDescription,
+        Keywords: productsById.keywords,
+        RegularPrice: productsById.regularPrice,
+        SalePrice: productsById.salePrice,
+        Discount: productsById.discount,
+        StockQuantity: productsById.stockQuantity,
+        // stockStatus: productsById.stockStatus,
+        Weight: productsById.weight,
+        Width: productsById.width,
+        Height: productsById.height,
+        Length: productsById.length,
+        LowStockThreshold: productsById.lowStockThreshold,
+        IsFeatured: productsById.isFeatured,
+        IsActive: productsById.isActive,
+        IsFragile: productsById.isFragile,
+        IsShippingRequired: productsById.isShippingRequired,
+        CostPrice: productsById.costPrice,
+        Categories: productsById.categoriesWithPathsForEdit,
+        FilterOptions: productsById.allFilterAttributesWithSelection,
+      };
+    }
 
-
+    console.log("initialValues:", initialValues)
 
   return (
     <Form
@@ -146,7 +181,7 @@ const ProductManagement = () => {
           </div>
 
           <div className="flex-1">
-            <Box>
+            <Box loading={productsLoading}>
               <ProductTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}

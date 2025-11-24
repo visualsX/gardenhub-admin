@@ -14,6 +14,7 @@ export const productKeys = {
   lists: () => [...productKeys.all, 'list'],
   list: (filters) => [...productKeys.lists(), { filters }],
   details: () => [...productKeys.all, 'detail'],
+  editDetails: () => [...productKeys.all, 'editDetail'],
   detail: (id) => [...productKeys.details(), id],
 };
 
@@ -88,6 +89,21 @@ export const useProduct = (id) => {
       };
       const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_PRODUCT_DETAIL, variables);
       return response.productDetail;
+    },
+    enabled: !!id,
+  });
+};
+
+// Get single product
+export const useProductEdit = (id) => {
+  return useQuery({
+    queryKey: productKeys.detail(id),
+    queryFn: async () => {
+      const variables = {
+        id: id,
+      };
+      const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_EDIT_PRODUCT_DETAIL, variables);
+      return response.productDetailById;
     },
     enabled: !!id,
   });

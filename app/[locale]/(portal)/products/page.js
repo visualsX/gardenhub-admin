@@ -10,14 +10,13 @@ import { useDeleteProduct, useProducts } from '@/hooks/useProduct';
 import { ProductCols } from '@/lib/columns/product-cols';
 import DeleteModal from '@/components/shared/delete-modal';
 import useUiStates from '@/store/useUiStates';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DEFAULT_CURSOR_PAGE_SIZE, PAGINATION_KEYS } from '@/lib/const/pagination';
 const { Option } = Select;
 
 const ProductManagement = () => {
   const { isDeleteModalOpen } = useUiStates();
   const router = useRouter();
-
   const { data, isLoading, isFetching, pageState } = useProducts({
     paginationKey: PAGINATION_KEYS.PRODUCTS,
     pageSize: DEFAULT_CURSOR_PAGE_SIZE,
