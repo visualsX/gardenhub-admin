@@ -19,16 +19,17 @@ export const productKeys = {
 
 // Get all products with pagination
 export const useProducts = (filters = {}) => {
-  const { paginationKey, pageSize = 10, where = null, order = null, ...paginationFilters } = filters;
+  const {
+    paginationKey,
+    pageSize = 10,
+    where = null,
+    order = null,
+    ...paginationFilters
+  } = filters;
 
   const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
 
-  const {
-    first = null,
-    after = null,
-    last = null,
-    before = null,
-  } = pageState ?? paginationFilters;
+  const { first = null, after = null, last = null, before = null } = pageState ?? paginationFilters;
 
   const queryKeyFilters = {
     paginationKey,
@@ -63,16 +64,14 @@ export const useProducts = (filters = {}) => {
   });
 
   // Expose pagination state so callers can wire UI without re-implementing setup.
-  const exposedPageState =
-    pageState ??
-    {
-      first,
-      after,
-      last,
-      before,
-      pageSize,
-      page: 1,
-    };
+  const exposedPageState = pageState ?? {
+    first,
+    after,
+    last,
+    before,
+    pageSize,
+    page: 1,
+  };
 
   return {
     ...query,
