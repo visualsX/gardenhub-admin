@@ -4,25 +4,15 @@ import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Form, Upload, Image } from 'antd';
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 const UploaderMax = ({ name = 'images', label = 'Upload Images', required = false, className }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [previewTitle, setPreviewTitle] = useState('');
 
   const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewTitle(file.name || file.url?.substring(file.url?.lastIndexOf('/') + 1));
+    // No fake loader → no getBase64 → rely on url / thumbUrl only
+    setPreviewImage(file.url || file.thumbUrl);
+    setPreviewTitle(file.name || '');
     setPreviewOpen(true);
   };
 

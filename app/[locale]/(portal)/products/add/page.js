@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Tabs, Form, Button, message, Typography, Skeleton, Checkbox, Radio } from 'antd';
+import { Tabs, Form, Button, message, Typography, Skeleton, Checkbox, Radio, Select } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
 import {
   FormInput,
@@ -79,11 +79,6 @@ const ProductManagement = () => {
 
   const initialValues = {};
 
-  const categoryOptions = [
-    { value: 34, label: 'Indoor Plants' },
-    { value: 2, label: 'Outdoor Plants' },
-  ];
-
   const boxSizeOptions = [
     { value: 'Small', label: 'Small' },
     { value: 'Medium', label: 'Medium' },
@@ -136,12 +131,9 @@ const ProductManagement = () => {
       <Box header title={'Attributes & Tags'}>
         <Skeleton loading={isLoading}>
           {data?.map((el, idx) => (
-            <Form.Item name={`idx_${idx}`} key={idx}>
+            <Form.Item label={el?.name} name={`idx_${idx}`} key={idx}>
               {el.isMultiSelect ? (
                 <Checkbox.Group className="mb-4 flex flex-col">
-                  <div className="mb-2 flex items-center justify-between">
-                    <Text strong>{el?.name}</Text>
-                  </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {el?.options?.map((option, key) => (
                       <Checkbox className="" value={option.id} key={key}>
@@ -151,18 +143,15 @@ const ProductManagement = () => {
                   </div>
                 </Checkbox.Group>
               ) : (
-                <Radio.Group className="mb-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <Text strong>{el?.name}</Text>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {el?.options?.map((option, key) => (
-                      <Radio value={option.id} key={key}>
-                        {option.value}
-                      </Radio>
-                    ))}
-                  </div>
-                </Radio.Group>
+                <Select
+                  allowClear
+                  options={el?.options?.map((option) => ({
+                    label: option.value,
+                    value: option.id,
+                  }))}
+                  placeholder={`Select ${el?.name}`}
+                  className="mb-4 w-full"
+                />
               )}
             </Form.Item>
           ))}
