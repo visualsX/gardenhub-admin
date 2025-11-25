@@ -2,9 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Button, message, Typography } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
-import {
-  FormSwitch,
-} from '@/components/ui/inputs';
+import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
@@ -21,10 +19,9 @@ const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  console.log("id: ",id)
-    const { data: productsById, isLoading: productsLoading } = useProductEdit(+id);
-  
+  const id = searchParams.get('id');
+
+  const { data: productsById, isLoading: productsLoading } = useProductEdit(+id);
 
   const addProduct = useCreateProduct();
   const { data, isLoading } = useAttributes();
@@ -79,10 +76,9 @@ const ProductManagement = () => {
     message.info('Form reset to initial values');
   };
 
-  var initialValues = {};
-
-  if (productsById) {
-      initialValues = {
+  React.useEffect(() => {
+    if (productsById) {
+      const initialValues = {
         Name: productsById.name,
         Slug: productsById.slug,
         Sku: productsById.sku,
@@ -106,21 +102,31 @@ const ProductManagement = () => {
         IsFragile: productsById.isFragile,
         IsShippingRequired: productsById.isShippingRequired,
         CostPrice: productsById.costPrice,
-        Categories: productsById.categoriesWithPathsForEdit,
+        CategoryIds: productsById.categoriesWithPathsForEdit
+          .flatMap((item) => [...item.ancestors.map((a) => a.id), item.currentCategory.id])
+          .sort((a, b) => a - b),
         FilterOptions: productsById.allFilterAttributesWithSelection,
       };
+
+      // Map dynamic attributes to form fields
+      productsById.allFilterAttributesWithSelection.forEach((attr, idx) => {
+        if (attr.isMultiSelect) {
+          initialValues[`idx_${idx}`] = attr.options
+            .filter((opt) => opt.isSelected)
+            .map((opt) => opt.id);
+        } else {
+          const selectedOption = attr.options.find((opt) => opt.isSelected);
+          initialValues[`idx_${idx}`] = selectedOption ? selectedOption.id : undefined;
+        }
+      });
+
+      form.setFieldsValue(initialValues);
     }
+  }, [productsById, form]);
 
-    console.log("initialValues:", initialValues)
-
+  console.log('producst by id: ', productsById?.images[0]?.imageUrl);
   return (
-    <Form
-      requiredMark={false}
-      form={form}
-      onFinish={onSubmit}
-      layout="vertical"
-      initialValues={initialValues}
-    >
+    <Form requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">
       <div className="flex items-center justify-between py-2">
         <Link href={'/products'} className="flex items-center gap-x-2">
           <div className="border-smoke rounded-full border bg-white p-1">
@@ -154,6 +160,7 @@ const ProductManagement = () => {
                 name={'MainImage'}
                 label="Main Image"
                 className={'products-main'}
+                existingImage={productsById?.images?.find((img) => img?.isMain)}
               />
 
               <UploaderMax
@@ -185,8 +192,9 @@ const ProductManagement = () => {
               <ProductTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                attributesData={data}
+                attributesData={id ? productsById?.allFilterAttributesWithSelection : data}
                 attributesLoading={isLoading}
+                productsById={productsById}
               />
             </Box>
           </div>

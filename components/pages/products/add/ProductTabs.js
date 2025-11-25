@@ -15,6 +15,7 @@ const ProductTabs = ({
   setActiveTab,
   attributesData,
   attributesLoading,
+  productsById
 }) => {
   const generalTab = (
     <div className="space-y-6">
