@@ -15,7 +15,7 @@ export const useLogin = () => {
     },
     onSuccess: (data) => {
       // Store token in cookie (24 hours)
-      // document.cookie = `token=${data.token};
+      // document.cookie = `tokens=${data.token}; path=/; max-age=86400`;
 
       message.success('Login successful!');
       router.push('/');
@@ -30,18 +30,32 @@ export const useLogin = () => {
 export const useLogout = () => {
   const router = useRouter();
 
-  const handleLogout = () => {
-    // Clear your auth token from cookies/localStorage
-    localStorage.removeItem('token');
-    document.cookie.split(';').forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, '')
-        .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
-    });
+  // const handleLogout = () => {
+  //   // Clear your auth token from cookies/localStorage
+  //   localStorage.removeItem('token');
+  //   document.cookie.split(';').forEach((c) => {
+  //     document.cookie = c
+  //       .replace(/^ +/, '')
+  //       .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
+  //   });
 
-    // Navigate to login
-    router.replace('/auth/login');
-  };
+  //   // Navigate to login
+  //   router.replace('/auth/login');
+  // };
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+      return response;
+    },
+    onSuccess: () => {
+      message.success('Loging out');
+      router.replace('/auth/login');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Logout failed');
+    },
+  });
 
   return handleLogout;
 };
