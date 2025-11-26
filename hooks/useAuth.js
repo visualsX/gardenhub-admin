@@ -15,7 +15,7 @@ export const useLogin = () => {
     },
     onSuccess: (data) => {
       // Store token in cookie (24 hours)
-      document.cookie = `token=${data.token}; path=/; max-age=86400`;
+      // document.cookie = `token=${data.token};
 
       message.success('Login successful!');
       router.push('/');
