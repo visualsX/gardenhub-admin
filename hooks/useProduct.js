@@ -102,7 +102,10 @@ export const useProductEdit = (id) => {
       const variables = {
         id: id,
       };
-      const response = await graphqlClient.request(PRODUCTS_QUERIES.GET_EDIT_PRODUCT_DETAIL, variables);
+      const response = await graphqlClient.request(
+        PRODUCTS_QUERIES.GET_EDIT_PRODUCT_DETAIL,
+        variables
+      );
       return response.productDetailById;
     },
     enabled: !!id,
@@ -170,6 +173,52 @@ export const useDeleteProduct = () => {
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to delete product');
+    },
+  });
+};
+// update product Image
+export const useUpdateProductImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload) => {
+      await apiClient.post(
+        API_ENDPOINTS.PRODUCTS.UPDATE_IMAGES(payload.productId),
+        payload.formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+    },
+    onSuccess: (data, variables) => {
+      console.log('test:', variables);
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.productId) });
+      message.success('Product Image successfully!');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to update product image');
+    },
+  });
+};
+// Delete product Image
+export const useDeleteProductImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids) => {
+      await apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE_IMAGES(ids.productId, ids.imageId));
+    },
+    onSuccess: (data, variables) => {
+      // console.log('test:', variables);
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.productId) });
+      message.success('Product Image deleted successfully!');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to delete product image');
     },
   });
 };

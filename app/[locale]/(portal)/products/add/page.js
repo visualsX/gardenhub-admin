@@ -6,7 +6,7 @@ import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useCreateProduct, useProduct, useProductEdit } from '@/hooks/useProduct';
+import { useCreateProduct, useProductEdit } from '@/hooks/useProduct';
 import { useAttributes } from '@/hooks/useAttribute';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
@@ -21,7 +21,7 @@ const ProductManagement = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
-  const { data: productsById, isLoading: productsLoading } = useProductEdit(+id);
+  const { data: productsById, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
   const addProduct = useCreateProduct();
   const { data, isLoading } = useAttributes();
@@ -124,7 +124,6 @@ const ProductManagement = () => {
     }
   }, [productsById, form]);
 
-  console.log('producst by id: ', productsById?.images[0]?.imageUrl);
   return (
     <Form requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">
       <div className="flex items-center justify-between py-2">
@@ -151,7 +150,7 @@ const ProductManagement = () => {
       <div className="py-6">
         <div className="flex gap-6">
           <div className="w-80 shrink-0 space-y-6">
-            <Box>
+            <Box loading={productsLoading}>
               <Title level={5} className="mb-4">
                 Product Images
               </Title>
@@ -160,7 +159,10 @@ const ProductManagement = () => {
                 name={'MainImage'}
                 label="Main Image"
                 className={'products-main'}
+                editPage={id ? true : false}
+                productId={+id}
                 existingImage={productsById?.images?.find((img) => img?.isMain)}
+                isFetching={isFetching}
               />
 
               <UploaderMax
