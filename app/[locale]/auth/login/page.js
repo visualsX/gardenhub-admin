@@ -12,7 +12,8 @@ const LoginPage = () => {
   const login = useLogin();
 
   function onSubmit({ username, password }) {
-    login.mutate({ username, password });
+    const payload = { username, password };
+    login.mutate(payload);
   }
 
   return (

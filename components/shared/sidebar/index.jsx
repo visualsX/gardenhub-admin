@@ -133,7 +133,7 @@ const Sidebar = () => {
       </div>
 
       <section
-        onClick={() => logout.mutate()}
+        onClick={logout}
         className="flex cursor-pointer items-center gap-x-2 px-8 pt-4 text-sm text-red-500"
       >
         <LogoutIcon />
