@@ -1,8 +1,9 @@
 import React from 'react';
-import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider, ColorPicker } from 'antd';
+import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider, ColorPicker, Collapse, message } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
+import Edit from '@/public/shared/edit.svg';
 import PlusGreen from '@/public/shared/plus-green-dark.svg';
 import PlusGray from '@/public/shared/plus-gray.svg';
 
@@ -223,30 +224,36 @@ const ProductTabs = ({
 
   const pricingTab = (
     <Box header title={'Pricing Information'} description={'Set product pricing and margins'}>
-      <FormInput
-        name="RegularPrice"
-        label="Retail Price"
-        placeholder="0.00"
-        type="number"
-        suffix="AED"
-        className="mb-4"
-      />
-      <FormInput
+      <div className="grid grid-cols-2 gap-x-4">
+        <FormInputNumber
         name="CostPrice"
         label="Cost Price"
         placeholder="0.00"
-        type="number"
         suffix="AED"
         className="mb-4"
       />
-      <FormInput
+        <FormInputNumber
+          name="SalePrice"
+          label="Sale Price"
+          placeholder="0.00"
+          suffix="AED"
+          className="mb-4"
+        />
+      <FormInputNumber
+        name="RegularPrice"
+        label="Retail Price"
+        placeholder="0.00"
+        suffix="AED"
+        className="mb-4"
+      />
+      <FormInputNumber
         name="Discount"
         label="Discount"
         placeholder="0"
-        type="number"
         suffix="%"
         className="mb-0"
       />
+      </div>
     </Box>
   );
 
@@ -310,11 +317,235 @@ const ProductTabs = ({
     </div>
   );
 
+  const form = Form.useFormInstance();
+
+  const handleGenerateVariants = () => {
+    const values = form.getFieldsValue();
+    const variants = values.variants || [];
+    const mainSku = values.Sku || '';
+
+    if (variants.length === 0) {
+      message.warning('Please add at least one variant in the General tab.');
+      return;
+    }
+
+    // Prepare options for Cartesian product
+    const options = variants.map((v) => {
+      if (v.type === 'text') {
+        return v.values
+          ? v.values.split(',').map((s) => s.trim()).filter(Boolean)
+          : [];
+      }
+      if (v.type === 'color') {
+        return v.colors ? v.colors.map((c) => c.name).filter(Boolean) : [];
+      }
+      return [];
+    });
+
+    // Check if any variant has no options
+    if (options.some((opt) => opt.length === 0)) {
+      message.warning('Please ensure all variants have values.');
+      return;
+    }
+
+    // Cartesian product function
+    const cartesian = (...a) =>
+      a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+
+    const combinations = cartesian(...options);
+
+    const generated = combinations.map((combo) => {
+      const variantName = Array.isArray(combo) ? combo.join(', ') : combo;
+      const variantSkuSuffix = Array.isArray(combo)
+        ? combo.join('-').toUpperCase()
+        : combo.toUpperCase();
+      
+      return {
+        name: variantName,
+        sku: mainSku ? `${mainSku}-${variantSkuSuffix}` : variantSkuSuffix,
+        price: 0,
+        salePrice: 0,
+        discountedPrice: 0,
+        stock: 0,
+        isStockManaged: false,
+      };
+    });
+
+    form.setFieldValue('generatedVariants', generated);
+    message.success(`${generated.length} variants generated.`);
+  };
+
+  const variantsTab = (
+    <div className="space-y-6">
+      <Box
+        header
+        title={'All Variants'}
+        description={'Basic details about the product'}
+      >
+        <Button
+          type="primary"
+          className="mb-6 bg-[#1B5E20]"
+          onClick={handleGenerateVariants}
+        >
+          Generate Variants
+        </Button>
+
+        <Form.List name="generatedVariants">
+          {(fields, { remove }) => (
+            <div className="space-y-4">
+              {fields.map(({ key, name, ...restField }) => (
+                <div key={key} className="rounded-lg border border-gray-200 bg-white">
+                  <Collapse
+                    ghost
+                    expandIconPosition="start"
+                    className="w-full"
+                  >
+                    <Collapse.Panel
+                      header={
+                        <div className="flex w-full items-center justify-between pr-4">
+                          <div className="w-1/4 font-medium">
+                            <Form.Item
+                              shouldUpdate={(prev, curr) =>
+                                prev.generatedVariants?.[name]?.name !==
+                                curr.generatedVariants?.[name]?.name
+                              }
+                              noStyle
+                            >
+                              {() => (
+                                <div className="truncate">
+                                  {form.getFieldValue(['generatedVariants', name, 'name'])}
+                                </div>
+                              )}
+                            </Form.Item>
+                          </div>
+                          <div className="w-1/4 text-gray-500">
+                            <Form.Item
+                              shouldUpdate={(prev, curr) =>
+                                prev.generatedVariants?.[name]?.sku !==
+                                curr.generatedVariants?.[name]?.sku
+                              }
+                              noStyle
+                            >
+                              {() => (
+                                <div className="truncate">
+                                  {form.getFieldValue(['generatedVariants', name, 'sku'])}
+                                </div>
+                              )}
+                            </Form.Item>
+                          </div>
+                          <div className="w-1/4 text-gray-500">
+                            <Form.Item
+                              shouldUpdate={(prev, curr) =>
+                                prev.generatedVariants?.[name]?.price !==
+                                curr.generatedVariants?.[name]?.price
+                              }
+                              noStyle
+                            >
+                              {() => {
+                                const price = form.getFieldValue([
+                                  'generatedVariants',
+                                  name,
+                                  'price',
+                                ]);
+                                return price ? price.toLocaleString() : '0';
+                              }}
+                            </Form.Item>
+                          </div>
+                          <div className="w-1/4 text-gray-500">
+                            <Form.Item
+                              shouldUpdate={(prev, curr) =>
+                                prev.generatedVariants?.[name]?.stock !==
+                                curr.generatedVariants?.[name]?.stock
+                              }
+                              noStyle
+                            >
+                              {() =>
+                                form.getFieldValue([
+                                  'generatedVariants',
+                                  name,
+                                  'stock',
+                                ]) || '0'
+                              }
+                            </Form.Item>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Trash
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                remove(name);
+                              }}
+                            />
+                            <Edit className="cursor-pointer" />
+                          </div>
+                        </div>
+                      }
+                      key={key}
+                    >
+                      <div className="border-t border-gray-100 p-4">
+                        <FormSwitch
+                          {...restField}
+                          name={[name, 'isStockManaged']}
+                          label="Manage Stock?"
+                          className="mb-4"
+                        />
+
+                        <div className="mb-4">
+                          <FormInput
+                            {...restField}
+                            name={[name, 'sku']}
+                            label="SKU"
+                            placeholder="Add values"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                          <FormInputNumber
+                            {...restField}
+                            name={[name, 'price']}
+                            label="Retail Price"
+                            placeholder="Add Regular Price"
+                          />
+                          <FormInputNumber
+                            {...restField}
+                            name={[name, 'salePrice']}
+                            label="Sale Price"
+                            placeholder="Add Sale Price"
+                          />
+                          <FormInputNumber
+                            {...restField}
+                            name={[name, 'discountedPrice']}
+                            label="Discounted Price"
+                            placeholder="Add Discounted Price"
+                          />
+                        </div>
+                        
+                        <div className="mt-4">
+                           <FormInputNumber
+                            {...restField}
+                            name={[name, 'stock']}
+                            label="Stock"
+                            placeholder="Stock Quantity"
+                          />
+                        </div>
+                      </div>
+                    </Collapse.Panel>
+                  </Collapse>
+                </div>
+              ))}
+            </div>
+          )}
+        </Form.List>
+      </Box>
+    </div>
+  );
+
   const tabItems = [
     { key: '1', label: 'General', children: generalTab },
     { key: '2', label: 'Pricing', children: pricingTab },
     { key: '3', label: 'Specifications', children: specificationsTab },
     { key: '4', label: 'Inventory', children: inventoryTab },
+    { key: '5', label: 'Variations', children: variantsTab },
   ];
 
   return <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />;
