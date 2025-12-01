@@ -27,6 +27,7 @@ const ProductManagement = () => {
   const { data, isLoading } = useAttributes();
 
   const onSubmit = (values) => {
+    console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
 
     // Collect only fields whose names start with 'idx_'
@@ -68,7 +69,7 @@ const ProductManagement = () => {
     }
 
     // Step 4: Submit
-    addProduct.mutate(formData);
+    // addProduct.mutate(formData);
   };
 
   const handleCancel = () => {

@@ -520,14 +520,37 @@ const ProductTabs = ({
                           />
                         </div>
                         
-                        <div className="mt-4">
-                           <FormInputNumber
-                            {...restField}
-                            name={[name, 'stock']}
-                            label="Stock"
-                            placeholder="Stock Quantity"
-                          />
-                        </div>
+                        <Form.Item
+                          noStyle
+                          shouldUpdate={(prev, curr) =>
+                            prev.generatedVariants?.[name]?.isStockManaged !==
+                            curr.generatedVariants?.[name]?.isStockManaged
+                          }
+                        >
+                          {({ getFieldValue }) => {
+                            const isStockManaged = getFieldValue([
+                              'generatedVariants',
+                              name,
+                              'isStockManaged',
+                            ]);
+                            return isStockManaged ? (
+                              <div className="mt-4 grid grid-cols-2 gap-4">
+                                <FormInputNumber
+                                  {...restField}
+                                  name={[name, 'stock']}
+                                  label="Stock Quantity"
+                                  placeholder="Add Stock Quantity"
+                                />
+                                <FormInputNumber
+                                  {...restField}
+                                  name={[name, 'lowStockThreshold']}
+                                  label="Low Stock Threshold"
+                                  placeholder="Add Value"
+                                />
+                              </div>
+                            ) : null;
+                          }}
+                        </Form.Item>
                       </div>
                     </Collapse.Panel>
                   </Collapse>
