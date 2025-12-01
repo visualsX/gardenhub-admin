@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider } from 'antd';
+import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider, ColorPicker } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
@@ -107,23 +107,35 @@ const ProductTabs = ({
                           {(subFields, { add: addSub, remove: removeSub }) => (
                             <div className="space-y-2">
                               {subFields.map(({ key: subKey, name: subName, ...subRest }) => (
-                                <div key={subKey} className="flex items-baseline gap-4">
-                                  <FormInput
-                                    {...subRest}
-                                    name={[subName, 'name']}
-                                    placeholder="Color Name"
-                                    className="mb-0 flex-1"
-                                    rules={[{ required: true, message: 'Missing color name' }]}
-                                  />
-                                  {/* <div className="flex flex-1 items-center gap-2"> */}
-                                  <FormInput
-                                    {...subRest}
-                                    name={[subName, 'hex']}
-                                    placeholder="Hex Code"
-                                    className="mb-0 flex-1"
-                                    rules={[{ required: true, message: 'Missing hex code' }]}
-                                  />
-                                  {/* </div> */}
+                                <div className="flex w-full items-baseline gap-x-4">
+                                  <div key={subKey} className="flex w-full items-center gap-x-4">
+                                    <FormInput
+                                      {...subRest}
+                                      name={[subName, 'name']}
+                                      placeholder="Color Name"
+                                      className="mb-0 flex-1"
+                                      rules={[{ required: true, message: 'Missing color name' }]}
+                                    />
+
+                                    <Form.Item
+                                      {...subRest}
+                                      name={[subName, 'hex']}
+                                      rules={[{ required: true, message: 'Missing hex code' }]}
+                                      className="mb-0 flex-1"
+                                      getValueFromEvent={(color) => {
+                                        return typeof color === 'string'
+                                          ? color
+                                          : color.toHexString();
+                                      }}
+                                    >
+                                      <ColorPicker
+                                        size="large"
+                                        className="[38px]! w-full"
+                                        showText
+                                        format="hex"
+                                      />
+                                    </Form.Item>
+                                  </div>
                                   <Cross onClick={() => removeSub(subName)} />
                                 </div>
                               ))}

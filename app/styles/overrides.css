@@ -103,3 +103,12 @@
 .ant-form-item-vertical .ant-form-item-label {
   padding-bottom: 2px !important;
 }
+
+/* ======================================================================= */
+/* align picker input content at start */
+/* ======================================================================= */
+.ant-color-picker-trigger.ant-color-picker-lg {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+}
