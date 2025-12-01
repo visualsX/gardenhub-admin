@@ -330,44 +330,66 @@ const ProductTabs = ({
     }
 
     // Prepare options for Cartesian product
-    const options = variants.map((v) => {
+    // We need to keep track of the variant name (e.g., "Color", "Size")
+    const optionsWithNames = variants.map((v) => {
+      let values = [];
       if (v.type === 'text') {
-        return v.values
+        values = v.values
           ? v.values.split(',').map((s) => s.trim()).filter(Boolean)
           : [];
+      } else if (v.type === 'color') {
+        values = v.colors ? v.colors.map((c) => c.name).filter(Boolean) : [];
       }
-      if (v.type === 'color') {
-        return v.colors ? v.colors.map((c) => c.name).filter(Boolean) : [];
-      }
-      return [];
+      return { name: v.name, values };
     });
 
     // Check if any variant has no options
-    if (options.some((opt) => opt.length === 0)) {
+    if (optionsWithNames.some((opt) => opt.values.length === 0)) {
       message.warning('Please ensure all variants have values.');
       return;
     }
 
-    // Cartesian product function
-    const cartesian = (...a) =>
-      a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+    // Cartesian product function that preserves the structure
+    // Input: [{name: "Color", values: ["Red", "Blue"]}, {name: "Size", values: ["S", "M"]}]
+    // Output: [[{name: "Color", value: "Red"}, {name: "Size", value: "S"}], ...]
+    const cartesian = (arrays) => {
+      return arrays.reduce(
+        (acc, curr) => {
+          return acc.flatMap((prev) => {
+            return curr.values.map((val) => {
+              // prev is an array of objects {name, value}
+              return [...prev, { name: curr.name, value: val }];
+            });
+          });
+        },
+        [[]]
+      );
+    };
 
-    const combinations = cartesian(...options);
+    const combinations = cartesian(optionsWithNames);
 
     const generated = combinations.map((combo) => {
-      const variantName = Array.isArray(combo) ? combo.join(', ') : combo;
-      const variantSkuSuffix = Array.isArray(combo)
-        ? combo.join('-').toUpperCase()
-        : combo.toUpperCase();
-      
+      // combo is an array of {name, value} objects
+      const variantName = combo.map((c) => c.value).join(', ');
+      const variantSkuSuffix = combo
+        .map((c) => c.value)
+        .join('-')
+        .toUpperCase();
+
+      const selectedOptions = combo.reduce((acc, curr) => {
+        acc[curr.name] = curr.value;
+        return acc;
+      }, {});
+
       return {
         name: variantName,
         sku: mainSku ? `${mainSku}-${variantSkuSuffix}` : variantSkuSuffix,
         price: 0,
         salePrice: 0,
-        discountedPrice: 0,
-        stock: 0,
-        isStockManaged: false,
+        discount: 0,
+        stockQuantity: 0,
+        trackInventory: false,
+        selectedOptions: selectedOptions,
       };
     });
 
@@ -454,8 +476,8 @@ const ProductTabs = ({
                           <div className="w-1/4 text-gray-500">
                             <Form.Item
                               shouldUpdate={(prev, curr) =>
-                                prev.generatedVariants?.[name]?.stock !==
-                                curr.generatedVariants?.[name]?.stock
+                                prev.generatedVariants?.[name]?.stockQuantity !==
+                                curr.generatedVariants?.[name]?.stockQuantity
                               }
                               noStyle
                             >
@@ -463,7 +485,7 @@ const ProductTabs = ({
                                 form.getFieldValue([
                                   'generatedVariants',
                                   name,
-                                  'stock',
+                                  'stockQuantity',
                                 ]) || '0'
                               }
                             </Form.Item>
@@ -485,7 +507,7 @@ const ProductTabs = ({
                       <div className="border-t border-gray-100 p-4">
                         <FormSwitch
                           {...restField}
-                          name={[name, 'isStockManaged']}
+                          name={[name, 'trackInventory']}
                           label="Manage Stock?"
                           className="mb-4"
                         />
@@ -514,30 +536,30 @@ const ProductTabs = ({
                           />
                           <FormInputNumber
                             {...restField}
-                            name={[name, 'discountedPrice']}
-                            label="Discounted Price"
-                            placeholder="Add Discounted Price"
+                            name={[name, 'discount']}
+                            label="Discount"
+                            placeholder="Add Discount"
                           />
                         </div>
                         
                         <Form.Item
                           noStyle
                           shouldUpdate={(prev, curr) =>
-                            prev.generatedVariants?.[name]?.isStockManaged !==
-                            curr.generatedVariants?.[name]?.isStockManaged
+                            prev.generatedVariants?.[name]?.trackInventory !==
+                            curr.generatedVariants?.[name]?.trackInventory
                           }
                         >
                           {({ getFieldValue }) => {
-                            const isStockManaged = getFieldValue([
+                            const trackInventory = getFieldValue([
                               'generatedVariants',
                               name,
-                              'isStockManaged',
+                              'trackInventory',
                             ]);
-                            return isStockManaged ? (
+                            return trackInventory ? (
                               <div className="mt-4 grid grid-cols-2 gap-4">
                                 <FormInputNumber
                                   {...restField}
-                                  name={[name, 'stock']}
+                                  name={[name, 'stockQuantity']}
                                   label="Stock Quantity"
                                   placeholder="Add Stock Quantity"
                                 />
