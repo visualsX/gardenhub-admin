@@ -9,9 +9,10 @@ export function Box({
   title,
   description,
   padding = 'p-6',
+  classRest = '',
 }) {
   return (
-    <div className={`border-smoke-light rounded-2xl border bg-white ${padding}`}>
+    <div className={`border-smoke-light rounded-2xl border bg-white ${padding} ${classRest}`}>
       {header && (
         <div className="flex items-center justify-between">
           <Title title={title} description={description} />

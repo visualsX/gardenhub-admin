@@ -1,21 +1,27 @@
 import React from 'react';
-import { Tabs, Form, Skeleton, Checkbox, Select } from 'antd';
+import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import Cross from '@/public/shared/cross-20.svg';
+import Trash from '@/public/shared/trash-red.svg';
+import PlusGreen from '@/public/shared/plus-green-dark.svg';
+import PlusGray from '@/public/shared/plus-gray.svg';
+
 import {
   FormInput,
   FormTextArea,
   FormSwitch,
   FormInputNumber,
+  FormSelect,
 } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import CategoryCascader from '@/components/ui/select-dropdowns/CategoryCascader';
-
 
 const ProductTabs = ({
   activeTab,
   setActiveTab,
   attributesData,
   attributesLoading,
-  productsById
+  productsById,
 }) => {
   const generalTab = (
     <div className="space-y-6">
@@ -53,6 +59,105 @@ const ProductTabs = ({
           rows={4}
           className="mb-0"
         />
+      </Box>
+
+      <Box
+        header
+        title={'Product Variants'}
+        description={'Manage product variations like size and color'}
+      >
+        <Form.List name="variants">
+          {(fields, { add, remove }) => (
+            <div className="space-y-4">
+              {fields.map(({ key, name, ...restField }) => (
+                <Box classRest="relative" header title={`Varient ${key + 1}`} key={key}>
+                  <Trash onClick={() => remove(name)} className="absolute top-2 right-2" />
+                  <div className="mb-4 grid grid-cols-[1fr_2fr] gap-4">
+                    <FormInput
+                      {...restField}
+                      name={[name, 'name']}
+                      label="Variant Name"
+                      placeholder="e.g. Size, Color"
+                      rules={[{ required: true, message: 'Missing variant name' }]}
+                      className="mb-0"
+                    />
+                    <FormSelect
+                      {...restField}
+                      name={[name, 'type']}
+                      label="Type"
+                      rules={[{ required: true, message: 'Missing type' }]}
+                      className="mb-0"
+                      options={[
+                        { value: 'text', label: 'Text' },
+                        { value: 'color', label: 'Color' },
+                      ]}
+                    />
+                  </div>
+
+                  <Form.Item
+                    noStyle
+                    shouldUpdate={(prevValues, currentValues) =>
+                      prevValues.variants?.[name]?.type !== currentValues.variants?.[name]?.type
+                    }
+                  >
+                    {({ getFieldValue }) => {
+                      const type = getFieldValue(['variants', name, 'type']);
+                      return type === 'color' ? (
+                        <Form.List className="mb-0" name={[name, 'colors']}>
+                          {(subFields, { add: addSub, remove: removeSub }) => (
+                            <div className="space-y-2">
+                              {subFields.map(({ key: subKey, name: subName, ...subRest }) => (
+                                <div key={subKey} className="flex items-baseline gap-4">
+                                  <FormInput
+                                    {...subRest}
+                                    name={[subName, 'name']}
+                                    placeholder="Color Name"
+                                    className="mb-0 flex-1"
+                                    rules={[{ required: true, message: 'Missing color name' }]}
+                                  />
+                                  {/* <div className="flex flex-1 items-center gap-2"> */}
+                                  <FormInput
+                                    {...subRest}
+                                    name={[subName, 'hex']}
+                                    placeholder="Hex Code"
+                                    className="mb-0 flex-1"
+                                    rules={[{ required: true, message: 'Missing hex code' }]}
+                                  />
+                                  {/* </div> */}
+                                  <Cross onClick={() => removeSub(subName)} />
+                                </div>
+                              ))}
+                              <Button type="default" onClick={() => addSub()} icon={<PlusGray />}>
+                                Add Value
+                              </Button>
+                            </div>
+                          )}
+                        </Form.List>
+                      ) : type === 'text' ? (
+                        <FormInput
+                          {...restField}
+                          name={[name, 'values']}
+                          label="Values"
+                          placeholder="e.g. S, M, L, XL"
+                          rules={[{ required: true, message: 'Missing values' }]}
+                          className="mb-0"
+                        />
+                      ) : null;
+                    }}
+                  </Form.Item>
+                </Box>
+              ))}
+
+              <Button
+                onClick={() => add()}
+                className="text-primary! bg-primary/10! border-primary/10! border"
+                icon={<PlusGreen />}
+              >
+                Add Another Varient
+              </Button>
+            </div>
+          )}
+        </Form.List>
       </Box>
 
       <Box header title={'Attributes & Tags'}>
@@ -187,7 +292,7 @@ const ProductTabs = ({
             suffix="lbs"
             className="mb-4"
           />
-            <FormSwitch name="IsFragile" label="Fragile Item" className="mb-0" />
+          <FormSwitch name="IsFragile" label="Fragile Item" className="mb-0" />
         </div>
       </Box>
     </div>
