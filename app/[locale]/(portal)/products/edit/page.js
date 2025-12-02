@@ -12,63 +12,48 @@ import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { useSearchParams } from 'next/navigation';
-import { transformVariantData, mapOptionsToForm, mapVariantsToForm } from '@/lib/utils/productUtils';
+import {
+  transformVariantData,
+  mapOptionsToForm,
+  mapVariantsToForm,
+} from '@/lib/utils/productUtils';
 
 const { Title, Text } = Typography;
- 
+
 const duplicateOfRealProductsById = {
-  costPrice: 10,
-  detailedDescription: 'Basic details about the product',
+  costPrice: 20,
+  detailedDescription: 'Product Information',
   discount: 10,
   height: 12,
-  id: 88,
-  isActive: false,
-  isFeatured: false,
-  isFragile: true,
+  id: 105,
+  isActive: true,
+  isFeatured: true,
+  isFragile: false,
   isShippingRequired: true,
-  keywords: 'Search engine optimization details',
+  keywords: 'Product Information',
   length: 12,
-  lowStockThreshold: 12,
-  metaDescription: 'Search engine optimization details\r\n\r\n',
-  metaTitle: 'Options',
-  name: 'Cactus',
-  regularPrice: 200,
-  salePrice: 100,
-  shortDescription: 'Basic details about the product\r\n\r\n',
-  sku: 'tes2',
-  slug: 'cactus',
-  stockQuantity: 0,
+  lowStockThreshold: 120,
+  metaDescription: 'Product Information',
+  metaTitle: 'Product Information',
+  name: 'test-1',
+  regularPrice: 999,
+  salePrice: 200,
+  shortDescription: 'Product Information',
+  sku: '32af',
+  slug: 'test-1',
+  stockQuantity: 1001,
   stockStatus: 'Unknown',
-  weight: 12,
+  weight: 100,
   width: 12,
-  images: [
-    {
-      id: 136,
-      imageUrl:
-        'https://api.gardenhub.ae/ProductImages/88-894d74a5-d09d-44d7-b593-e4a0827fa448.png',
-      isMain: true,
-    },
-    {
-      id: 137,
-      imageUrl:
-        'https://api.gardenhub.ae/ProductImages/88-e2f3abe1-7425-4093-8a05-58a1bb8ce69f.png',
-      isMain: false,
-    },
-    {
-      id: 138,
-      imageUrl:
-        'https://api.gardenhub.ae/ProductImages/88-4cd0c72f-7f60-40ff-a75f-8357cfe232fd.png',
-      isMain: false,
-    },
-  ],
+  images: [],
   categoriesWithPathsForEdit: [
     {
       currentCategory: {
-        id: 59,
+        id: 57,
       },
       ancestors: [
         {
-          id: 46,
+          id: 45,
         },
       ],
     },
@@ -87,7 +72,7 @@ const duplicateOfRealProductsById = {
         {
           value: 'String Roots',
           id: 1,
-          isSelected: true,
+          isSelected: false,
         },
       ],
     },
@@ -99,7 +84,7 @@ const duplicateOfRealProductsById = {
         {
           value: 'New Tag',
           id: 9,
-          isSelected: true,
+          isSelected: false,
         },
       ],
     },
@@ -126,7 +111,7 @@ const duplicateOfRealProductsById = {
         {
           value: 'Sandish',
           id: 3,
-          isSelected: true,
+          isSelected: false,
         },
         {
           value: 'Smoky',
@@ -143,73 +128,41 @@ const duplicateOfRealProductsById = {
   ],
   options: [
     {
-      id: 13,
+      id: 38,
       name: 'Size',
       type: 'Text',
       values: [
         {
-          id: 29,
+          id: 73,
           value: 'S',
           colorHex: null,
         },
         {
-          id: 30,
+          id: 74,
           value: 'M',
           colorHex: null,
         },
         {
-          id: 31,
+          id: 75,
           value: 'L',
           colorHex: null,
         },
-        {
-          id: 32,
-          value: 'XL',
-          colorHex: null,
-        },
       ],
     },
     {
-      id: 14,
-      name: 'Brands',
-      type: 'Text',
-      values: [
-        {
-          id: 33,
-          value: 'Alpha',
-          colorHex: null,
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          colorHex: null,
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          colorHex: null,
-        },
-      ],
-    },
-    {
-      id: 15,
+      id: 39,
       name: 'Colors',
       type: 'Color',
       values: [
         {
-          id: 36,
-          value: 'Brown',
-          colorHex: '#d69393',
+          id: 76,
+          value: 'White',
+          colorHex: '#ffffff',
         },
         {
-          id: 37,
-          value: 'Magenta',
-          colorHex: '#58a0a1',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          colorHex: '#ff9100',
+          id: 77,
+          value: 'Black',
+          colorHex: '#211e1e',
         },
       ],
     },
@@ -217,907 +170,128 @@ const duplicateOfRealProductsById = {
   trackInventory: true,
   variants: [
     {
-      id: 27,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-ALPHA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
+      id: 75,
+      price: 1000,
+      salePrice: 200,
+      sku: '32af-S-WHITE-zayan',
+      stockQuantity: 1001,
+      trackInventory: true,
       optionValues: [
         {
-          id: 29,
+          id: 73,
           value: 'S',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
+          id: 76,
+          value: 'White',
           name: 'Colors',
         },
       ],
     },
     {
-      id: 28,
-      price: 200,
+      id: 76,
+      price: 999,
       salePrice: 0,
-      sku: 'tes2-S-ALPHA-MAGENTA',
+      sku: '32af-S-BLACK',
       stockQuantity: 0,
       trackInventory: false,
       optionValues: [
         {
-          id: 29,
+          id: 73,
           value: 'S',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
+          id: 77,
+          value: 'Black',
           name: 'Colors',
         },
       ],
     },
     {
-      id: 29,
-      price: 200,
+      id: 77,
+      price: 999,
       salePrice: 0,
-      sku: 'tes2-S-ALPHA-MARINDA',
+      sku: '32af-M-WHITE',
       stockQuantity: 0,
       trackInventory: false,
       optionValues: [
         {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 30,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-BETA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 31,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-BETA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 32,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-BETA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 33,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-GAMMA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 34,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-GAMMA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 35,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-S-GAMMA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 29,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 36,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-ALPHA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
+          id: 74,
           value: 'M',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
+          id: 76,
+          value: 'White',
           name: 'Colors',
         },
       ],
     },
     {
-      id: 37,
-      price: 200,
+      id: 78,
+      price: 999,
       salePrice: 0,
-      sku: 'tes2-M-ALPHA-MAGENTA',
+      sku: '32af-M-BLACK',
       stockQuantity: 0,
       trackInventory: false,
       optionValues: [
         {
-          id: 30,
+          id: 74,
           value: 'M',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
+          id: 77,
+          value: 'Black',
           name: 'Colors',
         },
       ],
     },
     {
-      id: 38,
-      price: 200,
+      id: 79,
+      price: 999,
       salePrice: 0,
-      sku: 'tes2-M-ALPHA-MARINDA',
+      sku: '32af-L-WHITE',
       stockQuantity: 0,
       trackInventory: false,
       optionValues: [
         {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 39,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-BETA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 40,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-BETA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 41,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-BETA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 42,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-GAMMA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 43,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-GAMMA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 44,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-M-GAMMA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 30,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 45,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-ALPHA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
+          id: 75,
           value: 'L',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
+          id: 76,
+          value: 'White',
           name: 'Colors',
         },
       ],
     },
     {
-      id: 46,
-      price: 200,
+      id: 80,
+      price: 999,
       salePrice: 0,
-      sku: 'tes2-L-ALPHA-MAGENTA',
+      sku: '32af-L-BLACK',
       stockQuantity: 0,
       trackInventory: false,
       optionValues: [
         {
-          id: 31,
+          id: 75,
           value: 'L',
           name: 'Size',
         },
         {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 47,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-ALPHA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 48,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-BETA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 49,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-BETA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 50,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-BETA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 51,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-GAMMA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 52,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-GAMMA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 53,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-L-GAMMA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 31,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 54,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-ALPHA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 55,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-ALPHA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 56,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-ALPHA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 33,
-          value: 'Alpha',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 57,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-BETA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 58,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-BETA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 59,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-BETA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 34,
-          value: 'Beta',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 60,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-GAMMA-BROWN',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 36,
-          value: 'Brown',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 61,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-GAMMA-MAGENTA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 37,
-          value: 'Magenta',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 62,
-      price: 200,
-      salePrice: 0,
-      sku: 'tes2-XL-GAMMA-MARINDA',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 32,
-          value: 'XL',
-          name: 'Size',
-        },
-        {
-          id: 35,
-          value: 'Gamma',
-          name: 'Brands',
-        },
-        {
-          id: 38,
-          value: 'Marinda',
+          id: 77,
+          value: 'Black',
           name: 'Colors',
         },
       ],
     },
   ],
 };
+
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();

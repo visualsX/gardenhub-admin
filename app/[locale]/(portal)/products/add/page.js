@@ -27,6 +27,8 @@ const ProductManagement = () => {
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
     values['OptionsJson'] = JSON.stringify(transformVariantData(values.Options));
     values['VariantsJson'] = JSON.stringify(values.Variants);
+    values['Variants'] = null;
+    values['Options'] = null;
 
     // Collect only fields whose names start with 'idx_'
     const FilterOptionIds = Object.entries(values)
