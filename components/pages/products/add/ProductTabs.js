@@ -99,8 +99,8 @@ const ProductTabs = ({
                       rules={[{ required: true, message: 'Missing type' }]}
                       className="mb-0"
                       options={[
-                        { value: 'text', label: 'Text' },
-                        { value: 'color', label: 'Color' },
+                        { value: 'Text', label: 'Text' },
+                        { value: 'Color', label: 'Color' },
                       ]}
                     />
                   </div>
@@ -113,7 +113,7 @@ const ProductTabs = ({
                   >
                     {({ getFieldValue }) => {
                       const type = getFieldValue(['Options', name, 'type']);
-                      return type === 'color' ? (
+                      return type === 'Color' ? (
                         <Form.List className="mb-0" name={[name, 'colors']}>
                           {(subFields, { add: addSub, remove: removeSub }) => (
                             <div className="space-y-2">
@@ -156,7 +156,7 @@ const ProductTabs = ({
                             </div>
                           )}
                         </Form.List>
-                      ) : type === 'text' ? (
+                      ) : type === 'Text' ? (
                         <FormInput
                           {...restField}
                           name={[name, 'values']}
