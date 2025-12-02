@@ -30,8 +30,8 @@ const ProductManagement = () => {
   const onSubmit = (values) => {
     console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
-    values['Options'] = transformVariantData(values.variants);
-    values['Variants'] = values.generatedVariants;
+    values['OptionsJson'] = JSON.stringify(transformVariantData(values.variants));
+    values['VariantsJson'] = JSON.stringify(values.generatedVariants);
 
     // Collect only fields whose names start with 'idx_'
     const FilterOptionIds = Object.entries(values)
