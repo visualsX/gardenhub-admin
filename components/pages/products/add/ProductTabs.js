@@ -1,6 +1,16 @@
 import React from 'react';
-import { Tabs, Form, Skeleton, Checkbox, Select, Button, Divider, ColorPicker, Collapse, message } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  Tabs,
+  Form,
+  Skeleton,
+  Checkbox,
+  Select,
+  Button,
+  Divider,
+  ColorPicker,
+  Collapse,
+  message,
+} from 'antd';
 import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
 import Edit from '@/public/shared/edit.svg';
@@ -67,7 +77,7 @@ const ProductTabs = ({
         title={'Product Variants'}
         description={'Manage product variations like size and color'}
       >
-        <Form.List name="variants">
+        <Form.List name="Options">
           {(fields, { add, remove }) => (
             <div className="space-y-4">
               {fields.map(({ key, name, ...restField }) => (
@@ -98,11 +108,11 @@ const ProductTabs = ({
                   <Form.Item
                     noStyle
                     shouldUpdate={(prevValues, currentValues) =>
-                      prevValues.variants?.[name]?.type !== currentValues.variants?.[name]?.type
+                      prevValues.Options?.[name]?.type !== currentValues.Options?.[name]?.type
                     }
                   >
                     {({ getFieldValue }) => {
-                      const type = getFieldValue(['variants', name, 'type']);
+                      const type = getFieldValue(['Options', name, 'type']);
                       return type === 'color' ? (
                         <Form.List className="mb-0" name={[name, 'colors']}>
                           {(subFields, { add: addSub, remove: removeSub }) => (
@@ -226,12 +236,12 @@ const ProductTabs = ({
     <Box header title={'Pricing Information'} description={'Set product pricing and margins'}>
       <div className="grid grid-cols-2 gap-x-4">
         <FormInputNumber
-        name="CostPrice"
-        label="Cost Price"
-        placeholder="0.00"
-        suffix="AED"
-        className="mb-4"
-      />
+          name="CostPrice"
+          label="Cost Price"
+          placeholder="0.00"
+          suffix="AED"
+          className="mb-4"
+        />
         <FormInputNumber
           name="SalePrice"
           label="Sale Price"
@@ -239,20 +249,20 @@ const ProductTabs = ({
           suffix="AED"
           className="mb-4"
         />
-      <FormInputNumber
-        name="RegularPrice"
-        label="Retail Price"
-        placeholder="0.00"
-        suffix="AED"
-        className="mb-4"
-      />
-      <FormInputNumber
-        name="Discount"
-        label="Discount"
-        placeholder="0"
-        suffix="%"
-        className="mb-0"
-      />
+        <FormInputNumber
+          name="RegularPrice"
+          label="Retail Price"
+          placeholder="0.00"
+          suffix="AED"
+          className="mb-4"
+        />
+        <FormInputNumber
+          name="Discount"
+          label="Discount"
+          placeholder="0"
+          suffix="%"
+          className="mb-0"
+        />
       </div>
     </Box>
   );
@@ -321,7 +331,7 @@ const ProductTabs = ({
 
   const handleGenerateVariants = () => {
     const values = form.getFieldsValue();
-    const variants = values.variants || [];
+    const variants = values.Options || [];
     const mainSku = values.Sku || '';
 
     if (variants.length === 0) {
@@ -335,7 +345,10 @@ const ProductTabs = ({
       let values = [];
       if (v.type === 'text') {
         values = v.values
-          ? v.values.split(',').map((s) => s.trim()).filter(Boolean)
+          ? v.values
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
           : [];
       } else if (v.type === 'color') {
         values = v.colors ? v.colors.map((c) => c.name).filter(Boolean) : [];
@@ -354,7 +367,7 @@ const ProductTabs = ({
     // Output: [[{name: "Color", value: "Red"}, {name: "Size", value: "S"}], ...]
     const cartesian = (arrays) => {
       return arrays.reduce(
-         (acc, curr) => {
+        (acc, curr) => {
           return acc.flatMap((prev) => {
             return curr.values.map((val) => {
               // prev is an array of objects {name, value}
@@ -376,11 +389,11 @@ const ProductTabs = ({
         .join('-')
         .toUpperCase();
 
-      const selectedOptions = combo.reduce((acc, curr) => {
-        acc[curr.name] = curr.value;
-        return acc;
-      }, {});
-
+      const selectedOptions = combo.map((curr) => ({
+        key: curr.name,
+        value: curr.value,
+      }));
+      console.log('seletected options: ', selectedOptions);
       return {
         name: variantName,
         sku: mainSku ? `${mainSku}-${variantSkuSuffix}` : variantSkuSuffix,
@@ -389,53 +402,40 @@ const ProductTabs = ({
         discount: 0,
         stockQuantity: 0,
         trackInventory: false,
-        selectedOptions: selectedOptions,
+        optionValues: selectedOptions,
       };
     });
 
-    form.setFieldValue('generatedVariants', generated);
+    form.setFieldValue('Variants', generated);
     message.success(`${generated.length} variants generated.`);
   };
 
   const variantsTab = (
     <div className="space-y-6">
-      <Box
-        header
-        title={'All Variants'}
-        description={'Basic details about the product'}
-      >
-        <Button
-          type="primary"
-          className="mb-6 bg-[#1B5E20]"
-          onClick={handleGenerateVariants}
-        >
+      <Box header title={'All Variants'} description={'Basic details about the product'}>
+        <Button type="primary" className="mb-6 bg-[#1B5E20]" onClick={handleGenerateVariants}>
           Generate Variants
         </Button>
 
-        <Form.List name="generatedVariants">
+        <Form.List name="Variants">
           {(fields, { remove }) => (
             <div className="space-y-4">
               {fields.map(({ key, name, ...restField }) => (
                 <div key={key} className="rounded-lg border border-gray-200 bg-white">
-                  <Collapse
-                    ghost
-                    expandIconPosition="start"
-                    className="w-full"
-                  >
+                  <Collapse ghost expandIconPosition="start" className="w-full">
                     <Collapse.Panel
                       header={
                         <div className="flex w-full items-center justify-between pr-4">
                           <div className="w-1/4 font-medium">
                             <Form.Item
                               shouldUpdate={(prev, curr) =>
-                                prev.generatedVariants?.[name]?.name !==
-                                curr.generatedVariants?.[name]?.name
+                                prev.Variants?.[name]?.name !== curr.Variants?.[name]?.name
                               }
                               noStyle
                             >
                               {() => (
                                 <div className="truncate">
-                                  {form.getFieldValue(['generatedVariants', name, 'name'])}
+                                  {form.getFieldValue(['Variants', name, 'name'])}
                                 </div>
                               )}
                             </Form.Item>
@@ -443,14 +443,13 @@ const ProductTabs = ({
                           <div className="w-1/4 text-gray-500">
                             <Form.Item
                               shouldUpdate={(prev, curr) =>
-                                prev.generatedVariants?.[name]?.sku !==
-                                curr.generatedVariants?.[name]?.sku
+                                prev.Variants?.[name]?.sku !== curr.Variants?.[name]?.sku
                               }
                               noStyle
                             >
                               {() => (
                                 <div className="truncate">
-                                  {form.getFieldValue(['generatedVariants', name, 'sku'])}
+                                  {form.getFieldValue(['Variants', name, 'sku'])}
                                 </div>
                               )}
                             </Form.Item>
@@ -458,17 +457,12 @@ const ProductTabs = ({
                           <div className="w-1/4 text-gray-500">
                             <Form.Item
                               shouldUpdate={(prev, curr) =>
-                                prev.generatedVariants?.[name]?.price !==
-                                curr.generatedVariants?.[name]?.price
+                                prev.Variants?.[name]?.price !== curr.Variants?.[name]?.price
                               }
                               noStyle
                             >
                               {() => {
-                                const price = form.getFieldValue([
-                                  'generatedVariants',
-                                  name,
-                                  'price',
-                                ]);
+                                const price = form.getFieldValue(['Variants', name, 'price']);
                                 return price ? price.toLocaleString() : '0';
                               }}
                             </Form.Item>
@@ -476,18 +470,12 @@ const ProductTabs = ({
                           <div className="w-1/4 text-gray-500">
                             <Form.Item
                               shouldUpdate={(prev, curr) =>
-                                prev.generatedVariants?.[name]?.stockQuantity !==
-                                curr.generatedVariants?.[name]?.stockQuantity
+                                prev.Variants?.[name]?.stockQuantity !==
+                                curr.Variants?.[name]?.stockQuantity
                               }
                               noStyle
                             >
-                              {() =>
-                                form.getFieldValue([
-                                  'generatedVariants',
-                                  name,
-                                  'stockQuantity',
-                                ]) || '0'
-                              }
+                              {() => form.getFieldValue(['Variants', name, 'stockQuantity']) || '0'}
                             </Form.Item>
                           </div>
                           <div className="flex items-center gap-2">
@@ -541,17 +529,17 @@ const ProductTabs = ({
                             placeholder="Add Discount"
                           />
                         </div>
-                        
+
                         <Form.Item
                           noStyle
                           shouldUpdate={(prev, curr) =>
-                            prev.generatedVariants?.[name]?.trackInventory !==
-                            curr.generatedVariants?.[name]?.trackInventory
+                            prev.Variants?.[name]?.trackInventory !==
+                            curr.Variants?.[name]?.trackInventory
                           }
                         >
                           {({ getFieldValue }) => {
                             const trackInventory = getFieldValue([
-                              'generatedVariants',
+                              'Variants',
                               name,
                               'trackInventory',
                             ]);

@@ -21,7 +21,10 @@ const ColumnActions = ({
       <button onClick={() => openDeleteModal(true, record)} className="cursor-pointer">
         <Trash2 size={18} />
       </button>
-      <button onClick={()=>router.push(`/products/add?id=${record.id}`)} className="cursor-pointer">
+      <button
+        onClick={() => router.push(`/products/edit?id=${record.id}`)}
+        className="cursor-pointer"
+      >
         <Edit2 size={18} />
       </button>
     </div>
