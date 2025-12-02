@@ -354,7 +354,7 @@ const ProductTabs = ({
     // Output: [[{name: "Color", value: "Red"}, {name: "Size", value: "S"}], ...]
     const cartesian = (arrays) => {
       return arrays.reduce(
-        (acc, curr) => {
+         (acc, curr) => {
           return acc.flatMap((prev) => {
             return curr.values.map((val) => {
               // prev is an array of objects {name, value}

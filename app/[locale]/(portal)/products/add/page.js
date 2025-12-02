@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { useSearchParams } from 'next/navigation';
+import { transformVariantData } from '@/lib/utils/productUtils';
 
 const { Title, Text } = Typography;
 
@@ -29,6 +30,8 @@ const ProductManagement = () => {
   const onSubmit = (values) => {
     console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
+    values['Options'] = transformVariantData(values.variants);
+    values['Variants'] = values.generatedVariants;
 
     // Collect only fields whose names start with 'idx_'
     const FilterOptionIds = Object.entries(values)
@@ -69,7 +72,7 @@ const ProductManagement = () => {
     }
 
     // Step 4: Submit
-    // addProduct.mutate(formData);
+    addProduct.mutate(formData);
   };
 
   const handleCancel = () => {
