@@ -12,7 +12,11 @@ import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { useSearchParams } from 'next/navigation';
-import { transformVariantData } from '@/lib/utils/productUtils';
+import {
+  transformVariantData,
+  mapOptionsToForm,
+  mapVariantsToForm,
+} from '@/lib/utils/productUtils';
 
 const { Title, Text } = Typography;
 
@@ -1214,6 +1218,8 @@ const ProductManagement = () => {
           .flatMap((item) => [...item.ancestors.map((a) => a.id), item.currentCategory.id])
           .sort((a, b) => a - b),
         FilterOptions: duplicateOfRealProductsById.allFilterAttributesWithSelection,
+        Variants: mapVariantsToForm(duplicateOfRealProductsById.variants),
+        Options: mapOptionsToForm(duplicateOfRealProductsById.options),
       };
 
       // Map dynamic attributes to form fields

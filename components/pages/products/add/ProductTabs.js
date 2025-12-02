@@ -343,14 +343,14 @@ const ProductTabs = ({
     // We need to keep track of the variant name (e.g., "Color", "Size")
     const optionsWithNames = variants.map((v) => {
       let values = [];
-      if (v.type === 'text') {
+      if (v.type === 'Text') {
         values = v.values
           ? v.values
               .split(',')
               .map((s) => s.trim())
               .filter(Boolean)
           : [];
-      } else if (v.type === 'color') {
+      } else if (v.type === 'Color') {
         values = v.colors ? v.colors.map((c) => c.name).filter(Boolean) : [];
       }
       return { name: v.name, values };
