@@ -9,7 +9,9 @@ export const App = ({ children }) => {
       // Set the custom primary color
       // This color will be used for buttons, links, active states, etc.
       colorPrimary: '#226B3E',
-      borderRadius: 6, // You can customize other tokens here as well
+      borderRadius: 6,
+      // Set the font family to match the global Outfit font
+      fontFamily: 'var(--font-outfit), sans-serif',
     },
     components: {
       // You can add component-specific overrides here
