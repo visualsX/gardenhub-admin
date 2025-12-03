@@ -140,6 +140,7 @@ export const useCreateProduct = () => {
 // Update product
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async ({ id, data }) => {
@@ -150,10 +151,11 @@ export const useUpdateProduct = () => {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: productKeys.detail(data.id) });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.id) });
       message.success('Product updated successfully!');
+       router.push('/products');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to update product');

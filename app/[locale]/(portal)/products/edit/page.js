@@ -14,193 +14,194 @@ import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { useSearchParams } from 'next/navigation';
 import {
   transformVariantData,
+  transformVariantDataForUpdate,
   mapOptionsToForm,
   mapVariantsToForm,
 } from '@/lib/utils/productUtils';
 
 const { Title, Text } = Typography;
 
-const duplicateOfRealProductsById = {
-      "costPrice": 12,
-      "detailedDescription": "Product Information\r\nProduct Information\r\n",
-      "discount": 12,
-      "height": 12,
-      "id": 107,
-      "isActive": false,
-      "isFeatured": false,
-      "isFragile": true,
-      "isShippingRequired": true,
-      "keywords": "Product Information",
-      "length": 12,
-      "lowStockThreshold": 12,
-      "metaDescription": "Product Information\r\n",
-      "metaTitle": "Wait Abdullah!",
-      "name": "Simple",
-      "regularPrice": 1112,
-      "salePrice": 120,
-      "shortDescription": "Product Information\r\nProduct Information\r\n",
-      "sku": "903",
-      "slug": "simple",
-      "stockQuantity": 0,
-      "stockStatus": "Unknown",
-      "weight": 12,
-      "width": 12,
-      "images": [],
-      "categoriesWithPathsForEdit": [
-        {
-          "currentCategory": {
-            "id": 59
-          },
-          "ancestors": [
-            {
-              "id": 46
-            }
-          ]
-        }
-      ],
-      "allFilterAttributesWithSelection": [
-        {
-          "id": 1,
-          "isMultiSelect": false,
-          "name": "Benefits",
-          "options": [
-            {
-              "value": "Roots Nourishment",
-              "id": 2,
-              "isSelected": false
-            },
-            {
-              "value": "String Roots",
-              "id": 1,
-              "isSelected": true
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "isMultiSelect": true,
-          "name": "New Benefit",
-          "options": [
-            {
-              "value": "New Tag",
-              "id": 9,
-              "isSelected": false
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "isMultiSelect": true,
-          "name": "Type of Plant",
-          "options": [
-            {
-              "value": "Dry",
-              "id": 4,
-              "isSelected": false
-            },
-            {
-              "value": "Gravity",
-              "id": 8,
-              "isSelected": false
-            },
-            {
-              "value": "Muddy",
-              "id": 6,
-              "isSelected": false
-            },
-            {
-              "value": "Sandish",
-              "id": 3,
-              "isSelected": true
-            },
-            {
-              "value": "Smoky",
-              "id": 7,
-              "isSelected": false
-            },
-            {
-              "value": "Wet",
-              "id": 5,
-              "isSelected": false
-            }
-          ]
-        }
-      ],
-      "options": [
-        {
-          "id": 43,
-          "name": "Size",
-          "type": "Text",
-          "values": [
-            {
-              "id": 88,
-              "value": "S",
-              "colorHex": null
-            },
-            {
-              "id": 89,
-              "value": "M",
-              "colorHex": null
-            }
-          ]
-        },
-        {
-          "id": 44,
-          "name": "Color",
-          "type": "Color",
-          "values": [
-            {
-              "id": 90,
-              "value": "Red",
-              "colorHex": "#de1313"
-            }
-          ]
-        }
-      ],
-      "trackInventory": true,
-      "variants": [
-        {
-          "id": 117,
-          "price": 500,
-          "salePrice": 99,
-          "sku": "903-S-RED",
-          "stockQuantity": 0,
-          "trackInventory": false,
-          "optionValues": [
-            {
-              "id": 88,
-              "value": "S",
-              "name": "Size"
-            },
-            {
-              "id": 90,
-              "value": "Red",
-              "name": "Color"
-            }
-          ]
-        },
-        {
-          "id": 118,
-          "price": 500,
-          "salePrice": 99,
-          "sku": "903-M-RED",
-          "stockQuantity": 0,
-          "trackInventory": false,
-          "optionValues": [
-            {
-              "id": 89,
-              "value": "M",
-              "name": "Size"
-            },
-            {
-              "id": 90,
-              "value": "Red",
-              "name": "Color"
-            }
-          ]
-        }
-      ]
-    }
+// const realProductId = {
+//       "costPrice": 12,
+//       "detailedDescription": "Product Information\r\nProduct Information\r\n",
+//       "discount": 12,
+//       "height": 12,
+//       "id": 107,
+//       "isActive": false,
+//       "isFeatured": false,
+//       "isFragile": true,
+//       "isShippingRequired": true,
+//       "keywords": "Product Information",
+//       "length": 12,
+//       "lowStockThreshold": 12,
+//       "metaDescription": "Product Information\r\n",
+//       "metaTitle": "Wait Abdullah!",
+//       "name": "Simple",
+//       "regularPrice": 1112,
+//       "salePrice": 120,
+//       "shortDescription": "Product Information\r\nProduct Information\r\n",
+//       "sku": "903",
+//       "slug": "simple",
+//       "stockQuantity": 0,
+//       "stockStatus": "Unknown",
+//       "weight": 12,
+//       "width": 12,
+//       "images": [],
+//       "categoriesWithPathsForEdit": [
+//         {
+//           "currentCategory": {
+//             "id": 59
+//           },
+//           "ancestors": [
+//             {
+//               "id": 46
+//             }
+//           ]
+//         }
+//       ],
+//       "allFilterAttributesWithSelection": [
+//         {
+//           "id": 1,
+//           "isMultiSelect": false,
+//           "name": "Benefits",
+//           "options": [
+//             {
+//               "value": "Roots Nourishment",
+//               "id": 2,
+//               "isSelected": false
+//             },
+//             {
+//               "value": "String Roots",
+//               "id": 1,
+//               "isSelected": true
+//             }
+//           ]
+//         },
+//         {
+//           "id": 3,
+//           "isMultiSelect": true,
+//           "name": "New Benefit",
+//           "options": [
+//             {
+//               "value": "New Tag",
+//               "id": 9,
+//               "isSelected": false
+//             }
+//           ]
+//         },
+//         {
+//           "id": 2,
+//           "isMultiSelect": true,
+//           "name": "Type of Plant",
+//           "options": [
+//             {
+//               "value": "Dry",
+//               "id": 4,
+//               "isSelected": false
+//             },
+//             {
+//               "value": "Gravity",
+//               "id": 8,
+//               "isSelected": false
+//             },
+//             {
+//               "value": "Muddy",
+//               "id": 6,
+//               "isSelected": false
+//             },
+//             {
+//               "value": "Sandish",
+//               "id": 3,
+//               "isSelected": true
+//             },
+//             {
+//               "value": "Smoky",
+//               "id": 7,
+//               "isSelected": false
+//             },
+//             {
+//               "value": "Wet",
+//               "id": 5,
+//               "isSelected": false
+//             }
+//           ]
+//         }
+//       ],
+//       "options": [
+//         {
+//           "id": 43,
+//           "name": "Size",
+//           "type": "Text",
+//           "values": [
+//             {
+//               "id": 88,
+//               "value": "S",
+//               "colorHex": null
+//             },
+//             {
+//               "id": 89,
+//               "value": "M",
+//               "colorHex": null
+//             }
+//           ]
+//         },
+//         {
+//           "id": 44,
+//           "name": "Color",
+//           "type": "Color",
+//           "values": [
+//             {
+//               "id": 90,
+//               "value": "Red",
+//               "colorHex": "#de1313"
+//             }
+//           ]
+//         }
+//       ],
+//       "trackInventory": true,
+//       "variants": [
+//         {
+//           "id": 117,
+//           "price": 500,
+//           "salePrice": 99,
+//           "sku": "903-S-RED",
+//           "stockQuantity": 0,
+//           "trackInventory": false,
+//           "optionValues": [
+//             {
+//               "id": 88,
+//               "value": "S",
+//               "name": "Size"
+//             },
+//             {
+//               "id": 90,
+//               "value": "Red",
+//               "name": "Color"
+//             }
+//           ]
+//         },
+//         {
+//           "id": 118,
+//           "price": 500,
+//           "salePrice": 99,
+//           "sku": "903-M-RED",
+//           "stockQuantity": 0,
+//           "trackInventory": false,
+//           "optionValues": [
+//             {
+//               "id": 89,
+//               "value": "M",
+//               "name": "Size"
+//             },
+//             {
+//               "id": 90,
+//               "value": "Red",
+//               "name": "Color"
+//             }
+//           ]
+//         }
+//       ]
+//     }
   
 
 const ProductManagement = () => {
@@ -214,15 +215,36 @@ const ProductManagement = () => {
   const updateProduct = useUpdateProduct();
   // const { data, isLoading } = useAttributes();
 
-  console.log('productsById:', duplicateOfRealProductsById);
+  console.log('productsById:', realProductId);
 
   const onSubmit = (values) => {
     console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
-    values['OptionsJson'] = JSON.stringify(transformVariantData(values.Options));
-    values['VariantsJson'] = JSON.stringify(values.Variants);
+    
+    // Use transformVariantDataForUpdate to preserve IDs
+    values['OptionsJson'] = JSON.stringify(transformVariantDataForUpdate(values.Options));
+    
+    // Transform Variants to include IDs
+    const variantsWithIds = values.Variants?.map(variant => ({
+      id: variant.id || null, // Preserve variant ID
+      sku: variant.sku,
+      price: variant.price,
+      salePrice: variant.salePrice,
+      discount: variant.discount || 0,
+      stockQuantity: variant.stockQuantity,
+      lowStockThreshold: variant.lowStockThreshold,
+      trackInventory: variant.trackInventory,
+      optionValues: variant.optionValues?.map(ov => ({
+        id: ov.id || null, // Preserve optionValue ID
+        name: ov.name,
+        value: ov.value,
+      })) || [],
+    })) || [];
+    
+    values['VariantsJson'] = JSON.stringify(variantsWithIds);
     values['Variants'] = null;
     values['Options'] = null;
+    values['HasVariants'] = true;
     values['Id'] = +id;
 
     // Collect only fields whose names start with 'idx_'
@@ -273,42 +295,42 @@ const ProductManagement = () => {
   };
 
   React.useEffect(() => {
-    if (duplicateOfRealProductsById) {
+    if (realProductId) {
       const initialValues = {
-        Name: duplicateOfRealProductsById.name,
-        Slug: duplicateOfRealProductsById.slug,
-        Sku: duplicateOfRealProductsById.sku,
-        ShortDescription: duplicateOfRealProductsById.shortDescription,
-        DetailedDescription: duplicateOfRealProductsById.detailedDescription,
-        MetaTitle: duplicateOfRealProductsById.metaTitle,
-        MetaDescription: duplicateOfRealProductsById.metaDescription,
-        Keywords: duplicateOfRealProductsById.keywords,
-        RegularPrice: duplicateOfRealProductsById.regularPrice,
-        costPrice: duplicateOfRealProductsById.costPrice,
-        SalePrice: duplicateOfRealProductsById.salePrice,
-        Discount: duplicateOfRealProductsById.discount,
-        StockQuantity: duplicateOfRealProductsById.stockQuantity,
-        // stockStatus: duplicateOfRealProductsById.stockStatus,
-        Weight: duplicateOfRealProductsById.weight,
-        Width: duplicateOfRealProductsById.width,
-        Height: duplicateOfRealProductsById.height,
-        Length: duplicateOfRealProductsById.length,
-        LowStockThreshold: duplicateOfRealProductsById.lowStockThreshold,
-        IsFeatured: duplicateOfRealProductsById.isFeatured,
-        IsActive: duplicateOfRealProductsById.isActive,
-        IsFragile: duplicateOfRealProductsById.isFragile,
-        IsShippingRequired: duplicateOfRealProductsById.isShippingRequired,
-        CostPrice: duplicateOfRealProductsById.costPrice,
-        CategoryIds: duplicateOfRealProductsById.categoriesWithPathsForEdit
+        Name: realProductId.name,
+        Slug: realProductId.slug,
+        Sku: realProductId.sku,
+        ShortDescription: realProductId.shortDescription,
+        DetailedDescription: realProductId.detailedDescription,
+        MetaTitle: realProductId.metaTitle,
+        MetaDescription: realProductId.metaDescription,
+        Keywords: realProductId.keywords,
+        RegularPrice: realProductId.regularPrice,
+        costPrice: realProductId.costPrice,
+        SalePrice: realProductId.salePrice,
+        Discount: realProductId.discount,
+        StockQuantity: realProductId.stockQuantity,
+        // stockStatus: realProductId.stockStatus,
+        Weight: realProductId.weight,
+        Width: realProductId.width,
+        Height: realProductId.height,
+        Length: realProductId.length,
+        LowStockThreshold: realProductId.lowStockThreshold,
+        IsFeatured: realProductId.isFeatured,
+        IsActive: realProductId.isActive,
+        IsFragile: realProductId.isFragile,
+        IsShippingRequired: realProductId.isShippingRequired,
+        CostPrice: realProductId.costPrice,
+        CategoryIds: realProductId.categoriesWithPathsForEdit
           .flatMap((item) => [...item.ancestors.map((a) => a.id), item.currentCategory.id])
           .sort((a, b) => a - b),
-        FilterOptions: duplicateOfRealProductsById.allFilterAttributesWithSelection,
-        Variants: mapVariantsToForm(duplicateOfRealProductsById.variants),
-        Options: mapOptionsToForm(duplicateOfRealProductsById.options),
+        FilterOptions: realProductId.allFilterAttributesWithSelection,
+        Variants: mapVariantsToForm(realProductId.variants),
+        Options: mapOptionsToForm(realProductId.options),
       };
 
       // Map dynamic attributes to form fields
-      duplicateOfRealProductsById.allFilterAttributesWithSelection.forEach((attr, idx) => {
+      realProductId.allFilterAttributesWithSelection.forEach((attr, idx) => {
         if (attr.isMultiSelect) {
           initialValues[`idx_${idx}`] = attr.options
             .filter((opt) => opt.isSelected)
@@ -321,7 +343,7 @@ const ProductManagement = () => {
 
       form.setFieldsValue(initialValues);
     }
-  }, [form]);
+  }, [form,realProductId]);
 
   return (
     <Form requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">
@@ -360,7 +382,7 @@ const ProductManagement = () => {
                 className={'products-main'}
                 editPage={id ? true : false}
                 productId={+id}
-                existingImage={duplicateOfRealProductsById?.images?.find((img) => img?.isMain)}
+                existingImage={realProductId?.images?.find((img) => img?.isMain)}
                 isFetching={isFetching}
               />
 
@@ -393,9 +415,9 @@ const ProductManagement = () => {
               <ProductTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                attributesData={duplicateOfRealProductsById?.allFilterAttributesWithSelection}
+                attributesData={realProductId?.allFilterAttributesWithSelection}
                 attributesLoading={productsLoading}
-                productsById={duplicateOfRealProductsById}
+                productsById={realProductId}
               />
             </Box>
           </div>

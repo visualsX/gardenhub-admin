@@ -313,15 +313,8 @@ const ProductTabs = ({
       </Box>
 
       <Box header title={'Shipping Information'}>
-        <FormSwitch name="IsShippingRequired" label="Shipping Required" className="mb-4" />
         <div className="grid grid-cols-2 gap-4">
-          <FormInputNumber
-            name="shippingWeight"
-            label="Shipping Weight"
-            placeholder="0"
-            suffix="lbs"
-            className="mb-4"
-          />
+          <FormSwitch name="IsShippingRequired" label="Shipping Required" className="mb-4" />
           <FormSwitch name="IsFragile" label="Fragile Item" className="mb-0" />
         </div>
       </Box>
@@ -329,8 +322,6 @@ const ProductTabs = ({
   );
 
   const form = Form.useFormInstance();
-
-
 
   const tabItems = [
     { key: '1', label: 'General', children: generalTab },
