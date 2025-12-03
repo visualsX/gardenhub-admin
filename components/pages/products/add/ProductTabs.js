@@ -324,14 +324,27 @@ const ProductTabs = ({
   const form = Form.useFormInstance();
 
   const tabItems = [
-    { key: '1', label: 'General', children: generalTab },
-    { key: '2', label: 'Pricing', children: pricingTab },
-    { key: '3', label: 'Specifications', children: specificationsTab },
-    { key: '4', label: 'Inventory', children: inventoryTab },
-    { key: '5', label: 'Variations', children: <VariantsTab /> },
+    { key: '1', label: 'General' },
+    { key: '2', label: 'Pricing' },
+    { key: '3', label: 'Specifications' },
+    { key: '4', label: 'Inventory' },
+    { key: '5', label: 'Variations' },
   ];
 
-  return <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />;
+  return (
+    <div>
+      <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
+
+      {/* Render all tab content, but hide inactive ones */}
+      <div style={{ display: activeTab === '1' ? 'block' : 'none' }}>{generalTab}</div>
+      <div style={{ display: activeTab === '2' ? 'block' : 'none' }}>{pricingTab}</div>
+      <div style={{ display: activeTab === '3' ? 'block' : 'none' }}>{specificationsTab}</div>
+      <div style={{ display: activeTab === '4' ? 'block' : 'none' }}>{inventoryTab}</div>
+      <div style={{ display: activeTab === '5' ? 'block' : 'none' }}>
+        <VariantsTab />
+      </div>
+    </div>
+  );
 };
 
 export default ProductTabs;

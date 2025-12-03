@@ -152,10 +152,12 @@ export const useUpdateProduct = () => {
       return response.data;
     },
     onSuccess: (data, variables) => {
+      // Invalidate products list query (for index page)
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      // Invalidate product detail query (used by useProductEdit on edit page)
       queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.id) });
       message.success('Product updated successfully!');
-       router.push('/products');
+      router.push('/products');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to update product');
