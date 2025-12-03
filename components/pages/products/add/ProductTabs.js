@@ -15,7 +15,7 @@ import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
 import Edit from '@/public/shared/edit.svg';
 import PlusGreen from '@/public/shared/plus-green-dark.svg';
-import PlusGray from '@/public/shared/plus-gray.svg';
+import PlusGray from '@/public/shared/Plus-gray.svg';
 
 import {
   FormInput,
