@@ -244,7 +244,6 @@ const ProductManagement = () => {
     values['VariantsJson'] = JSON.stringify(variantsWithIds);
     values['Variants'] = null;
     values['Options'] = null;
-    values['HasVariants'] = true;
     values['Id'] = +id;
 
     // Collect only fields whose names start with 'idx_'
