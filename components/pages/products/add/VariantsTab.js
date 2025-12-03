@@ -1,9 +1,10 @@
 import React from 'react';
-import { Form, Button, Collapse, message } from 'antd';
+import { Form, Button, Collapse, message, Select } from 'antd';
 import { Box } from '@/components/wrappers/box';
 import { FormInput, FormInputNumber, FormSwitch } from '@/components/ui/inputs';
 import Trash from '@/public/shared/trash-red.svg';
 import Edit from '@/public/shared/edit.svg';
+import DownIcon from '@/public/shared/select-down.svg';
 import { generateCombinations, mergeVariants } from '@/lib/utils/productUtils';
 
 const VariantsTab = () => {
@@ -33,12 +34,49 @@ const VariantsTab = () => {
     message.success(`${mergedVariants.length} variants generated/updated.`);
   };
 
+  const handleAddManually = () => {
+    const values = form.getFieldsValue();
+    const existingVariants = values.Variants || [];
+    const options = values.Options || [];
+
+    if (options.length === 0) {
+      message.warning('Please add at least one option in the General tab first.');
+      return;
+    }
+
+    // Create a new empty variant
+    const newVariant = {
+      name: 'New Variant',
+      sku: '',
+      price: 0,
+      salePrice: 0,
+      discount: 0,
+      stockQuantity: 0,
+      lowStockThreshold: 0,
+      trackInventory: false,
+      optionValues: options.map(opt => ({
+        name: opt.name,
+        value: ''
+      }))
+    };
+
+    // Add new variant at the top
+    const updatedVariants = [newVariant, ...existingVariants];
+    form.setFieldValue('Variants', updatedVariants);
+    message.success('Manual variant added at the top.');
+  };
+
   return (
     <div className="space-y-6">
       <Box header title={'All Variants'} description={'Basic details about the product'}>
-        <Button type="primary" className="mb-6 bg-[#1B5E20]" onClick={handleGenerateVariants}>
-          Generate Variants
-        </Button>
+        <div className="mb-6 flex gap-3">
+          <Button type="primary" className="bg-[#1B5E20]" onClick={handleGenerateVariants}>
+            Generate Variants
+          </Button>
+          <Button type="default" onClick={handleAddManually}>
+            Add Manually
+          </Button>
+        </div>
 
         <Form.List name="Variants">
           {(fields, { remove }) => (
@@ -48,70 +86,92 @@ const VariantsTab = () => {
                   <Collapse ghost expandIconPosition="start" className="w-full">
                     <Collapse.Panel
                       header={
-                        <div className="flex w-full items-center justify-between pr-4">
-                          <div className="w-1/4 font-medium">
-                            <Form.Item
-                              shouldUpdate={(prev, curr) =>
-                                prev.Variants?.[name]?.name !== curr.Variants?.[name]?.name
-                              }
-                              noStyle
-                            >
-                              {() => (
-                                <div className="truncate">
-                                  {form.getFieldValue(['Variants', name, 'name'])}
+                        <Form.Item
+                          noStyle
+                          shouldUpdate={(prev, curr) => {
+                            const prevOptions = prev.Variants?.[name]?.optionValues;
+                            const currOptions = curr.Variants?.[name]?.optionValues;
+                            return JSON.stringify(prevOptions) !== JSON.stringify(currOptions);
+                          }}
+                        >
+                          {() => {
+                            const values = form.getFieldsValue();
+                            const options = values.Options || [];
+                            const variant = values.Variants?.[name];
+                            const variantId = variant?.id || `#${0 + name}`;
+
+                            return (
+                              <div className="flex w-full items-center gap-4 pr-4">
+                                <div className="font-medium text-base">{variantId}</div>
+                                <div className="flex flex-1 gap-3">
+                                  {options.map((option, optionIndex) => {
+                                    // Get available values for this option
+                                    let availableValues = [];
+                                    if (option.type === 'Color' && Array.isArray(option.colors)) {
+                                      availableValues = option.colors.map(c => c.name);
+                                    } else if (option.type === 'Text' && option.values) {
+                                      availableValues = option.values
+                                        .split(',')
+                                        .map(v => v.trim())
+                                        .filter(Boolean);
+                                    }
+
+                                    const currentValue = variant?.optionValues?.[optionIndex]?.value || '';
+
+                                    return (
+                                      <Form.Item
+                                        key={optionIndex}
+                                        name={[name, 'optionValues', optionIndex, 'value']}
+                                        noStyle
+                                      >
+                                        <Select
+                                          placeholder={`Any ${option.name}...`}
+                                          suffixIcon={<DownIcon />}
+                                          className="flex-1 min-w-[140px]"
+                                          onClick={(e) => e.stopPropagation()}
+                                          onChange={(value) => {
+                                            // Update the variant name based on selected option values
+                                            const currentVariant = form.getFieldValue(['Variants', name]);
+                                            const updatedOptionValues = [...(currentVariant.optionValues || [])];
+                                            updatedOptionValues[optionIndex] = {
+                                              name: option.name,
+                                              value: value
+                                            };
+                                            
+                                            // Generate new variant name from all option values
+                                            const newName = updatedOptionValues
+                                              .map(ov => ov.value)
+                                              .filter(Boolean)
+                                              .join(', ');
+                                            
+                                            form.setFieldValue(['Variants', name, 'name'], newName || 'New Variant');
+                                            form.setFieldValue(['Variants', name, 'optionValues'], updatedOptionValues);
+                                          }}
+                                        >
+                                          {availableValues.map((val) => (
+                                            <Select.Option key={val} value={val}>
+                                              {val}
+                                            </Select.Option>
+                                          ))}
+                                        </Select>
+                                      </Form.Item>
+                                    );
+                                  })}
                                 </div>
-                              )}
-                            </Form.Item>
-                          </div>
-                          <div className="w-1/4 text-gray-500">
-                            <Form.Item
-                              shouldUpdate={(prev, curr) =>
-                                prev.Variants?.[name]?.sku !== curr.Variants?.[name]?.sku
-                              }
-                              noStyle
-                            >
-                              {() => (
-                                <div className="truncate">
-                                  {form.getFieldValue(['Variants', name, 'sku'])}
+                                <div className="flex items-center gap-2">
+                                  <Trash
+                                    className="cursor-pointer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      remove(name);
+                                    }}
+                                  />
+                                  <Edit className="cursor-pointer" />
                                 </div>
-                              )}
-                            </Form.Item>
-                          </div>
-                          <div className="w-1/4 text-gray-500">
-                            <Form.Item
-                              shouldUpdate={(prev, curr) =>
-                                prev.Variants?.[name]?.price !== curr.Variants?.[name]?.price
-                              }
-                              noStyle
-                            >
-                              {() => {
-                                const price = form.getFieldValue(['Variants', name, 'price']);
-                                return price ? price.toLocaleString() : '0';
-                              }}
-                            </Form.Item>
-                          </div>
-                          <div className="w-1/4 text-gray-500">
-                            <Form.Item
-                              shouldUpdate={(prev, curr) =>
-                                prev.Variants?.[name]?.stockQuantity !==
-                                curr.Variants?.[name]?.stockQuantity
-                              }
-                              noStyle
-                            >
-                              {() => form.getFieldValue(['Variants', name, 'stockQuantity']) || '0'}
-                            </Form.Item>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Trash
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                remove(name);
-                              }}
-                            />
-                            <Edit className="cursor-pointer" />
-                          </div>
-                        </div>
+                              </div>
+                            );
+                          }}
+                        </Form.Item>
                       }
                       key={key}
                     >
