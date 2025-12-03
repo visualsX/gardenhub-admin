@@ -193,77 +193,72 @@ const VariantsTab = () => {
     setBulkActionValue(0);
   };
 
-  const bulkActionsMenu = (
-    <Menu
-      onClick={({ key }) => handleBulkAction(key)}
-      items={[
-        {
-          key: 'bulk_actions_label',
-          label: 'Bulk actions',
-          disabled: true,
-          className: 'font-semibold'
-        },
-        {
-          key: 'delete_all',
-          label: 'Delete all variations',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          key: 'pricing_label',
-          label: 'Pricing',
-          disabled: true,
-          className: 'font-semibold text-gray-400'
-        },
-        {
-          key: 'set_price',
-          label: 'Set retail prices',
-        },
-        {
-          key: 'increase_price',
-          label: 'Increase retail prices (fixed amount)',
-        },
-        {
-          key: 'decrease_price',
-          label: 'Decrease retail prices (fixed amount)',
-        },
-        {
-          key: 'set_sale_price',
-          label: 'Set sale prices',
-        },
-        {
-          key: 'increase_sale_price',
-          label: 'Increase sale prices (fixed amount)',
-        },
-        {
-          key: 'decrease_sale_price',
-          label: 'Decrease sale prices (fixed amount)',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          key: 'inventory_label',
-          label: 'Inventory',
-          disabled: true,
-          className: 'font-semibold text-gray-400'
-        },
-        {
-          key: 'toggle_stock',
-          label: 'Toggle "Manage stock"',
-        },
-        {
-          key: 'set_stock_quantity',
-          label: 'Set stock quantity',
-        },
-        {
-          key: 'set_low_stock_threshold',
-          label: 'Set low stock threshold',
-        },
-      ]}
-    />
-  );
+  const bulkActionItems = [
+    {
+      key: 'bulk_actions_label',
+      label: 'Bulk actions',
+      disabled: true,
+      className: 'font-semibold'
+    },
+    {
+      key: 'delete_all',
+      label: 'Delete all variations',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'pricing_label',
+      label: 'Pricing',
+      disabled: true,
+      className: 'font-semibold text-gray-400'
+    },
+    {
+      key: 'set_price',
+      label: 'Set retail prices',
+    },
+    {
+      key: 'increase_price',
+      label: 'Increase retail prices (fixed amount)',
+    },
+    {
+      key: 'decrease_price',
+      label: 'Decrease retail prices (fixed amount)',
+    },
+    {
+      key: 'set_sale_price',
+      label: 'Set sale prices',
+    },
+    {
+      key: 'increase_sale_price',
+      label: 'Increase sale prices (fixed amount)',
+    },
+    {
+      key: 'decrease_sale_price',
+      label: 'Decrease sale prices (fixed amount)',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'inventory_label',
+      label: 'Inventory',
+      disabled: true,
+      className: 'font-semibold text-gray-400'
+    },
+    {
+      key: 'toggle_stock',
+      label: 'Toggle "Manage stock"',
+    },
+    {
+      key: 'set_stock_quantity',
+      label: 'Set stock quantity',
+    },
+    {
+      key: 'set_low_stock_threshold',
+      label: 'Set low stock threshold',
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -275,7 +270,13 @@ const VariantsTab = () => {
           <Button type="default" onClick={handleAddManually}>
             Add Manually
           </Button>
-          <Dropdown overlay={bulkActionsMenu} trigger={['click']}>
+          <Dropdown 
+            menu={{ 
+              items: bulkActionItems, 
+              onClick: ({ key }) => handleBulkAction(key) 
+            }} 
+            trigger={['click']}
+          >
             <Button>
               Bulk actions <DownIcon className="ml-1 inline-block" />
             </Button>

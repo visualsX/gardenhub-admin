@@ -29,8 +29,6 @@ const UploaderMax = ({ name = 'images', label = 'Upload Images', required = fals
         layout="vertical"
         name={name}
         label={label}
-        multiple={false}
-        count={0}
         valuePropName="fileList"
         getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
         rules={[
