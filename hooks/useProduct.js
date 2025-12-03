@@ -142,8 +142,12 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, ...data }) => {
-      const response = await apiClient.put(API_ENDPOINTS.PRODUCTS.UPDATE(id), data);
+    mutationFn: async ({ id, data }) => {
+      const response = await apiClient.put(API_ENDPOINTS.PRODUCTS.UPDATE(id), data,{
+         headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
     onSuccess: (data) => {

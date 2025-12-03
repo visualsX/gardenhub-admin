@@ -6,7 +6,7 @@ import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useCreateProduct, useProductEdit } from '@/hooks/useProduct';
+import { useCreateProduct, useProductEdit, useUpdateProduct } from '@/hooks/useProduct';
 import { useAttributes } from '@/hooks/useAttribute';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
@@ -21,276 +21,187 @@ import {
 const { Title, Text } = Typography;
 
 const duplicateOfRealProductsById = {
-  costPrice: 20,
-  detailedDescription: 'Product Information',
-  discount: 10,
-  height: 12,
-  id: 105,
-  isActive: true,
-  isFeatured: true,
-  isFragile: false,
-  isShippingRequired: true,
-  keywords: 'Product Information',
-  length: 12,
-  lowStockThreshold: 120,
-  metaDescription: 'Product Information',
-  metaTitle: 'Product Information',
-  name: 'test-1',
-  regularPrice: 999,
-  salePrice: 200,
-  shortDescription: 'Product Information',
-  sku: '32af',
-  slug: 'test-1',
-  stockQuantity: 1001,
-  stockStatus: 'Unknown',
-  weight: 100,
-  width: 12,
-  images: [],
-  categoriesWithPathsForEdit: [
-    {
-      currentCategory: {
-        id: 57,
-      },
-      ancestors: [
+      "costPrice": 12,
+      "detailedDescription": "Product Information\r\nProduct Information\r\n",
+      "discount": 12,
+      "height": 12,
+      "id": 107,
+      "isActive": false,
+      "isFeatured": false,
+      "isFragile": true,
+      "isShippingRequired": true,
+      "keywords": "Product Information",
+      "length": 12,
+      "lowStockThreshold": 12,
+      "metaDescription": "Product Information\r\n",
+      "metaTitle": "Wait Abdullah!",
+      "name": "Simple",
+      "regularPrice": 1112,
+      "salePrice": 120,
+      "shortDescription": "Product Information\r\nProduct Information\r\n",
+      "sku": "903",
+      "slug": "simple",
+      "stockQuantity": 0,
+      "stockStatus": "Unknown",
+      "weight": 12,
+      "width": 12,
+      "images": [],
+      "categoriesWithPathsForEdit": [
         {
-          id: 45,
-        },
+          "currentCategory": {
+            "id": 59
+          },
+          "ancestors": [
+            {
+              "id": 46
+            }
+          ]
+        }
       ],
-    },
-  ],
-  allFilterAttributesWithSelection: [
-    {
-      id: 1,
-      isMultiSelect: false,
-      name: 'Benefits',
-      options: [
+      "allFilterAttributesWithSelection": [
         {
-          value: 'Roots Nourishment',
-          id: 2,
-          isSelected: false,
+          "id": 1,
+          "isMultiSelect": false,
+          "name": "Benefits",
+          "options": [
+            {
+              "value": "Roots Nourishment",
+              "id": 2,
+              "isSelected": false
+            },
+            {
+              "value": "String Roots",
+              "id": 1,
+              "isSelected": true
+            }
+          ]
         },
         {
-          value: 'String Roots',
-          id: 1,
-          isSelected: false,
+          "id": 3,
+          "isMultiSelect": true,
+          "name": "New Benefit",
+          "options": [
+            {
+              "value": "New Tag",
+              "id": 9,
+              "isSelected": false
+            }
+          ]
         },
+        {
+          "id": 2,
+          "isMultiSelect": true,
+          "name": "Type of Plant",
+          "options": [
+            {
+              "value": "Dry",
+              "id": 4,
+              "isSelected": false
+            },
+            {
+              "value": "Gravity",
+              "id": 8,
+              "isSelected": false
+            },
+            {
+              "value": "Muddy",
+              "id": 6,
+              "isSelected": false
+            },
+            {
+              "value": "Sandish",
+              "id": 3,
+              "isSelected": true
+            },
+            {
+              "value": "Smoky",
+              "id": 7,
+              "isSelected": false
+            },
+            {
+              "value": "Wet",
+              "id": 5,
+              "isSelected": false
+            }
+          ]
+        }
       ],
-    },
-    {
-      id: 3,
-      isMultiSelect: true,
-      name: 'New Benefit',
-      options: [
+      "options": [
         {
-          value: 'New Tag',
-          id: 9,
-          isSelected: false,
+          "id": 43,
+          "name": "Size",
+          "type": "Text",
+          "values": [
+            {
+              "id": 88,
+              "value": "S",
+              "colorHex": null
+            },
+            {
+              "id": 89,
+              "value": "M",
+              "colorHex": null
+            }
+          ]
         },
+        {
+          "id": 44,
+          "name": "Color",
+          "type": "Color",
+          "values": [
+            {
+              "id": 90,
+              "value": "Red",
+              "colorHex": "#de1313"
+            }
+          ]
+        }
       ],
-    },
-    {
-      id: 2,
-      isMultiSelect: true,
-      name: 'Type of Plant',
-      options: [
+      "trackInventory": true,
+      "variants": [
         {
-          value: 'Dry',
-          id: 4,
-          isSelected: true,
+          "id": 117,
+          "price": 500,
+          "salePrice": 99,
+          "sku": "903-S-RED",
+          "stockQuantity": 0,
+          "trackInventory": false,
+          "optionValues": [
+            {
+              "id": 88,
+              "value": "S",
+              "name": "Size"
+            },
+            {
+              "id": 90,
+              "value": "Red",
+              "name": "Color"
+            }
+          ]
         },
         {
-          value: 'Gravity',
-          id: 8,
-          isSelected: false,
-        },
-        {
-          value: 'Muddy',
-          id: 6,
-          isSelected: false,
-        },
-        {
-          value: 'Sandish',
-          id: 3,
-          isSelected: false,
-        },
-        {
-          value: 'Smoky',
-          id: 7,
-          isSelected: false,
-        },
-        {
-          value: 'Wet',
-          id: 5,
-          isSelected: false,
-        },
-      ],
-    },
-  ],
-  options: [
-    {
-      id: 38,
-      name: 'Size',
-      type: 'Text',
-      values: [
-        {
-          id: 73,
-          value: 'S',
-          colorHex: null,
-        },
-        {
-          id: 74,
-          value: 'M',
-          colorHex: null,
-        },
-        {
-          id: 75,
-          value: 'L',
-          colorHex: null,
-        },
-      ],
-    },
-    {
-      id: 39,
-      name: 'Colors',
-      type: 'Color',
-      values: [
-        {
-          id: 76,
-          value: 'White',
-          colorHex: '#ffffff',
-        },
-        {
-          id: 77,
-          value: 'Black',
-          colorHex: '#211e1e',
-        },
-      ],
-    },
-  ],
-  trackInventory: true,
-  variants: [
-    {
-      id: 75,
-      price: 1000,
-      salePrice: 200,
-      sku: '32af-S-WHITE-zayan',
-      stockQuantity: 1001,
-      trackInventory: true,
-      optionValues: [
-        {
-          id: 73,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 76,
-          value: 'White',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 76,
-      price: 999,
-      salePrice: 0,
-      sku: '32af-S-BLACK',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 73,
-          value: 'S',
-          name: 'Size',
-        },
-        {
-          id: 77,
-          value: 'Black',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 77,
-      price: 999,
-      salePrice: 0,
-      sku: '32af-M-WHITE',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 74,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 76,
-          value: 'White',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 78,
-      price: 999,
-      salePrice: 0,
-      sku: '32af-M-BLACK',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 74,
-          value: 'M',
-          name: 'Size',
-        },
-        {
-          id: 77,
-          value: 'Black',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 79,
-      price: 999,
-      salePrice: 0,
-      sku: '32af-L-WHITE',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 75,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 76,
-          value: 'White',
-          name: 'Colors',
-        },
-      ],
-    },
-    {
-      id: 80,
-      price: 999,
-      salePrice: 0,
-      sku: '32af-L-BLACK',
-      stockQuantity: 0,
-      trackInventory: false,
-      optionValues: [
-        {
-          id: 75,
-          value: 'L',
-          name: 'Size',
-        },
-        {
-          id: 77,
-          value: 'Black',
-          name: 'Colors',
-        },
-      ],
-    },
-  ],
-};
+          "id": 118,
+          "price": 500,
+          "salePrice": 99,
+          "sku": "903-M-RED",
+          "stockQuantity": 0,
+          "trackInventory": false,
+          "optionValues": [
+            {
+              "id": 89,
+              "value": "M",
+              "name": "Size"
+            },
+            {
+              "id": 90,
+              "value": "Red",
+              "name": "Color"
+            }
+          ]
+        }
+      ]
+    }
+  
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
@@ -300,7 +211,7 @@ const ProductManagement = () => {
 
   const { data: realProductId, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
-  const addProduct = useCreateProduct();
+  const updateProduct = useUpdateProduct();
   // const { data, isLoading } = useAttributes();
 
   console.log('productsById:', duplicateOfRealProductsById);
@@ -310,6 +221,9 @@ const ProductManagement = () => {
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
     values['OptionsJson'] = JSON.stringify(transformVariantData(values.Options));
     values['VariantsJson'] = JSON.stringify(values.Variants);
+    values['Variants'] = null;
+    values['Options'] = null;
+    values['Id'] = +id;
 
     // Collect only fields whose names start with 'idx_'
     const FilterOptionIds = Object.entries(values)
@@ -350,7 +264,7 @@ const ProductManagement = () => {
     // }
 
     // Step 4: Submit
-    addProduct.mutate(formData);
+    updateProduct.mutate({id:id,data:formData});
   };
 
   const handleCancel = () => {
@@ -370,6 +284,7 @@ const ProductManagement = () => {
         MetaDescription: duplicateOfRealProductsById.metaDescription,
         Keywords: duplicateOfRealProductsById.keywords,
         RegularPrice: duplicateOfRealProductsById.regularPrice,
+        costPrice: duplicateOfRealProductsById.costPrice,
         SalePrice: duplicateOfRealProductsById.salePrice,
         Discount: duplicateOfRealProductsById.discount,
         StockQuantity: duplicateOfRealProductsById.stockQuantity,
@@ -423,8 +338,8 @@ const ProductManagement = () => {
             type="primary"
             htmlType="submit"
             className="w-40!"
-            loading={addProduct.isPending}
-            disabled={addProduct.isPending}
+            loading={updateProduct.isPending}
+            disabled={updateProduct.isPending}
           >
             Save
           </Button>

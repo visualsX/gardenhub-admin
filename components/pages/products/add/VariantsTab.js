@@ -1,5 +1,5 @@
-import React from 'react';
-import { Form, Button, Collapse, message, Select } from 'antd';
+import React, { useState } from 'react';
+import { Form, Button, Collapse, message, Select, Dropdown, Menu, Modal, InputNumber } from 'antd';
 import { Box } from '@/components/wrappers/box';
 import { FormInput, FormInputNumber, FormSwitch } from '@/components/ui/inputs';
 import Trash from '@/public/shared/trash-red.svg';
@@ -9,6 +9,9 @@ import { generateCombinations, mergeVariants } from '@/lib/utils/productUtils';
 
 const VariantsTab = () => {
   const form = Form.useFormInstance();
+  const [bulkActionModalVisible, setBulkActionModalVisible] = useState(false);
+  const [bulkActionType, setBulkActionType] = useState(null);
+  const [bulkActionValue, setBulkActionValue] = useState(0);
 
   const handleGenerateVariants = () => {
     const values = form.getFieldsValue();
@@ -66,6 +69,174 @@ const VariantsTab = () => {
     message.success('Manual variant added at the top.');
   };
 
+  const handleBulkAction = (actionType) => {
+    const variants = form.getFieldValue('Variants') || [];
+    
+    if (variants.length === 0) {
+      message.warning('No variants to apply bulk action.');
+      return;
+    }
+
+    switch (actionType) {
+      case 'delete_all':
+        Modal.confirm({
+          title: 'Delete All Variations',
+          content: 'Are you sure you want to delete all variations? This action cannot be undone.',
+          okText: 'Delete',
+          okType: 'danger',
+          onOk: () => {
+            form.setFieldValue('Variants', []);
+            message.success('All variants deleted.');
+          },
+        });
+        break;
+
+      case 'toggle_stock':
+        const updatedVariants = variants.map(v => ({
+          ...v,
+          trackInventory: !v.trackInventory
+        }));
+        form.setFieldValue('Variants', updatedVariants);
+        message.success('Stock management toggled for all variants.');
+        break;
+
+      case 'set_price':
+      case 'set_sale_price':
+      case 'increase_price':
+      case 'decrease_price':
+      case 'increase_sale_price':
+      case 'decrease_sale_price':
+        setBulkActionType(actionType);
+        setBulkActionValue(0);
+        setBulkActionModalVisible(true);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const handleBulkActionSubmit = () => {
+    const variants = form.getFieldValue('Variants') || [];
+    let updatedVariants = [...variants];
+
+    switch (bulkActionType) {
+      case 'set_price':
+        updatedVariants = variants.map(v => ({ ...v, price: bulkActionValue }));
+        message.success(`Retail price set to ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'set_sale_price':
+        updatedVariants = variants.map(v => ({ ...v, salePrice: bulkActionValue }));
+        message.success(`Sale price set to ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'increase_price':
+        updatedVariants = variants.map(v => ({
+          ...v,
+          price: (v.price || 0) + bulkActionValue
+        }));
+        message.success(`Retail price increased by ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'decrease_price':
+        updatedVariants = variants.map(v => ({
+          ...v,
+          price: Math.max(0, (v.price || 0) - bulkActionValue)
+        }));
+        message.success(`Retail price decreased by ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'increase_sale_price':
+        updatedVariants = variants.map(v => ({
+          ...v,
+          salePrice: (v.salePrice || 0) + bulkActionValue
+        }));
+        message.success(`Sale price increased by ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'decrease_sale_price':
+        updatedVariants = variants.map(v => ({
+          ...v,
+          salePrice: Math.max(0, (v.salePrice || 0) - bulkActionValue)
+        }));
+        message.success(`Sale price decreased by ${bulkActionValue} for all variants.`);
+        break;
+
+      default:
+        break;
+    }
+
+    form.setFieldValue('Variants', updatedVariants);
+    setBulkActionModalVisible(false);
+    setBulkActionType(null);
+    setBulkActionValue(0);
+  };
+
+  const bulkActionsMenu = (
+    <Menu
+      onClick={({ key }) => handleBulkAction(key)}
+      items={[
+        {
+          key: 'bulk_actions_label',
+          label: 'Bulk actions',
+          disabled: true,
+          className: 'font-semibold'
+        },
+        {
+          key: 'delete_all',
+          label: 'Delete all variations',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          key: 'pricing_label',
+          label: 'Pricing',
+          disabled: true,
+          className: 'font-semibold text-gray-400'
+        },
+        {
+          key: 'set_price',
+          label: 'Set retail prices',
+        },
+        {
+          key: 'increase_price',
+          label: 'Increase retail prices (fixed amount)',
+        },
+        {
+          key: 'decrease_price',
+          label: 'Decrease retail prices (fixed amount)',
+        },
+        {
+          key: 'set_sale_price',
+          label: 'Set sale prices',
+        },
+        {
+          key: 'increase_sale_price',
+          label: 'Increase sale prices (fixed amount)',
+        },
+        {
+          key: 'decrease_sale_price',
+          label: 'Decrease sale prices (fixed amount)',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          key: 'inventory_label',
+          label: 'Inventory',
+          disabled: true,
+          className: 'font-semibold text-gray-400'
+        },
+        {
+          key: 'toggle_stock',
+          label: 'Toggle "Manage stock"',
+        },
+      ]}
+    />
+  );
+
   return (
     <div className="space-y-6">
       <Box header title={'All Variants'} description={'Basic details about the product'}>
@@ -76,6 +247,11 @@ const VariantsTab = () => {
           <Button type="default" onClick={handleAddManually}>
             Add Manually
           </Button>
+          <Dropdown overlay={bulkActionsMenu} trigger={['click']}>
+            <Button>
+              Bulk actions <DownIcon className="ml-1 inline-block" />
+            </Button>
+          </Dropdown>
         </div>
 
         <Form.List name="Variants">
@@ -253,6 +429,40 @@ const VariantsTab = () => {
           )}
         </Form.List>
       </Box>
+
+      <Modal
+        title={
+          bulkActionType === 'set_price' ? 'Set Retail Prices' :
+          bulkActionType === 'set_sale_price' ? 'Set Sale Prices' :
+          bulkActionType === 'increase_price' ? 'Increase Retail Prices' :
+          bulkActionType === 'decrease_price' ? 'Decrease Retail Prices' :
+          bulkActionType === 'increase_sale_price' ? 'Increase Sale Prices' :
+          bulkActionType === 'decrease_sale_price' ? 'Decrease Sale Prices' :
+          'Bulk Action'
+        }
+        open={bulkActionModalVisible}
+        onOk={handleBulkActionSubmit}
+        onCancel={() => {
+          setBulkActionModalVisible(false);
+          setBulkActionType(null);
+          setBulkActionValue(0);
+        }}
+        okText="Apply"
+      >
+        <div className="py-4">
+          <label className="mb-2 block font-medium">
+            {bulkActionType?.includes('set') ? 'Price Value:' : 'Amount to adjust:'}
+          </label>
+          <InputNumber
+            value={bulkActionValue}
+            onChange={(value) => setBulkActionValue(value || 0)}
+            min={0}
+            style={{ width: '100%' }}
+            placeholder="Enter amount"
+            prefix="$"
+          />
+        </div>
+      </Modal>
     </div>
   );
 };
