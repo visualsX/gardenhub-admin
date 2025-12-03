@@ -78,110 +78,128 @@ const ProductTabs = ({
         title={'Product Variants'}
         description={'Manage product variations like size and color'}
       >
-        <Form.List name="Options">
-          {(fields, { add, remove }) => (
-            <div className="space-y-4">
-              {fields.map(({ key, name, ...restField }) => (
-                <Box classRest="relative" header title={`Varient ${key + 1}`} key={key}>
-                  <Trash onClick={() => remove(name)} className="absolute top-2 right-2" />
-                  <div className="mb-4 grid grid-cols-[1fr_2fr] gap-4">
-                    <FormInput
-                      {...restField}
-                      name={[name, 'name']}
-                      label="Variant Name"
-                      placeholder="e.g. Size, Color"
-                      rules={[{ required: true, message: 'Missing variant name' }]}
-                      className="mb-0"
-                    />
-                    <FormSelect
-                      {...restField}
-                      name={[name, 'type']}
-                      label="Type"
-                      rules={[{ required: true, message: 'Missing type' }]}
-                      className="mb-0"
-                      options={[
-                        { value: 'Text', label: 'Text' },
-                        { value: 'Color', label: 'Color' },
-                      ]}
-                    />
-                  </div>
+        <FormSwitch
+          name="HasVariants"
+          label="Has Variants"
+          className="mb-4"
+        />
 
-                  <Form.Item
-                    noStyle
-                    shouldUpdate={(prevValues, currentValues) =>
-                      prevValues.Options?.[name]?.type !== currentValues.Options?.[name]?.type
-                    }
-                  >
-                    {({ getFieldValue }) => {
-                      const type = getFieldValue(['Options', name, 'type']);
-                      return type === 'Color' ? (
-                        <Form.List className="mb-0" name={[name, 'colors']}>
-                          {(subFields, { add: addSub, remove: removeSub }) => (
-                            <div className="space-y-2">
-                              {subFields.map(({ key: subKey, name: subName, ...subRest }) => (
-                                <div className="flex w-full items-baseline gap-x-4">
-                                  <div key={subKey} className="flex w-full items-center gap-x-4">
-                                    <FormInput
-                                      {...subRest}
-                                      name={[subName, 'name']}
-                                      placeholder="Color Name"
-                                      className="mb-0 flex-1"
-                                      rules={[{ required: true, message: 'Missing color name' }]}
-                                    />
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.HasVariants !== currentValues.HasVariants
+          }
+        >
+          {({ getFieldValue }) => {
+            const hasVariants = getFieldValue('HasVariants');
+            return hasVariants ? (
+              <Form.List name="Options">
+                {(fields, { add, remove }) => (
+                  <div className="space-y-4">
+                    {fields.map(({ key, name, ...restField }) => (
+                      <Box classRest="relative" header title={`Varient ${key + 1}`} key={key}>
+                        <Trash onClick={() => remove(name)} className="absolute top-2 right-2" />
+                        <div className="mb-4 grid grid-cols-[1fr_2fr] gap-4">
+                          <FormInput
+                            {...restField}
+                            name={[name, 'name']}
+                            label="Variant Name"
+                            placeholder="e.g. Size, Color"
+                            rules={[{ required: true, message: 'Missing variant name' }]}
+                            className="mb-0"
+                          />
+                          <FormSelect
+                            {...restField}
+                            name={[name, 'type']}
+                            label="Type"
+                            rules={[{ required: true, message: 'Missing type' }]}
+                            className="mb-0"
+                            options={[
+                              { value: 'Text', label: 'Text' },
+                              { value: 'Color', label: 'Color' },
+                            ]}
+                          />
+                        </div>
 
-                                    <Form.Item
-                                      {...subRest}
-                                      name={[subName, 'hex']}
-                                      rules={[{ required: true, message: 'Missing hex code' }]}
-                                      className="mb-0 flex-1"
-                                      getValueFromEvent={(color) => {
-                                        return typeof color === 'string'
-                                          ? color
-                                          : color.toHexString();
-                                      }}
-                                    >
-                                      <ColorPicker
-                                        size="large"
-                                        className="[38px]! w-full"
-                                        showText
-                                        format="hex"
-                                      />
-                                    </Form.Item>
+                        <Form.Item
+                          noStyle
+                          shouldUpdate={(prevValues, currentValues) =>
+                            prevValues.Options?.[name]?.type !== currentValues.Options?.[name]?.type
+                          }
+                        >
+                          {({ getFieldValue }) => {
+                            const type = getFieldValue(['Options', name, 'type']);
+                            return type === 'Color' ? (
+                              <Form.List className="mb-0" name={[name, 'colors']}>
+                                {(subFields, { add: addSub, remove: removeSub }) => (
+                                  <div className="space-y-2">
+                                    {subFields.map(({ key: subKey, name: subName, ...subRest }) => (
+                                      <div className="flex w-full items-baseline gap-x-4">
+                                        <div key={subKey} className="flex w-full items-center gap-x-4">
+                                          <FormInput
+                                            {...subRest}
+                                            name={[subName, 'name']}
+                                            placeholder="Color Name"
+                                            className="mb-0 flex-1"
+                                            rules={[{ required: true, message: 'Missing color name' }]}
+                                          />
+
+                                          <Form.Item
+                                            {...subRest}
+                                            name={[subName, 'hex']}
+                                            rules={[{ required: true, message: 'Missing hex code' }]}
+                                            className="mb-0 flex-1"
+                                            getValueFromEvent={(color) => {
+                                              return typeof color === 'string'
+                                                ? color
+                                                : color.toHexString();
+                                            }}
+                                          >
+                                            <ColorPicker
+                                              size="large"
+                                              className="[38px]! w-full"
+                                              showText
+                                              format="hex"
+                                            />
+                                          </Form.Item>
+                                        </div>
+                                        <Cross onClick={() => removeSub(subName)} />
+                                      </div>
+                                    ))}
+                                    <Button type="default" onClick={() => addSub()} icon={<PlusGray />}>
+                                      Add Value
+                                    </Button>
                                   </div>
-                                  <Cross onClick={() => removeSub(subName)} />
-                                </div>
-                              ))}
-                              <Button type="default" onClick={() => addSub()} icon={<PlusGray />}>
-                                Add Value
-                              </Button>
-                            </div>
-                          )}
-                        </Form.List>
-                      ) : type === 'Text' ? (
-                        <FormInput
-                          {...restField}
-                          name={[name, 'values']}
-                          label="Values"
-                          placeholder="e.g. S, M, L, XL"
-                          rules={[{ required: true, message: 'Missing values' }]}
-                          className="mb-0"
-                        />
-                      ) : null;
-                    }}
-                  </Form.Item>
-                </Box>
-              ))}
+                                )}
+                              </Form.List>
+                            ) : type === 'Text' ? (
+                              <FormInput
+                                {...restField}
+                                name={[name, 'values']}
+                                label="Values"
+                                placeholder="e.g. S, M, L, XL"
+                                rules={[{ required: true, message: 'Missing values' }]}
+                                className="mb-0"
+                              />
+                            ) : null;
+                          }}
+                        </Form.Item>
+                      </Box>
+                    ))}
 
-              <Button
-                onClick={() => add()}
-                className="text-primary! bg-primary/10! border-primary/10! border"
-                icon={<PlusGreen />}
-              >
-                Add Another Varient
-              </Button>
-            </div>
-          )}
-        </Form.List>
+                    <Button
+                      onClick={() => add()}
+                      className="text-primary! bg-primary/10! border-primary/10! border"
+                      icon={<PlusGreen />}
+                    >
+                      Add Another Varient
+                    </Button>
+                  </div>
+                )}
+              </Form.List>
+            ) : null;
+          }}
+        </Form.Item>
       </Box>
 
       <Box header title={'Attributes & Tags'}>

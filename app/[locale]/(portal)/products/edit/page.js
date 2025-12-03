@@ -318,6 +318,7 @@ const ProductManagement = () => {
         LowStockThreshold: realProductId.lowStockThreshold,
         IsFeatured: realProductId.isFeatured,
         IsActive: realProductId.isActive,
+        HasVariants: realProductId.hasVariants,
         IsFragile: realProductId.isFragile,
         IsShippingRequired: realProductId.isShippingRequired,
         CostPrice: realProductId.costPrice,
