@@ -106,6 +106,8 @@ const VariantsTab = () => {
       case 'decrease_price':
       case 'increase_sale_price':
       case 'decrease_sale_price':
+      case 'set_stock_quantity':
+      case 'set_low_stock_threshold':
         setBulkActionType(actionType);
         setBulkActionValue(0);
         setBulkActionModalVisible(true);
@@ -161,6 +163,24 @@ const VariantsTab = () => {
           salePrice: Math.max(0, (v.salePrice || 0) - bulkActionValue)
         }));
         message.success(`Sale price decreased by ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'set_stock_quantity':
+        updatedVariants = variants.map(v => ({ 
+          ...v, 
+          stockQuantity: bulkActionValue,
+          trackInventory: true // Enable stock management when setting stock
+        }));
+        message.success(`Stock quantity set to ${bulkActionValue} for all variants.`);
+        break;
+
+      case 'set_low_stock_threshold':
+        updatedVariants = variants.map(v => ({ 
+          ...v, 
+          lowStockThreshold: bulkActionValue,
+          trackInventory: true // Enable stock management when setting threshold
+        }));
+        message.success(`Low stock threshold set to ${bulkActionValue} for all variants.`);
         break;
 
       default:
@@ -232,6 +252,14 @@ const VariantsTab = () => {
         {
           key: 'toggle_stock',
           label: 'Toggle "Manage stock"',
+        },
+        {
+          key: 'set_stock_quantity',
+          label: 'Set stock quantity',
+        },
+        {
+          key: 'set_low_stock_threshold',
+          label: 'Set low stock threshold',
         },
       ]}
     />
@@ -365,6 +393,7 @@ const VariantsTab = () => {
                             name={[name, 'sku']}
                             label="SKU"
                             placeholder="Add values"
+                            rules={[]}
                           />
                         </div>
 
@@ -374,18 +403,21 @@ const VariantsTab = () => {
                             name={[name, 'price']}
                             label="Retail Price"
                             placeholder="Add Regular Price"
+                            rules={[]}
                           />
                           <FormInputNumber
                             {...restField}
                             name={[name, 'salePrice']}
                             label="Sale Price"
                             placeholder="Add Sale Price"
+                            rules={[]}
                           />
                           <FormInputNumber
                             {...restField}
                             name={[name, 'discount']}
                             label="Discount"
                             placeholder="Add Discount"
+                            rules={[]}
                           />
                         </div>
 
@@ -409,12 +441,14 @@ const VariantsTab = () => {
                                   name={[name, 'stockQuantity']}
                                   label="Stock Quantity"
                                   placeholder="Add Stock Quantity"
+                                  rules={[]}
                                 />
                                 <FormInputNumber
                                   {...restField}
                                   name={[name, 'lowStockThreshold']}
                                   label="Low Stock Threshold"
                                   placeholder="Add Value"
+                                  rules={[]}
                                 />
                               </div>
                             ) : null;
@@ -438,6 +472,8 @@ const VariantsTab = () => {
           bulkActionType === 'decrease_price' ? 'Decrease Retail Prices' :
           bulkActionType === 'increase_sale_price' ? 'Increase Sale Prices' :
           bulkActionType === 'decrease_sale_price' ? 'Decrease Sale Prices' :
+          bulkActionType === 'set_stock_quantity' ? 'Set Stock Quantity' :
+          bulkActionType === 'set_low_stock_threshold' ? 'Set Low Stock Threshold' :
           'Bulk Action'
         }
         open={bulkActionModalVisible}
@@ -451,7 +487,10 @@ const VariantsTab = () => {
       >
         <div className="py-4">
           <label className="mb-2 block font-medium">
-            {bulkActionType?.includes('set') ? 'Price Value:' : 'Amount to adjust:'}
+            {bulkActionType === 'set_stock_quantity' ? 'Stock Quantity:' :
+             bulkActionType === 'set_low_stock_threshold' ? 'Low Stock Threshold:' :
+             bulkActionType?.includes('set') ? 'Price Value:' : 
+             'Amount to adjust:'}
           </label>
           <InputNumber
             value={bulkActionValue}
@@ -459,7 +498,7 @@ const VariantsTab = () => {
             min={0}
             style={{ width: '100%' }}
             placeholder="Enter amount"
-            prefix="$"
+            prefix={bulkActionType?.includes('stock') ? null : '$'}
           />
         </div>
       </Modal>
