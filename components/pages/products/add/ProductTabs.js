@@ -314,20 +314,60 @@ const ProductTabs = ({
   const inventoryTab = (
     <div className="space-y-6">
       <Box header title={'Stock Management'} description={'Manage inventory levels and alerts'}>
-        <div className="grid grid-cols-2 gap-4">
-          <FormInputNumber
-            name="StockQuantity"
-            label="Current Stock"
-            placeholder="0"
-            className="mb-0"
-          />
-          <FormInputNumber
-            name="LowStockThreshold"
-            label="Low Stock Threshold"
-            placeholder="0"
-            className="mb-0"
-          />
-        </div>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prev, curr) => prev.HasVariants !== curr.HasVariants}
+        >
+          {({ getFieldValue }) => {
+            const hasVariants = getFieldValue('HasVariants');
+            
+            if (hasVariants) {
+              return (
+                <div className="text-gray-500 italic">
+                  Stock management is handled at the variant level.
+                </div>
+              );
+            }
+
+            return (
+              <>
+                <FormSwitch 
+                  name="TrackInventory" 
+                  label="Track Inventory" 
+                  className="mb-4" 
+                />
+                
+                <Form.Item
+                  noStyle
+                  shouldUpdate={(prev, curr) => prev.TrackInventory !== curr.TrackInventory}
+                >
+                  {({ getFieldValue }) => {
+                    const trackInventory = getFieldValue('TrackInventory');
+                    
+                    if (!trackInventory) return null;
+
+                    return (
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormInputNumber
+                          name="StockQuantity"
+                          label="Current Stock"
+                          placeholder="0"
+                          className="mb-0"
+                        />
+                        <FormInputNumber
+                          name="LowStockThreshold"
+                          label="Low Stock Threshold"
+                          placeholder="0"
+                          className="mb-0"
+                        />
+                      </div>
+                    );
+                  }}
+                </Form.Item>
+              </>
+            );
+          }}
+        </Form.Item>
       </Box>
 
       <Box header title={'Shipping Information'}>

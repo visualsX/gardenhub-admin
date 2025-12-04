@@ -6,203 +6,18 @@ import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useCreateProduct, useProductEdit, useUpdateProduct } from '@/hooks/useProduct';
-import { useAttributes } from '@/hooks/useAttribute';
+import { useProductEdit, useUpdateProduct } from '@/hooks/useProduct';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { useSearchParams } from 'next/navigation';
 import {
-  transformVariantData,
   transformVariantDataForUpdate,
   mapOptionsToForm,
   mapVariantsToForm,
 } from '@/lib/utils/productUtils';
 
 const { Title, Text } = Typography;
-
-// const realProductId = {
-//       "costPrice": 12,
-//       "detailedDescription": "Product Information\r\nProduct Information\r\n",
-//       "discount": 12,
-//       "height": 12,
-//       "id": 107,
-//       "isActive": false,
-//       "isFeatured": false,
-//       "isFragile": true,
-//       "isShippingRequired": true,
-//       "keywords": "Product Information",
-//       "length": 12,
-//       "lowStockThreshold": 12,
-//       "metaDescription": "Product Information\r\n",
-//       "metaTitle": "Wait Abdullah!",
-//       "name": "Simple",
-//       "regularPrice": 1112,
-//       "salePrice": 120,
-//       "shortDescription": "Product Information\r\nProduct Information\r\n",
-//       "sku": "903",
-//       "slug": "simple",
-//       "stockQuantity": 0,
-//       "stockStatus": "Unknown",
-//       "weight": 12,
-//       "width": 12,
-//       "images": [],
-//       "categoriesWithPathsForEdit": [
-//         {
-//           "currentCategory": {
-//             "id": 59
-//           },
-//           "ancestors": [
-//             {
-//               "id": 46
-//             }
-//           ]
-//         }
-//       ],
-//       "allFilterAttributesWithSelection": [
-//         {
-//           "id": 1,
-//           "isMultiSelect": false,
-//           "name": "Benefits",
-//           "options": [
-//             {
-//               "value": "Roots Nourishment",
-//               "id": 2,
-//               "isSelected": false
-//             },
-//             {
-//               "value": "String Roots",
-//               "id": 1,
-//               "isSelected": true
-//             }
-//           ]
-//         },
-//         {
-//           "id": 3,
-//           "isMultiSelect": true,
-//           "name": "New Benefit",
-//           "options": [
-//             {
-//               "value": "New Tag",
-//               "id": 9,
-//               "isSelected": false
-//             }
-//           ]
-//         },
-//         {
-//           "id": 2,
-//           "isMultiSelect": true,
-//           "name": "Type of Plant",
-//           "options": [
-//             {
-//               "value": "Dry",
-//               "id": 4,
-//               "isSelected": false
-//             },
-//             {
-//               "value": "Gravity",
-//               "id": 8,
-//               "isSelected": false
-//             },
-//             {
-//               "value": "Muddy",
-//               "id": 6,
-//               "isSelected": false
-//             },
-//             {
-//               "value": "Sandish",
-//               "id": 3,
-//               "isSelected": true
-//             },
-//             {
-//               "value": "Smoky",
-//               "id": 7,
-//               "isSelected": false
-//             },
-//             {
-//               "value": "Wet",
-//               "id": 5,
-//               "isSelected": false
-//             }
-//           ]
-//         }
-//       ],
-//       "options": [
-//         {
-//           "id": 43,
-//           "name": "Size",
-//           "type": "Text",
-//           "values": [
-//             {
-//               "id": 88,
-//               "value": "S",
-//               "colorHex": null
-//             },
-//             {
-//               "id": 89,
-//               "value": "M",
-//               "colorHex": null
-//             }
-//           ]
-//         },
-//         {
-//           "id": 44,
-//           "name": "Color",
-//           "type": "Color",
-//           "values": [
-//             {
-//               "id": 90,
-//               "value": "Red",
-//               "colorHex": "#de1313"
-//             }
-//           ]
-//         }
-//       ],
-//       "trackInventory": true,
-//       "variants": [
-//         {
-//           "id": 117,
-//           "price": 500,
-//           "salePrice": 99,
-//           "sku": "903-S-RED",
-//           "stockQuantity": 0,
-//           "trackInventory": false,
-//           "optionValues": [
-//             {
-//               "id": 88,
-//               "value": "S",
-//               "name": "Size"
-//             },
-//             {
-//               "id": 90,
-//               "value": "Red",
-//               "name": "Color"
-//             }
-//           ]
-//         },
-//         {
-//           "id": 118,
-//           "price": 500,
-//           "salePrice": 99,
-//           "sku": "903-M-RED",
-//           "stockQuantity": 0,
-//           "trackInventory": false,
-//           "optionValues": [
-//             {
-//               "id": 89,
-//               "value": "M",
-//               "name": "Size"
-//             },
-//             {
-//               "id": 90,
-//               "value": "Red",
-//               "name": "Color"
-//             }
-//           ]
-//         }
-//       ]
-//     }
-  
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
@@ -309,7 +124,6 @@ const ProductManagement = () => {
         SalePrice: realProductId.salePrice,
         Discount: realProductId.discount,
         StockQuantity: realProductId.stockQuantity,
-        // stockStatus: realProductId.stockStatus,
         Weight: realProductId.weight,
         Width: realProductId.width,
         Height: realProductId.height,
@@ -318,6 +132,7 @@ const ProductManagement = () => {
         IsFeatured: realProductId.isFeatured,
         IsActive: realProductId.isActive,
         HasVariants: realProductId.hasVariants,
+        TrackInventory: realProductId.trackInventory,
         IsFragile: realProductId.isFragile,
         IsShippingRequired: realProductId.isShippingRequired,
         CostPrice: realProductId.costPrice,
