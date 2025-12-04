@@ -151,11 +151,11 @@ export const useUpdateProduct = () => {
       });
       return response.data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate products list query (for index page)
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
       // Invalidate product detail query (used by useProductEdit on edit page)
-      queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: productKeys.detail(+variables.id) });
       message.success('Product updated successfully!');
       router.push('/products');
     },
