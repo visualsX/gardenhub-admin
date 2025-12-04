@@ -148,6 +148,8 @@ const InventoryDetail = ({ params }) => {
 
 export default InventoryDetail;
 
+import SegmentedTabs from '@/components/ui/segmented-tabs';
+
 function InventoryTabs({ product, transactions, loadMoreRef, isFetchingNextPage, loading }) {
   const [activeTab, setActiveTab] = useState('info');
   const tabs = [
@@ -157,22 +159,11 @@ function InventoryTabs({ product, transactions, loadMoreRef, isFetchingNextPage,
 
   return (
     <div>
-      <div className="mb-4 flex rounded-full bg-gray-100 p-1">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-full px-6 py-2 text-sm font-semibold transition ${
-              activeTab === tab.key
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+      />
       {activeTab === 'info' ? (
         <ProductInfo product={product} loading={loading} />
       ) : (
