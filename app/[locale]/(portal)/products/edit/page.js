@@ -6,7 +6,7 @@ import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useProductEdit, useUpdateProduct } from '@/hooks/useProduct';
+import { useProductEdit, useUpdateProduct } from '@/hooks/products/useProduct';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';

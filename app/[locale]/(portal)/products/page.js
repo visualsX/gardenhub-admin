@@ -1,25 +1,36 @@
 'use client';
 
-import { Input, Select } from 'antd';
-import Search from '@/public/shared/search.svg';
 import Plus from '@/public/shared/plus-white.svg';
 import StatsCard from '@/components/shared/stats-card';
 import DataTable from '@/components/shared/data-table';
 import Link from 'next/link';
-import { useDeleteProduct, useProducts } from '@/hooks/useProduct';
+import { useDeleteProduct, useProducts } from '@/hooks/products/useProduct';
 import { ProductCols } from '@/lib/columns/product-cols';
 import DeleteModal from '@/components/shared/delete-modal';
 import useUiStates from '@/store/useUiStates';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { DEFAULT_CURSOR_PAGE_SIZE, PAGINATION_KEYS } from '@/lib/const/pagination';
-const { Option } = Select;
+import { useProductFilters } from '@/hooks/products/useProductFilters';
+import { buildProductWhereClause } from '@/lib/filters/productFilters';
+import ProductFilters from '@/components/pages/products/ProductFilters';
 
 const ProductManagement = () => {
   const { isDeleteModalOpen } = useUiStates();
   const router = useRouter();
+
+  // Filter management
+  const filters = useProductFilters();
+  const where = buildProductWhereClause({
+    searchTerm: filters.searchTerm,
+    category: filters.selectedCategory,
+    stockStatus: filters.selectedStockStatus,
+  });
+
+  // Data fetching
   const { data, isLoading, isFetching, pageState } = useProducts({
     paginationKey: PAGINATION_KEYS.PRODUCTS,
     pageSize: DEFAULT_CURSOR_PAGE_SIZE,
+    where,
   });
 
   const deleteProduct = useDeleteProduct();
@@ -53,29 +64,19 @@ const ProductManagement = () => {
 
         {/* Table Card */}
         <div className="rounded-lg border border-gray-200 bg-white">
-          {/* Search and Filters */}
-          <div className="flex flex-col gap-4 p-6 md:flex-row">
-            <div className="flex-1">
-              <Input
-                placeholder="Search Products"
-                prefix={<Search size={18} className="text-gray-400" />}
-                className="h-10"
-                style={{ borderRadius: '8px' }}
-              />
-            </div>
-            <Select defaultValue="all" className="w-full md:w-48" style={{ height: '40px' }}>
-              <Option value="all">All Categories</Option>
-              <Option value="care">Care Essentials</Option>
-              <Option value="tools">Tools</Option>
-              <Option value="seeds">Seeds</Option>
-            </Select>
-            <Select defaultValue="all" className="w-full md:w-48" style={{ height: '40px' }}>
-              <Option value="all">All stock status</Option>
-              <Option value="in">In Stock</Option>
-              <Option value="low">Low Stock</Option>
-              <Option value="out">Out of Stock</Option>
-            </Select>
-          </div>
+          {/* Filters */}
+          <ProductFilters
+            searchTerm={filters.searchTerm}
+            filters={{
+              selectedCategory: filters.selectedCategory,
+              selectedStockStatus: filters.selectedStockStatus,
+            }}
+            onFilterChange={{
+              setSearch: filters.setSearch,
+              setCategory: filters.setCategory,
+              setStockStatus: filters.setStockStatus,
+            }}
+          />
 
           {/* Table */}
           <DataTable
@@ -84,8 +85,8 @@ const ProductManagement = () => {
             columns={ProductCols()}
             data={data?.nodes}
             onRow={(record) => ({
-              onClick: () => router.push(`/products/${record.id}`), // ✅ navigate on row click
-              style: { cursor: 'pointer' }, // optional: show pointer cursor
+              onClick: () => router.push(`/products/${record.id}`),
+              style: { cursor: 'pointer' },
             })}
             pagination={false}
             cursorPaginationProps={{

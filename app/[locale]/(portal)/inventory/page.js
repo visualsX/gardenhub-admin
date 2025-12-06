@@ -90,14 +90,14 @@ const StatusBadge = ({ stock, trackInventory }) => {
   );
 };
 
-const VariantRow = ({ variant, isLast }) => {
+const VariantRow = ({ productId, variant, isLast }) => {
   const router = useRouter();
   const totalValue = (variant.price || 0) * (variant.currentStock || 0);
 
   return (
-    <tr 
+    <tr
       className={`cursor-pointer hover:bg-gray-50 ${!isLast ? 'border-b border-gray-100' : ''}`}
-      onClick={() => router.push(`/inventory/${variant.id}`)}
+      onClick={() => router.push(`/inventory/${productId}?variantId=${variant.id}`)}
     >
       <td className="px-4 py-4 text-sm text-gray-900">{variant.name}</td>
       <td className="px-4 py-4 text-sm text-gray-600">{variant.sku}</td>
@@ -108,7 +108,9 @@ const VariantRow = ({ variant, isLast }) => {
       <td className="px-4 py-4">
         <StatusBadge stock={variant.currentStock} trackInventory={variant.trackInventory} />
       </td>
-      <td className="px-4 py-4 text-sm font-medium text-gray-900">${variant.price?.toFixed(2) || '0.00'}</td>
+      <td className="px-4 py-4 text-sm font-medium text-gray-900">
+        ${variant.price?.toFixed(2) || '0.00'}
+      </td>
       <td className="px-4 py-4 text-sm font-semibold text-gray-900">${totalValue.toFixed(2)}</td>
       <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
         <Dropdown
@@ -153,24 +155,35 @@ const ProductRow = ({ product, isExpanded, onToggle }) => {
         onClick={handleClick}
       >
         {hasVariants && (
-          <button 
-            className="text-gray-400 transition-transform duration-200 flex-shrink-0" 
+          <button
+            className="flex-shrink-0 text-gray-400 transition-transform duration-200"
             style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         )}
         {!hasVariants && <div className="w-5" />}
         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-green-50">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="2"
+          >
             <path d="M20 7h-9M14 17H5M17 12H3" />
           </svg>
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="font-medium text-gray-900">{product.name}</h3>
-          <p className="text-sm text-gray-500 truncate">Large indoor plant with vibrant leaves</p>
+          <p className="truncate text-sm text-gray-500">Large indoor plant with vibrant leaves</p>
         </div>
       </div>
 
@@ -180,19 +193,40 @@ const ProductRow = ({ product, isExpanded, onToggle }) => {
             <table className="w-full">
               <thead className="border-y border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variant Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Variant Name
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    SKU
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Stock
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Unit Price
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Total Value
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white">
                 {product.variants.map((variant, index) => (
-                  <VariantRow key={variant.id} variant={variant} isLast={index === product.variants.length - 1} />
+                  <VariantRow
+                    productId={product.id}
+                    key={variant.id}
+                    variant={variant}
+                    isLast={index === product.variants.length - 1}
+                  />
                 ))}
               </tbody>
             </table>
@@ -209,9 +243,8 @@ const InventoryPage = () => {
   const [expandedProducts, setExpandedProducts] = useState(new Set());
 
   // Define where clause based on active tab
-  const where = activeTab === 'variants' 
-    ? { hasVariants: { eq: true } }
-    : { hasVariants: { eq: false } };
+  const where =
+    activeTab === 'variants' ? { hasVariants: { eq: true } } : { hasVariants: { eq: false } };
 
   const { data, isLoading, isFetching, pageState } = useInventory({
     paginationKey: `${PAGINATION_KEYS.INVENTORY}_${activeTab}`,

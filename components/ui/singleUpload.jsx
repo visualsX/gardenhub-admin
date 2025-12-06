@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, Form, message } from 'antd';
 import DeleteIcon from '@/public/shared/trash.svg';
-import { useDeleteProductImage, useUpdateProductImage } from '@/hooks/useProduct';
+import { useDeleteProductImage, useUpdateProductImage } from '@/hooks/products/useProduct';
 
 const SingleImageUploader = ({
   name = 'images',

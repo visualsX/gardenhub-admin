@@ -17,7 +17,7 @@ import {
   useInventoryTransactions,
   useAdjustInventory,
 } from '@/hooks/useInventory';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import LabelAndValue from '@/components/ui/label-value';
 import GoBack from '@/components/ui/go-back';
 import SelectInventoryAdjustments from '@/components/ui/select-dropdowns/SelectInventoryAdjustments';
@@ -26,6 +26,9 @@ import { FormInput, FormInputNumber, FormTextArea } from '@/components/ui/inputs
 const InventoryDetail = ({ params }) => {
   // const productId = Number(params.id);
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const variantId = searchParams.get('variantId') || '';
+
   const { data: product, isLoading: productLoading } = useInventoryItem(+id);
   const {
     data: transactionData,
@@ -33,7 +36,12 @@ const InventoryDetail = ({ params }) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading: transactionsLoading,
-  } = useInventoryTransactions({ productId: +id, pageSize: 10, order: [{ createdAt: 'DESC' }] });
+  } = useInventoryTransactions({
+    productId: +id,
+    varientId: +variantId,
+    pageSize: 10,
+    order: [{ createdAt: 'DESC' }],
+  });
   const loadMoreRef = useRef(null);
 
   useEffect(() => {
@@ -159,11 +167,7 @@ function InventoryTabs({ product, transactions, loadMoreRef, isFetchingNextPage,
 
   return (
     <div>
-      <SegmentedTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onChange={setActiveTab}
-      />
+      <SegmentedTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
       {activeTab === 'info' ? (
         <ProductInfo product={product} loading={loading} />
       ) : (
@@ -248,6 +252,9 @@ function StockProgress({ stock = 0, min = 10, max = 100, loading }) {
 function AdjustmentForm({ stock }) {
   const { id } = useParams();
   const [form] = Form.useForm();
+  const searchParams = useSearchParams();
+  const variantId = searchParams.get('variantId') || '';
+
   const adjustInventory = useAdjustInventory();
   const adjustmentType = Form.useWatch('adjustmentType', form);
 
@@ -267,7 +274,14 @@ function AdjustmentForm({ stock }) {
 
   function onFinishHandle(values) {
     const payload = {
-      products: [{ productId: +id }],
+      products: [
+        {
+          productId: +id,
+          productVariantId: +variantId,
+          adjustmentQuantity: isManual ? 0 : Number(values.adjustmentQuantity ?? 0),
+          newStockValue: isManual ? Number(values.newStockValue ?? null) : null,
+        },
+      ],
       adjustmentType: values.adjustmentType,
       adjustmentQuantity: isManual ? 0 : Number(values.adjustmentQuantity ?? 0),
       newStockValue: isManual ? Number(values.newStockValue ?? null) : null,

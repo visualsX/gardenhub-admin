@@ -14,7 +14,7 @@ import LabelAndValue from '@/components/ui/label-value';
 import Badge from '@/components/ui/badge';
 import { Box } from '@/components/wrappers/box';
 import { useParams } from 'next/navigation';
-import { useProduct } from '@/hooks/useProduct';
+import { useProduct } from '@/hooks/products/useProduct';
 import ImageGallery from '@/components/shared/image-gallery';
 import Link from 'next/link';
 

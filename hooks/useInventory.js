@@ -95,13 +95,19 @@ export const useInventoryStats = () => {
   });
 };
 
-export const useInventoryTransactions = ({ productId, pageSize = 10, order = null } = {}) => {
+export const useInventoryTransactions = ({
+  productId,
+  varientId,
+  pageSize = 10,
+  order = null,
+} = {}) => {
   return useInfiniteQuery({
     queryKey: inventoryKeys.transactions(productId),
     enabled: !!productId,
     queryFn: async ({ pageParam = null }) => {
       const variables = {
         productId,
+        varientId,
         first: pageSize,
         after: pageParam,
         order,
@@ -132,6 +138,7 @@ export const useAdjustInventory = () => {
     onSuccess: (_, variables) => {
       const productId = variables?.products[0].productId;
       console.log('variables', productId);
+      message.success('Inventory updated successfully');
       queryClient.invalidateQueries({ queryKey: inventoryKeys.stats() });
       queryClient.invalidateQueries({ queryKey: inventoryKeys.lists() });
       if (productId) {
