@@ -34,8 +34,8 @@ const SingleImageUploader = ({
     }
   }, [editPage, existingImage]);
 
-  const deleteImage = useDeleteProductImage();
-  const updateImage = useUpdateProductImage();
+  // const deleteImage = useDeleteProductImage();
+  // const updateImage = useUpdateProductImage();
 
   const handleChange = async ({ file, fileList: newFileList }) => {
     // If user uploads a new file
@@ -43,19 +43,18 @@ const SingleImageUploader = ({
 
     setFileList(file);
     if (file.status !== 'removed') {
-      const formData = new FormData();
-      formData.append('IsMain', String(true)); // booleans must be strings
-      formData.append('ImageFile', file); // file object goes directly
-
-      const payload = {
-        productId,
-        formData,
-      };
-      updateImage?.mutate(payload, {
-        onSuccess: () => {
-          return true; // allow removal
-        },
-      });
+      // const formData = new FormData();
+      // formData.append('IsMain', String(true)); // booleans must be strings
+      // formData.append('ImageFile', file); // file object goes directly
+      // const payload = {
+      //   productId,
+      //   formData,
+      // };
+      // updateImage?.mutate(payload, {
+      //   onSuccess: () => {
+      //     return true; // allow removal
+      //   },
+      // });
     }
 
     // setFileList(latestFile);
@@ -63,13 +62,13 @@ const SingleImageUploader = ({
 
   const handleRemove = async (file) => {
     if (editPage && existingImage) {
-      const ids = { productId, imageId: existingImage?.id };
-      deleteImage.mutate(ids, {
-        onSuccess: () => {
-          setFileList([]);
-          return true; // allow removal
-        },
-      });
+      // const ids = { productId, imageId: existingImage?.id };
+      // deleteImage.mutate(ids, {
+      //   onSuccess: () => {
+      //     setFileList([]);
+      //     return true; // allow removal
+      //   },
+      // });
     }
   };
 
