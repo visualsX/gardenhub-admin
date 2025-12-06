@@ -50,12 +50,15 @@ body {
 .ant-menu-light.ant-menu-inline .ant-menu-item {
   padding-left: 8px !important;
 }
+
 .ant-menu-light .ant-menu-submenu-selected > .ant-menu-submenu-title {
   padding-left: 8px !important;
 }
+
 .ant-menu-light.ant-menu-inline .ant-menu-sub.ant-menu-inline {
   padding-left: 28px !important;
 }
+
 .ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
   padding-left: 8px !important;
 }
