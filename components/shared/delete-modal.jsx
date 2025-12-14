@@ -6,6 +6,7 @@ export default function DeleteModal({
   onConfirm = () =>
     console.error('Default Function: Pass onConfirm prop in <DeleteModal/> for delete mutation! '),
   loading = false,
+  entityName = 'product',
 }) {
   const { isDeleteModalOpen, closeDeleteModal } = useUiStates();
 
@@ -25,7 +26,7 @@ export default function DeleteModal({
       <div className="text-content-color font-cairo flex flex-col gap-y-6 font-semibold">
         <div className="text-pinkish grid place-items-start gap-y-1">
           <DeleteWarnIcon />
-          <span className="text-lg font-semibold">Delete product from DB?</span>
+          <span className="text-lg font-semibold">Delete {entityName} from DB?</span>
           <span className="text-sm font-normal">This action cannot be undone!</span>
         </div>
         <div className="grid gap-y-4">
