@@ -10,7 +10,7 @@ export default function StatsCard({ title, value, variant = 'default', className
   };
 
   return (
-    <div className={`rounded-lg border border-gray-200 bg-white p-5 ${className}`}>
+    <div className={`border-with-radius p-5 ${className}`}>
       <div className="mb-2 text-sm text-gray-600">{title}</div>
       <div className={`text-3xl font-bold ${valueColors[variant]}`}>{value}</div>
     </div>

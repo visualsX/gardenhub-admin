@@ -38,7 +38,7 @@ const ProductManagement = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="">
+      <div className="space-y-6">
         {/* Header */}
         <div className="mb-6 flex items-start justify-between">
           <div>
@@ -55,57 +55,53 @@ const ProductManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <StatsCard title="Total Products" value="23,999" />
           <StatsCard title="In Stock" value="142" />
           <StatsCard title="Out of Stock" value="05" variant="danger" />
           <StatsCard title="Low Stock" value="23" variant="warning" />
         </div>
 
+        <ProductFilters
+          searchTerm={filters.searchTerm}
+          filters={{
+            selectedCategory: filters.selectedCategory,
+            selectedStockStatus: filters.selectedStockStatus,
+          }}
+          onFilterChange={{
+            setSearch: filters.setSearch,
+            setCategory: filters.setCategory,
+            setStockStatus: filters.setStockStatus,
+          }}
+        />
+
         {/* Table Card */}
-        <div className="rounded-lg border border-gray-200 bg-white">
-          {/* Filters */}
-          <ProductFilters
-            searchTerm={filters.searchTerm}
-            filters={{
-              selectedCategory: filters.selectedCategory,
-              selectedStockStatus: filters.selectedStockStatus,
-            }}
-            onFilterChange={{
-              setSearch: filters.setSearch,
-              setCategory: filters.setCategory,
-              setStockStatus: filters.setStockStatus,
-            }}
-          />
+        <DataTable
+          loading={isFetching || isLoading}
+          rowKey="id"
+          columns={ProductCols()}
+          data={data?.nodes}
+          onRow={(record) => ({
+            onClick: () => router.push(`/products/${record.id}`),
+            style: { cursor: 'pointer' },
+          })}
+          pagination={false}
+          cursorPaginationProps={{
+            paginationKey: PAGINATION_KEYS.PRODUCTS,
+            pageInfo,
+            totalCount: data?.totalCount ?? 0,
+            pageSize: pageState.pageSize,
+            loading: isLoading || isFetching,
+          }}
+          cursorPaginationWrapperClassName="flex items-center justify-end border-t border-gray-100 px-6 py-4"
+        />
 
-          {/* Table */}
-          <DataTable
-            loading={isFetching || isLoading}
-            rowKey="id"
-            columns={ProductCols()}
-            data={data?.nodes}
-            onRow={(record) => ({
-              onClick: () => router.push(`/products/${record.id}`),
-              style: { cursor: 'pointer' },
-            })}
-            pagination={false}
-            cursorPaginationProps={{
-              paginationKey: PAGINATION_KEYS.PRODUCTS,
-              pageInfo,
-              totalCount: data?.totalCount ?? 0,
-              pageSize: pageState.pageSize,
-              loading: isLoading || isFetching,
-            }}
-            cursorPaginationWrapperClassName="flex items-center justify-end border-t border-gray-100 px-6 py-4"
-          />
-
-          <DeleteModal
-            loading={deleteProduct?.isPending}
-            onConfirm={() => {
-              deleteProduct.mutate(isDeleteModalOpen?.data?.id);
-            }}
-          />
-        </div>
+        <DeleteModal
+          loading={deleteProduct?.isPending}
+          onConfirm={() => {
+            deleteProduct.mutate(isDeleteModalOpen?.data?.id);
+          }}
+        />
       </div>
     </div>
   );

@@ -10,20 +10,20 @@ import { useProductEdit, useUpdateProduct } from '@/hooks/products/useProduct';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
-import { useSearchParams } from 'next/navigation';
 import {
   transformVariantDataForUpdate,
   mapOptionsToForm,
   mapVariantsToForm,
 } from '@/lib/utils/productUtils';
+import { useParams } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
 const ProductManagement = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const { id } = useParams();
+
 
   const { data: realProductId, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
@@ -35,10 +35,10 @@ const ProductManagement = () => {
   const onSubmit = (values) => {
     console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
-    
+
     // Use transformVariantDataForUpdate to preserve IDs
     values['OptionsJson'] = JSON.stringify(transformVariantDataForUpdate(values.Options));
-    
+
     // Transform Variants to include IDs
     const variantsWithIds = values.Variants?.map(variant => ({
       id: variant.id || null, // Preserve variant ID
@@ -55,7 +55,7 @@ const ProductManagement = () => {
         value: ov.value,
       })) || [],
     })) || [];
-    
+
     values['VariantsJson'] = JSON.stringify(variantsWithIds);
     values['Variants'] = null;
     values['Options'] = null;
@@ -100,7 +100,7 @@ const ProductManagement = () => {
     // }
 
     // Step 4: Submit
-    updateProduct.mutate({id:id,data:formData});
+    updateProduct.mutate({ id: id, data: formData });
   };
 
   const handleCancel = () => {
@@ -158,7 +158,7 @@ const ProductManagement = () => {
 
       form.setFieldsValue(initialValues);
     }
-  }, [form,realProductId]);
+  }, [form, realProductId]);
 
   return (
     <Form requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">

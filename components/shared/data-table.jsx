@@ -17,10 +17,11 @@ export default function DataTable({
   cursorPaginationProps,
   cursorPaginationWrapperClassName = 'flex items-center justify-end border-t border-gray-100 px-6 py-4',
   minHeight = 200,
+  parentBorders = true,
   ...props
 }) {
   return (
-    <main className="table-wrapper">
+    <main className={`table-wrapper ${parentBorders&&"border-with-radius"}`}>
       <Table
         rowKey={rowKey}
         columns={columns}

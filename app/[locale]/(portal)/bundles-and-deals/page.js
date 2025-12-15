@@ -50,7 +50,7 @@ export default function BundlesDealsPage() {
               <div
                 key={bundle.id}
                 onClick={() => router.push(`/bundles-and-deals/${bundle.id}`)}
-                className="border-smoke overflow-hidden rounded-xl border bg-white p-3 shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+                className="border-with-radius p-3 shadow-sm transition-shadow hover:shadow-md cursor-pointer"
               >
                 {/* Bundle Image */}
                 <div className="relative h-96 overflow-hidden rounded-xl bg-gray-100">

@@ -5,7 +5,7 @@ import SidebarLabel from './sidebar-label';
 import { usePathname } from '@/i18n/navigation';
 import Image from 'next/image';
 import Tx from '../tx';
-import { SidebarIcons, LogoutIcon } from '@/lib/const/icons';
+import { SidebarIcons, LogoutIcon, Stock } from '@/lib/const/icons';
 import { useLogout } from '@/hooks/useAuth';
 import { LogoTemp, CrossRed, EditGreen } from '@/lib/const/icons';
 
@@ -73,6 +73,7 @@ const Sidebar = () => {
       ],
     },
     { key: '/inventory', label: 'Inventory', icon: <SidebarIcons.Inventory className="h-6 w-6" /> },
+    { key: '/shipping', label: 'Shipping', icon: <Stock className="h-6 w-6" /> },
     { key: '/orders', label: 'Orders', icon: <SidebarIcons.Orders className="h-6 w-6" /> },
     { key: '/customers', label: 'Customers', icon: <SidebarIcons.Users className="h-6 w-6" /> },
     {

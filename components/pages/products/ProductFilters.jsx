@@ -12,7 +12,7 @@ export default function ProductFilters({ searchTerm, filters, onFilterChange }) 
   const categories = categoriesData?.nodes ?? [];
 
   return (
-    <div className="flex flex-col gap-4 p-6 md:flex-row">
+    <div className="flex flex-col gap-4 p-6 md:flex-row border-with-radius">
       <div className="flex-1">
         <InputSearch
           placeholder="Search Products"
