@@ -21,11 +21,7 @@ export default function AddCouponPage() {
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white p-6">
-        <CouponForm
-          onSubmit={handleSubmit}
-          isLoading={createCoupon.isPending}
-          mode="create"
-        />
+        <CouponForm onSubmit={handleSubmit} isLoading={createCoupon.isPending} mode="create" />
       </div>
     </div>
   );

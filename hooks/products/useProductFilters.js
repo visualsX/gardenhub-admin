@@ -36,4 +36,3 @@ export const useProductFilters = () => {
     setStockStatus: (value) => updateParams('status', value),
   };
 };
-

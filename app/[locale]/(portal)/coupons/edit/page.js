@@ -9,7 +9,7 @@ export default function EditCouponPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const couponId = parseInt(searchParams.get('id'));
-  
+
   const { data: coupon, isLoading } = useCoupon(couponId);
   const updateCoupon = useUpdateCoupon();
 

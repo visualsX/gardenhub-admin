@@ -57,10 +57,10 @@ const VariantsTab = () => {
       stockQuantity: 0,
       lowStockThreshold: 0,
       trackInventory: false,
-      optionValues: options.map(opt => ({
+      optionValues: options.map((opt) => ({
         name: opt.name,
-        value: ''
-      }))
+        value: '',
+      })),
     };
 
     // Add new variant at the top
@@ -71,7 +71,7 @@ const VariantsTab = () => {
 
   const handleBulkAction = (actionType) => {
     const variants = form.getFieldValue('Variants') || [];
-    
+
     if (variants.length === 0) {
       message.warning('No variants to apply bulk action.');
       return;
@@ -92,9 +92,9 @@ const VariantsTab = () => {
         break;
 
       case 'toggle_stock':
-        const updatedVariants = variants.map(v => ({
+        const updatedVariants = variants.map((v) => ({
           ...v,
-          trackInventory: !v.trackInventory
+          trackInventory: !v.trackInventory,
         }));
         form.setFieldValue('Variants', updatedVariants);
         message.success('Stock management toggled for all variants.');
@@ -124,61 +124,61 @@ const VariantsTab = () => {
 
     switch (bulkActionType) {
       case 'set_price':
-        updatedVariants = variants.map(v => ({ ...v, price: bulkActionValue }));
+        updatedVariants = variants.map((v) => ({ ...v, price: bulkActionValue }));
         message.success(`Retail price set to ${bulkActionValue} for all variants.`);
         break;
 
       case 'set_sale_price':
-        updatedVariants = variants.map(v => ({ ...v, salePrice: bulkActionValue }));
+        updatedVariants = variants.map((v) => ({ ...v, salePrice: bulkActionValue }));
         message.success(`Sale price set to ${bulkActionValue} for all variants.`);
         break;
 
       case 'increase_price':
-        updatedVariants = variants.map(v => ({
+        updatedVariants = variants.map((v) => ({
           ...v,
-          price: (v.price || 0) + bulkActionValue
+          price: (v.price || 0) + bulkActionValue,
         }));
         message.success(`Retail price increased by ${bulkActionValue} for all variants.`);
         break;
 
       case 'decrease_price':
-        updatedVariants = variants.map(v => ({
+        updatedVariants = variants.map((v) => ({
           ...v,
-          price: Math.max(0, (v.price || 0) - bulkActionValue)
+          price: Math.max(0, (v.price || 0) - bulkActionValue),
         }));
         message.success(`Retail price decreased by ${bulkActionValue} for all variants.`);
         break;
 
       case 'increase_sale_price':
-        updatedVariants = variants.map(v => ({
+        updatedVariants = variants.map((v) => ({
           ...v,
-          salePrice: (v.salePrice || 0) + bulkActionValue
+          salePrice: (v.salePrice || 0) + bulkActionValue,
         }));
         message.success(`Sale price increased by ${bulkActionValue} for all variants.`);
         break;
 
       case 'decrease_sale_price':
-        updatedVariants = variants.map(v => ({
+        updatedVariants = variants.map((v) => ({
           ...v,
-          salePrice: Math.max(0, (v.salePrice || 0) - bulkActionValue)
+          salePrice: Math.max(0, (v.salePrice || 0) - bulkActionValue),
         }));
         message.success(`Sale price decreased by ${bulkActionValue} for all variants.`);
         break;
 
       case 'set_stock_quantity':
-        updatedVariants = variants.map(v => ({ 
-          ...v, 
+        updatedVariants = variants.map((v) => ({
+          ...v,
           stockQuantity: bulkActionValue,
-          trackInventory: true // Enable stock management when setting stock
+          trackInventory: true, // Enable stock management when setting stock
         }));
         message.success(`Stock quantity set to ${bulkActionValue} for all variants.`);
         break;
 
       case 'set_low_stock_threshold':
-        updatedVariants = variants.map(v => ({ 
-          ...v, 
+        updatedVariants = variants.map((v) => ({
+          ...v,
           lowStockThreshold: bulkActionValue,
-          trackInventory: true // Enable stock management when setting threshold
+          trackInventory: true, // Enable stock management when setting threshold
         }));
         message.success(`Low stock threshold set to ${bulkActionValue} for all variants.`);
         break;
@@ -198,7 +198,7 @@ const VariantsTab = () => {
       key: 'bulk_actions_label',
       label: 'Bulk actions',
       disabled: true,
-      className: 'font-semibold'
+      className: 'font-semibold',
     },
     {
       key: 'delete_all',
@@ -211,7 +211,7 @@ const VariantsTab = () => {
       key: 'pricing_label',
       label: 'Pricing',
       disabled: true,
-      className: 'font-semibold text-gray-400'
+      className: 'font-semibold text-gray-400',
     },
     {
       key: 'set_price',
@@ -244,7 +244,7 @@ const VariantsTab = () => {
       key: 'inventory_label',
       label: 'Inventory',
       disabled: true,
-      className: 'font-semibold text-gray-400'
+      className: 'font-semibold text-gray-400',
     },
     {
       key: 'toggle_stock',
@@ -270,11 +270,11 @@ const VariantsTab = () => {
           <Button type="default" onClick={handleAddManually}>
             Add Manually
           </Button>
-          <Dropdown 
-            menu={{ 
-              items: bulkActionItems, 
-              onClick: ({ key }) => handleBulkAction(key) 
-            }} 
+          <Dropdown
+            menu={{
+              items: bulkActionItems,
+              onClick: ({ key }) => handleBulkAction(key),
+            }}
             trigger={['click']}
           >
             <Button>
@@ -307,21 +307,22 @@ const VariantsTab = () => {
 
                             return (
                               <div className="flex w-full items-center gap-4 pr-4">
-                                <div className="font-medium text-base">{variantId}</div>
+                                <div className="text-base font-medium">{variantId}</div>
                                 <div className="flex flex-1 gap-3">
                                   {options.map((option, optionIndex) => {
                                     // Get available values for this option
                                     let availableValues = [];
                                     if (option.type === 'Color' && Array.isArray(option.colors)) {
-                                      availableValues = option.colors.map(c => c.name);
+                                      availableValues = option.colors.map((c) => c.name);
                                     } else if (option.type === 'Text' && option.values) {
                                       availableValues = option.values
                                         .split(',')
-                                        .map(v => v.trim())
+                                        .map((v) => v.trim())
                                         .filter(Boolean);
                                     }
 
-                                    const currentValue = variant?.optionValues?.[optionIndex]?.value || '';
+                                    const currentValue =
+                                      variant?.optionValues?.[optionIndex]?.value || '';
 
                                     return (
                                       <Form.Item
@@ -332,25 +333,36 @@ const VariantsTab = () => {
                                         <Select
                                           placeholder={`Any ${option.name}...`}
                                           suffixIcon={<DownIcon />}
-                                          className="flex-1 min-w-[140px]"
+                                          className="min-w-[140px] flex-1"
                                           onClick={(e) => e.stopPropagation()}
                                           onChange={(value) => {
                                             // Update the variant name based on selected option values
-                                            const currentVariant = form.getFieldValue(['Variants', name]);
-                                            const updatedOptionValues = [...(currentVariant.optionValues || [])];
+                                            const currentVariant = form.getFieldValue([
+                                              'Variants',
+                                              name,
+                                            ]);
+                                            const updatedOptionValues = [
+                                              ...(currentVariant.optionValues || []),
+                                            ];
                                             updatedOptionValues[optionIndex] = {
                                               name: option.name,
-                                              value: value
+                                              value: value,
                                             };
-                                            
+
                                             // Generate new variant name from all option values
                                             const newName = updatedOptionValues
-                                              .map(ov => ov.value)
+                                              .map((ov) => ov.value)
                                               .filter(Boolean)
                                               .join(', ');
-                                            
-                                            form.setFieldValue(['Variants', name, 'name'], newName || 'New Variant');
-                                            form.setFieldValue(['Variants', name, 'optionValues'], updatedOptionValues);
+
+                                            form.setFieldValue(
+                                              ['Variants', name, 'name'],
+                                              newName || 'New Variant'
+                                            );
+                                            form.setFieldValue(
+                                              ['Variants', name, 'optionValues'],
+                                              updatedOptionValues
+                                            );
                                           }}
                                         >
                                           {availableValues.map((val) => (
@@ -467,15 +479,23 @@ const VariantsTab = () => {
 
       <Modal
         title={
-          bulkActionType === 'set_price' ? 'Set Retail Prices' :
-          bulkActionType === 'set_sale_price' ? 'Set Sale Prices' :
-          bulkActionType === 'increase_price' ? 'Increase Retail Prices' :
-          bulkActionType === 'decrease_price' ? 'Decrease Retail Prices' :
-          bulkActionType === 'increase_sale_price' ? 'Increase Sale Prices' :
-          bulkActionType === 'decrease_sale_price' ? 'Decrease Sale Prices' :
-          bulkActionType === 'set_stock_quantity' ? 'Set Stock Quantity' :
-          bulkActionType === 'set_low_stock_threshold' ? 'Set Low Stock Threshold' :
-          'Bulk Action'
+          bulkActionType === 'set_price'
+            ? 'Set Retail Prices'
+            : bulkActionType === 'set_sale_price'
+              ? 'Set Sale Prices'
+              : bulkActionType === 'increase_price'
+                ? 'Increase Retail Prices'
+                : bulkActionType === 'decrease_price'
+                  ? 'Decrease Retail Prices'
+                  : bulkActionType === 'increase_sale_price'
+                    ? 'Increase Sale Prices'
+                    : bulkActionType === 'decrease_sale_price'
+                      ? 'Decrease Sale Prices'
+                      : bulkActionType === 'set_stock_quantity'
+                        ? 'Set Stock Quantity'
+                        : bulkActionType === 'set_low_stock_threshold'
+                          ? 'Set Low Stock Threshold'
+                          : 'Bulk Action'
         }
         open={bulkActionModalVisible}
         onOk={handleBulkActionSubmit}
@@ -488,10 +508,13 @@ const VariantsTab = () => {
       >
         <div className="py-4">
           <label className="mb-2 block font-medium">
-            {bulkActionType === 'set_stock_quantity' ? 'Stock Quantity:' :
-             bulkActionType === 'set_low_stock_threshold' ? 'Low Stock Threshold:' :
-             bulkActionType?.includes('set') ? 'Price Value:' : 
-             'Amount to adjust:'}
+            {bulkActionType === 'set_stock_quantity'
+              ? 'Stock Quantity:'
+              : bulkActionType === 'set_low_stock_threshold'
+                ? 'Low Stock Threshold:'
+                : bulkActionType?.includes('set')
+                  ? 'Price Value:'
+                  : 'Amount to adjust:'}
           </label>
           <InputNumber
             value={bulkActionValue}

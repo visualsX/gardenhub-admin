@@ -188,6 +188,7 @@ export const FormInputNumber = ({
   suffix,
   formatter,
   parser,
+  precision,
   ...formItemProps
 }) => {
   return (
@@ -211,6 +212,7 @@ export const FormInputNumber = ({
         parser={parser}
         style={{ width: '100%' }}
         size="large"
+        precision={precision}
         className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       />
     </Form.Item>

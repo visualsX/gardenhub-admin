@@ -24,7 +24,6 @@ const ProductManagement = () => {
   const [form] = Form.useForm();
   const { id } = useParams();
 
-
   const { data: realProductId, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
   const updateProduct = useUpdateProduct();
@@ -40,21 +39,23 @@ const ProductManagement = () => {
     values['OptionsJson'] = JSON.stringify(transformVariantDataForUpdate(values.Options));
 
     // Transform Variants to include IDs
-    const variantsWithIds = values.Variants?.map(variant => ({
-      id: variant.id || null, // Preserve variant ID
-      sku: variant.sku,
-      price: variant.price,
-      salePrice: variant.salePrice,
-      discount: variant.discount || 0,
-      stockQuantity: variant.stockQuantity,
-      lowStockThreshold: variant.lowStockThreshold,
-      trackInventory: variant.trackInventory,
-      optionValues: variant.optionValues?.map(ov => ({
-        id: ov.id || null, // Preserve optionValue ID
-        name: ov.name,
-        value: ov.value,
-      })) || [],
-    })) || [];
+    const variantsWithIds =
+      values.Variants?.map((variant) => ({
+        id: variant.id || null, // Preserve variant ID
+        sku: variant.sku,
+        price: variant.price,
+        salePrice: variant.salePrice,
+        discount: variant.discount || 0,
+        stockQuantity: variant.stockQuantity,
+        lowStockThreshold: variant.lowStockThreshold,
+        trackInventory: variant.trackInventory,
+        optionValues:
+          variant.optionValues?.map((ov) => ({
+            id: ov.id || null, // Preserve optionValue ID
+            name: ov.name,
+            value: ov.value,
+          })) || [],
+      })) || [];
 
     values['VariantsJson'] = JSON.stringify(variantsWithIds);
     values['Variants'] = null;

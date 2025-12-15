@@ -21,7 +21,11 @@ export default function BundlesDealsPage() {
             <h1 className="text-xl font-medium">Bundles & Deals</h1>
             <p className="text-gray-600">Create and manage product bundles</p>
           </div>
-          <Button type="primary" icon={<PlusWhite />} onClick={() => router.push('/bundles-and-deals/add')}>
+          <Button
+            type="primary"
+            icon={<PlusWhite />}
+            onClick={() => router.push('/bundles-and-deals/add')}
+          >
             Create Bundle
           </Button>
         </div>
@@ -35,7 +39,7 @@ export default function BundlesDealsPage() {
 
         {/* Empty State */}
         {!isLoading && bundlesData.length === 0 && (
-          <div className="text-center p-12 text-gray-500">
+          <div className="p-12 text-center text-gray-500">
             No bundles found. Create one to get started.
           </div>
         )}
@@ -43,14 +47,15 @@ export default function BundlesDealsPage() {
         {/* Bundles Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bundlesData.map((bundle) => {
-            const mainImage = bundle.images?.find(i => i.isMain)?.imageUrl || bundle.images?.[0]?.imageUrl;
+            const mainImage =
+              bundle.images?.find((i) => i.isMain)?.imageUrl || bundle.images?.[0]?.imageUrl;
             const productCount = bundle.items ? bundle.items.length : 0;
 
             return (
               <div
                 key={bundle.id}
                 onClick={() => router.push(`/bundles-and-deals/${bundle.id}`)}
-                className="border-with-radius p-3 shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+                className="border-with-radius cursor-pointer p-3 shadow-sm transition-shadow hover:shadow-md"
               >
                 {/* Bundle Image */}
                 <div className="relative h-96 overflow-hidden rounded-xl bg-gray-100">
@@ -75,7 +80,9 @@ export default function BundlesDealsPage() {
                     <span className="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs font-medium">
                       Save {bundle.discountPercentage}%
                     </span>
-                    <span className={`text-sm font-medium ${bundle.isActive ? 'text-green-600' : 'text-gray-500'}`}>
+                    <span
+                      className={`text-sm font-medium ${bundle.isActive ? 'text-green-600' : 'text-gray-500'}`}
+                    >
                       {bundle.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>

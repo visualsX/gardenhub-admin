@@ -47,9 +47,7 @@ export default function CouponDetailPage() {
           <p className="mt-1 text-sm text-gray-600">Coupon Code: {coupon.code}</p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={() => router.push(`/coupons/edit?id=${coupon.id}`)}>
-            Edit Coupon
-          </Button>
+          <Button onClick={() => router.push(`/coupons/edit?id=${coupon.id}`)}>Edit Coupon</Button>
           <Button onClick={() => router.push('/coupons')}>Back to List</Button>
         </div>
       </div>
@@ -83,13 +81,7 @@ export default function CouponDetailPage() {
           <div className="mt-2">
             <Badge
               status={coupon.isActive && !isExpired ? 'success' : 'error'}
-              text={
-                isExpired
-                  ? 'Expired'
-                  : coupon.isActive
-                    ? 'Active'
-                    : 'Inactive'
-              }
+              text={isExpired ? 'Expired' : coupon.isActive ? 'Active' : 'Inactive'}
             />
           </div>
         </Card>
@@ -188,9 +180,7 @@ export default function CouponDetailPage() {
           <Descriptions.Item label="Last Updated">
             {dayjs(coupon.lastUpdatedAt).format('MMMM D, YYYY h:mm A')}
           </Descriptions.Item>
-          <Descriptions.Item label="Updated By">
-            {coupon.lastUpdatedBy || 'N/A'}
-          </Descriptions.Item>
+          <Descriptions.Item label="Updated By">{coupon.lastUpdatedBy || 'N/A'}</Descriptions.Item>
         </Descriptions>
       </Card>
     </div>

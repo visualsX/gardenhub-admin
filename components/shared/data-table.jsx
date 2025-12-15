@@ -21,7 +21,7 @@ export default function DataTable({
   ...props
 }) {
   return (
-    <main className={`table-wrapper ${parentBorders&&"border-with-radius"}`}>
+    <main className={`table-wrapper ${parentBorders && 'border-with-radius'}`}>
       <Table
         rowKey={rowKey}
         columns={columns}

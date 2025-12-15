@@ -34,11 +34,7 @@ export default function AddBundlePage() {
         </div>
       </div>
 
-      <BundleForm
-        onSubmit={handleCreate}
-        isLoading={createBundle.isPending}
-        mode="create"
-      />
+      <BundleForm onSubmit={handleCreate} isLoading={createBundle.isPending} mode="create" />
     </div>
   );
 }

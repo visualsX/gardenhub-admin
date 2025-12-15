@@ -8,7 +8,7 @@ const SegmentedTabs = ({ tabs, activeTab, onChange, className = '' }) => {
           key={tab.key}
           type="button"
           onClick={() => onChange(tab.key)}
-          className={`flex-1 rounded-full px-6 py-2 text-sm font-semibold transition text-nowrap ${
+          className={`flex-1 rounded-full px-6 py-2 text-sm font-semibold text-nowrap transition ${
             activeTab === tab.key
               ? 'bg-white text-gray-900 shadow-sm'
               : 'text-gray-500 hover:text-gray-700'

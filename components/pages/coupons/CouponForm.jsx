@@ -133,7 +133,11 @@ export default function CouponForm({ initialValues, onSubmit, isLoading, mode = 
                   label="Select Categories"
                   tooltip="Enter category IDs (comma-separated)"
                 >
-                  <Select mode="tags" placeholder="Enter category IDs" style={{ minHeight: '40px' }} />
+                  <Select
+                    mode="tags"
+                    placeholder="Enter category IDs"
+                    style={{ minHeight: '40px' }}
+                  />
                 </Form.Item>
               );
             }
@@ -144,7 +148,11 @@ export default function CouponForm({ initialValues, onSubmit, isLoading, mode = 
                   label="Select Products"
                   tooltip="Enter product IDs (comma-separated)"
                 >
-                  <Select mode="tags" placeholder="Enter product IDs" style={{ minHeight: '40px' }} />
+                  <Select
+                    mode="tags"
+                    placeholder="Enter product IDs"
+                    style={{ minHeight: '40px' }}
+                  />
                 </Form.Item>
               );
             }
@@ -204,7 +212,11 @@ export default function CouponForm({ initialValues, onSubmit, isLoading, mode = 
                 label="Allowed Customer IDs"
                 tooltip="Enter customer IDs (comma-separated)"
               >
-                <Select mode="tags" placeholder="Enter customer IDs" style={{ minHeight: '40px' }} />
+                <Select
+                  mode="tags"
+                  placeholder="Enter customer IDs"
+                  style={{ minHeight: '40px' }}
+                />
               </Form.Item>
             ) : null
           }

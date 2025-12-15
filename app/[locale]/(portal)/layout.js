@@ -11,9 +11,7 @@ export default function RootLayout({ children }) {
     <div className="font-outfit bg-snow min-h-screen">
       <Sidebar />
       <Header />
-      <main className="ml-[263px] pt-[90px] px-6 pb-6">
-        {children}
-      </main>
+      <main className="ml-[263px] px-6 pt-[90px] pb-6">{children}</main>
     </div>
   );
 }

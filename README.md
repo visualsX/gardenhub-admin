@@ -113,29 +113,36 @@ gardenhub-admin/
 ## 🏗️ Architecture Overview
 
 ### App Router Structure
+
 The project uses Next.js 16's App Router with the following routing strategy:
+
 - **Internationalization**: Routes are wrapped in `[locale]` for multi-language support
 - **Route Groups**: The `(portal)` group organizes authenticated routes without affecting URLs
 - **File-based Routing**: Each folder represents a route segment
 
 ### Component Organization
+
 Components are organized by purpose:
+
 - **`components/pages/`**: Page-specific components that are tightly coupled to routes
 - **`components/shared/`**: Reusable components used across multiple pages
 - **`components/ui/`**: Generic UI components and form inputs
 - **`components/wrappers/`**: Layout and structural components
 
 ### Data Management
+
 - **TanStack Query**: Handles server state, caching, and data synchronization
 - **Zustand**: Manages client-side global state
 - **Custom Hooks**: Encapsulate data fetching and business logic
 
 ### API Layer
+
 - **GraphQL**: Primary API communication via `graphql-request`
 - **REST**: Fallback for file uploads and specific endpoints via Axios
 - **Type Safety**: GraphQL queries defined in `lib/api/queries.js`
 
 ### Styling Strategy
+
 - **TailwindCSS**: Utility-first styling for rapid development
 - **Ant Design**: Pre-built components with custom theme
 - **CSS Variables**: Global design tokens in `globals.css`
@@ -144,6 +151,7 @@ Components are organized by purpose:
 ## 🎨 Key Features
 
 ### Product Management
+
 - **Variants Support**: Manage product variations (size, color, etc.)
 - **Conditional Stock Tracking**: Track inventory at product or variant level
 - **Image Management**: Single main image + multiple additional images
@@ -151,12 +159,14 @@ Components are organized by purpose:
 - **SEO Optimization**: Meta tags and keywords management
 
 ### Inventory Management
+
 - **Real-time Stock Tracking**: Monitor current stock levels
 - **Low Stock Alerts**: Configurable threshold warnings
 - **Transaction History**: Track inventory adjustments
 - **Bulk Actions**: Update multiple items simultaneously
 
 ### Internationalization
+
 - **Multi-language Support**: English and Arabic
 - **RTL Support**: Right-to-left layout for Arabic
 - **Translation Management**: JSON-based translation files
@@ -164,7 +174,8 @@ Components are organized by purpose:
 ## 🚦 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm, yarn, pnpm, or bun
 
 ### Installation
@@ -199,21 +210,27 @@ npm run format:check
 ## 🔧 Configuration
 
 ### Environment Variables
+
 Create a `.env.local` file with the following variables:
+
 ```env
 NEXT_PUBLIC_API_URL=your_api_url
 NEXT_PUBLIC_GRAPHQL_URL=your_graphql_url
 ```
 
 ### Theme Customization
+
 Modify `theme/antd-provider.js` to customize Ant Design theme:
+
 - Primary color
 - Border radius
 - Component-specific styles
 - Font family (currently using Outfit)
 
 ### Internationalization
+
 Add new languages by:
+
 1. Creating a new JSON file in `messages/`
 2. Updating `i18n/routing.js` with the new locale
 3. Adding translations to the new JSON file
@@ -221,17 +238,20 @@ Add new languages by:
 ## 📝 Code Conventions
 
 ### File Naming
+
 - **Components**: PascalCase (e.g., `ProductTabs.js`)
 - **Utilities**: camelCase (e.g., `productUtils.js`)
 - **Hooks**: camelCase with `use` prefix (e.g., `useProduct.js`)
 
 ### Component Structure
+
 - Use functional components with hooks
 - Extract complex logic into custom hooks
 - Keep components focused and single-purpose
 - Use Ant Design's Form.Item with custom wrappers
 
 ### State Management
+
 - **Server State**: Use TanStack Query hooks
 - **Client State**: Use Zustand for global state
 - **Local State**: Use React's useState for component-local state
@@ -239,14 +259,18 @@ Add new languages by:
 ## 🔗 API Integration
 
 ### GraphQL Queries
+
 All GraphQL queries are centralized in `lib/api/queries.js`:
+
 - `CATEGORY_QUERIES`: Category management
 - `ATTRIBUTES_QUERIES`: Product attributes
 - `PRODUCTS_QUERIES`: Product CRUD operations
 - `INVENTORY_QUERIES`: Inventory management
 
 ### Custom Hooks Pattern
+
 Each resource has a dedicated hook file:
+
 ```javascript
 // Example: useProduct.js
 export const useProducts = () => useQuery(...)
@@ -258,11 +282,13 @@ export const useUpdateProduct = () => useMutation(...)
 ## 📦 Build & Deployment
 
 ### Production Build
+
 ```bash
 npm run build
 ```
 
 ### Deployment Options
+
 - **Vercel**: Optimized for Next.js (recommended)
 - **Docker**: Containerized deployment
 - **Node.js Server**: Self-hosted option

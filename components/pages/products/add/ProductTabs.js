@@ -78,11 +78,7 @@ const ProductTabs = ({
         title={'Product Variants'}
         description={'Manage product variations like size and color'}
       >
-        <FormSwitch
-          name="HasVariants"
-          label="Has Variants"
-          className="mb-4"
-        />
+        <FormSwitch name="HasVariants" label="Has Variants" className="mb-4" />
 
         <Form.Item
           noStyle
@@ -135,19 +131,26 @@ const ProductTabs = ({
                                   <div className="space-y-2">
                                     {subFields.map(({ key: subKey, name: subName, ...subRest }) => (
                                       <div className="flex w-full items-baseline gap-x-4">
-                                        <div key={subKey} className="flex w-full items-center gap-x-4">
+                                        <div
+                                          key={subKey}
+                                          className="flex w-full items-center gap-x-4"
+                                        >
                                           <FormInput
                                             {...subRest}
                                             name={[subName, 'name']}
                                             placeholder="Color Name"
                                             className="mb-0 flex-1"
-                                            rules={[{ required: true, message: 'Missing color name' }]}
+                                            rules={[
+                                              { required: true, message: 'Missing color name' },
+                                            ]}
                                           />
 
                                           <Form.Item
                                             {...subRest}
                                             name={[subName, 'hex']}
-                                            rules={[{ required: true, message: 'Missing hex code' }]}
+                                            rules={[
+                                              { required: true, message: 'Missing hex code' },
+                                            ]}
                                             className="mb-0 flex-1"
                                             getValueFromEvent={(color) => {
                                               return typeof color === 'string'
@@ -166,7 +169,11 @@ const ProductTabs = ({
                                         <Cross onClick={() => removeSub(subName)} />
                                       </div>
                                     ))}
-                                    <Button type="default" onClick={() => addSub()} icon={<PlusGray />}>
+                                    <Button
+                                      type="default"
+                                      onClick={() => addSub()}
+                                      icon={<PlusGray />}
+                                    >
                                       Add Value
                                     </Button>
                                   </div>
@@ -314,13 +321,10 @@ const ProductTabs = ({
   const inventoryTab = (
     <div className="space-y-6">
       <Box header title={'Stock Management'} description={'Manage inventory levels and alerts'}>
-        <Form.Item
-          noStyle
-          shouldUpdate={(prev, curr) => prev.HasVariants !== curr.HasVariants}
-        >
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.HasVariants !== curr.HasVariants}>
           {({ getFieldValue }) => {
             const hasVariants = getFieldValue('HasVariants');
-            
+
             if (hasVariants) {
               return (
                 <div className="text-gray-500 italic">
@@ -331,19 +335,15 @@ const ProductTabs = ({
 
             return (
               <>
-                <FormSwitch 
-                  name="TrackInventory" 
-                  label="Track Inventory" 
-                  className="mb-4" 
-                />
-                
+                <FormSwitch name="TrackInventory" label="Track Inventory" className="mb-4" />
+
                 <Form.Item
                   noStyle
                   shouldUpdate={(prev, curr) => prev.TrackInventory !== curr.TrackInventory}
                 >
                   {({ getFieldValue }) => {
                     const trackInventory = getFieldValue('TrackInventory');
-                    
+
                     if (!trackInventory) return null;
 
                     return (

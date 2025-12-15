@@ -4,10 +4,15 @@ import { UAE_EMIRATES } from '@/lib/const/regions';
 
 const { Option } = Select;
 
-export default function ShippingFilters({ searchTerm, selectedEmirate, onSearchChange, onEmirateChange }) {
+export default function ShippingFilters({
+  searchTerm,
+  selectedEmirate,
+  onSearchChange,
+  onEmirateChange,
+}) {
   return (
-    <div className="flex flex-col gap-4 p-6 md:flex-row border-with-radius items-center">
-      <div className="flex-1 w-full md:w-auto">
+    <div className="border-with-radius flex flex-col items-center gap-4 p-6 md:flex-row">
+      <div className="w-full flex-1 md:w-auto">
         <InputSearch
           placeholder="Search by Zone Name"
           defaultValue={searchTerm}

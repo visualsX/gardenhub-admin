@@ -144,8 +144,8 @@ export const useUpdateProduct = () => {
 
   return useMutation({
     mutationFn: async ({ id, data }) => {
-      const response = await apiClient.put(API_ENDPOINTS.PRODUCTS.UPDATE(id), data,{
-         headers: {
+      const response = await apiClient.put(API_ENDPOINTS.PRODUCTS.UPDATE(id), data, {
+        headers: {
           'Content-Type': 'multipart/form-data',
         },
       });

@@ -56,9 +56,7 @@ const CouponManagement = () => {
         <StatsCard title="Total Coupons" value={data?.totalCount?.toString() || '0'} />
         <StatsCard
           title="Active Coupons"
-          value={
-            data?.nodes?.filter((c) => c.isActive).length.toString() || '0'
-          }
+          value={data?.nodes?.filter((c) => c.isActive).length.toString() || '0'}
           variant="success"
         />
         <StatsCard
@@ -72,9 +70,7 @@ const CouponManagement = () => {
         />
         <StatsCard
           title="Inactive"
-          value={
-            data?.nodes?.filter((c) => !c.isActive).length.toString() || '0'
-          }
+          value={data?.nodes?.filter((c) => !c.isActive).length.toString() || '0'}
           variant="error"
         />
       </div>
@@ -113,7 +109,7 @@ const CouponManagement = () => {
         onConfirm={() => {
           if (isDeleteModalOpen?.data?.id) {
             deleteCoupon.mutate(isDeleteModalOpen.data.id, {
-              onSuccess: () => openDeleteModal(false, null)
+              onSuccess: () => openDeleteModal(false, null),
             });
           }
         }}
