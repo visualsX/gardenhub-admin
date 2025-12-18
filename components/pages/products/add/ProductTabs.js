@@ -403,7 +403,7 @@ const ProductTabs = ({
       <div style={{ display: activeTab === '3' ? 'block' : 'none' }}>{specificationsTab}</div>
       <div style={{ display: activeTab === '4' ? 'block' : 'none' }}>{inventoryTab}</div>
       <div style={{ display: activeTab === '5' ? 'block' : 'none' }}>
-        <VariantsTab />
+        <VariantsTab editPage={!!productsById} productId={productsById?.id} />
       </div>
     </div>
   );

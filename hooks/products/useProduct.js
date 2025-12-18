@@ -157,7 +157,7 @@ export const useUpdateProduct = () => {
       // Invalidate product detail query (used by useProductEdit on edit page)
       queryClient.invalidateQueries({ queryKey: productKeys.detail(+variables.id) });
       message.success('Product updated successfully!');
-      // router.push('/products');
+      router.push('/products');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to update product');
@@ -234,7 +234,6 @@ export const useDeleteProductImage = () => {
 // Update product variants
 export const useUpdateVariants = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: async ({ id, data }) => {
@@ -244,7 +243,6 @@ export const useUpdateVariants = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: productKeys.detail(+variables.id) });
       message.success('Variants updated successfully!');
-      router.push('/products');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to update variants');
