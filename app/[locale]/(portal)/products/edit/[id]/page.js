@@ -6,7 +6,7 @@ import { FormSwitch } from '@/components/ui/inputs';
 import { Box } from '@/components/wrappers/box';
 import UploaderMax from '@/components/ui/uploaderM';
 import SingleImageUploader from '@/components/ui/singleUpload';
-import { useProductEdit, useUpdateProduct } from '@/hooks/products/useProduct';
+import { useProductEdit, useUpdateProduct, useUpdateVariants } from '@/hooks/products/useProduct';
 import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
@@ -27,6 +27,7 @@ const ProductManagement = () => {
   const { data: realProductId, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
   const updateProduct = useUpdateProduct();
+  const updateVariants = useUpdateVariants();
   // const { data, isLoading } = useAttributes();
 
   console.log('productsById:', realProductId);
@@ -57,7 +58,7 @@ const ProductManagement = () => {
           })) || [],
       })) || [];
     console.log('variantsWithIds:', variantsWithIds);
-    values['VariantsJson'] = JSON.stringify(variantsWithIds);
+    values['VariantsJson'] = null; // Don't send variants with product update
     values['Variants'] = null;
     values['Options'] = null;
     values['Id'] = +id;
@@ -101,7 +102,24 @@ const ProductManagement = () => {
     // }
 
     // Step 4: Submit
-    // updateProduct.mutate({ id: id, data: formData });
+    // First update the product (without variants)
+    updateProduct.mutate(
+      { id: id, data: formData },
+      {
+        onSuccess: () => {
+          // Then update the variants
+          if (variantsWithIds.length > 0) {
+            updateVariants.mutate({
+              id: +id,
+              data: {
+                productId: +id,
+                variants: variantsWithIds,
+              },
+            });
+          }
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
