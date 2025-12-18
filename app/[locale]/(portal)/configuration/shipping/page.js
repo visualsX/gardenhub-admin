@@ -45,7 +45,7 @@ export default function ShippingZonesPage() {
             <p className="mt-1 text-sm text-gray-600">Manage shipping rates and regions</p>
           </div>
           <Link
-            href={'/shipping/add'}
+            href={'/configuration/shipping/add'}
             className="bg-primary hover:bg-primary/80 flex items-center gap-2 rounded-lg px-4 py-2.5 text-white transition-colors"
           >
             <Plus className="h-5 w-5" />
@@ -66,7 +66,7 @@ export default function ShippingZonesPage() {
           columns={ShippingCols(router)}
           data={data?.nodes || []}
           onRow={(record) => ({
-            onClick: () => router.push(`/shipping/${record.id}`),
+            onClick: () => router.push(`/configuration/shipping/${record.id}`),
             style: { cursor: 'pointer' },
           })}
           pagination={false}

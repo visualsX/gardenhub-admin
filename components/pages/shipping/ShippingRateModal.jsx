@@ -35,7 +35,7 @@ export default function ShippingRateModal({ open, onCancel, initialValues, zoneI
     };
     try {
       if (isEdit) {
-        await updateRate.mutateAsync({ id: initialValues.id, data: payload });
+        await updateRate.mutateAsync({ id: initialValues.id, ...payload });
       } else {
         await createRate.mutateAsync(payload);
       }

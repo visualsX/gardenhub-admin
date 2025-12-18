@@ -128,7 +128,7 @@ export const useCreateShippingZone = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: shippingKeys.zones() });
       message.success('Shipping zone created successfully');
-      router.push('/shipping');
+      router.push('/configuration/shipping');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to create shipping zone');
@@ -142,15 +142,15 @@ export const useUpdateShippingZone = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async ({ id, data }) => {
-      const response = await apiClient.put(API_ENDPOINTS.SHIPPING.ZONES.UPDATE(id), data);
+    mutationFn: async (data) => {
+      const response = await apiClient.put(API_ENDPOINTS.SHIPPING.ZONES.UPDATE(data.id), data);
       return response.data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: shippingKeys.zones() });
       queryClient.invalidateQueries({ queryKey: shippingKeys.zoneDetail(variables.id) });
       message.success('Shipping zone updated successfully');
-      router.push('/shipping');
+      router.push('/configuration/shipping');
     },
     onError: (error) => {
       message.error(error.response?.data?.message || 'Failed to update shipping zone');
@@ -210,16 +210,14 @@ export const useUpdateShippingRate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }) => {
-      const response = await apiClient.put(API_ENDPOINTS.SHIPPING.RATES.UPDATE(id), data);
+    mutationFn: async (data) => {
+      const response = await apiClient.put(API_ENDPOINTS.SHIPPING.RATES.UPDATE(data.id), data);
       return response.data;
     },
     onSuccess: (_, variables) => {
-      if (variables.data.shippingZoneId || variables.shippingZoneId) {
+      if (variables.shippingZoneId) {
         queryClient.invalidateQueries({
-          queryKey: shippingKeys.zoneDetail(
-            variables.data.shippingZoneId || variables.shippingZoneId
-          ),
+          queryKey: shippingKeys.zoneDetail(variables.shippingZoneId),
         });
       }
       // Fallback invalidation strategies if zone ID not readily available in args

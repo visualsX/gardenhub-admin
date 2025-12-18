@@ -65,7 +65,7 @@ export default function ShippingZoneDetailPage() {
           <Button
             type="text"
             icon={<ArrowLeft className="h-5 w-5" />}
-            onClick={() => router.push('/shipping')}
+            onClick={() => router.push('/configuration/shipping')}
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{zone.name}</h1>
@@ -74,7 +74,7 @@ export default function ShippingZoneDetailPage() {
         </div>
         <Button
           icon={<Edit />}
-          onClick={() => router.push(`/shipping/edit/${zone.id}`)}
+          onClick={() => router.push(`/configuration/shipping/edit/${zone.id}`)}
         >
           Edit Zone Details
         </Button>

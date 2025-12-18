@@ -49,11 +49,7 @@ const Sidebar = () => {
         },
       ],
     },
-    {
-      key: '/category-and-subcategory',
-      label: 'Category & Subcategory',
-      icon: <SidebarIcons.Categories className="h-6 w-6" />,
-    },
+
     {
       key: 'bundles-menu',
       href: '/bundles-and-deals',
@@ -73,7 +69,7 @@ const Sidebar = () => {
       ],
     },
     { key: '/inventory', label: 'Inventory', icon: <SidebarIcons.Inventory className="h-6 w-6" /> },
-    { key: '/shipping', label: 'Shipping', icon: <Stock className="h-6 w-6" /> },
+
     { key: '/orders', label: 'Orders', icon: <SidebarIcons.Orders className="h-6 w-6" /> },
     { key: '/customers', label: 'Customers', icon: <SidebarIcons.Users className="h-6 w-6" /> },
     {
@@ -90,6 +86,16 @@ const Sidebar = () => {
         {
           key: '/configuration/attributes',
           label: 'Attributes',
+          icon: null,
+        },
+        {
+          key: '/configuration/category-and-subcategory',
+          label: 'Category & Subcategory',
+          icon: null,
+        },
+        {
+          key: '/configuration/shipping',
+          label: 'Shipping',
           icon: null,
         },
       ],

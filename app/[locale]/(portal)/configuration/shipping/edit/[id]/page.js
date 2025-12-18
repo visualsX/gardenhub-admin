@@ -15,7 +15,7 @@ export default function EditShippingZonePage() {
   const updateZone = useUpdateShippingZone();
 
   const handleUpdate = async (values) => {
-    updateZone.mutate({ id: +id, data: values });
+    updateZone.mutate({ id: +id, ...values });
   };
 
   return (
