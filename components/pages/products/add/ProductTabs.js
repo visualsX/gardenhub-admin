@@ -58,6 +58,7 @@ const ProductTabs = ({
           <CategoryCascader name="CategoryIds" label="Category" />
         </div>
         <FormTextArea
+          rules={[]}
           name="ShortDescription"
           label="Short Description"
           placeholder="Enter short description"
@@ -65,6 +66,7 @@ const ProductTabs = ({
           className="mb-4"
         />
         <FormTextArea
+          rules={[]}
           name="DetailedDescription"
           label="Detailed Description"
           placeholder="Enter detailed description"
@@ -245,6 +247,7 @@ const ProductTabs = ({
           label="SEO Title"
           placeholder="Enter SEO title"
           className="mb-4"
+          rules={[]}
         />
         <FormTextArea
           name="MetaDescription"
@@ -252,8 +255,9 @@ const ProductTabs = ({
           placeholder="Enter meta description"
           rows={3}
           className="mb-4"
+          rules={[]}
         />
-        <FormInput name="Keywords" label="Keywords" placeholder="Enter keywords" className="mb-0" />
+        <FormInput rules={[]} name="Keywords" label="Keywords" placeholder="Enter keywords" className="mb-0" />
       </Box>
     </div>
   );

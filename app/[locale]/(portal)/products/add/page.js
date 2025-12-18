@@ -25,8 +25,8 @@ const ProductManagement = () => {
   const onSubmit = (values) => {
     console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
-    values['OptionsJson'] = JSON.stringify(transformVariantData(values.Options));
-    values['VariantsJson'] = JSON.stringify(values.Variants);
+    values['OptionsJson'] = values.Options ? JSON.stringify(transformVariantData(values.Options)) : null;
+    values['VariantsJson'] = values.Variants ? JSON.stringify(values.Variants) : null;
     values['Variants'] = null;
     values['Options'] = null;
 

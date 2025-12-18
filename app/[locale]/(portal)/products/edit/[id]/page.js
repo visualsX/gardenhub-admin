@@ -56,7 +56,7 @@ const ProductManagement = () => {
             value: ov.value,
           })) || [],
       })) || [];
-
+    console.log('variantsWithIds:', variantsWithIds);
     values['VariantsJson'] = JSON.stringify(variantsWithIds);
     values['Variants'] = null;
     values['Options'] = null;
@@ -101,7 +101,7 @@ const ProductManagement = () => {
     // }
 
     // Step 4: Submit
-    updateProduct.mutate({ id: id, data: formData });
+    // updateProduct.mutate({ id: id, data: formData });
   };
 
   const handleCancel = () => {
