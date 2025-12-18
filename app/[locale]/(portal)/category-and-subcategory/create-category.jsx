@@ -33,16 +33,6 @@ export default function CreateCategoryModal() {
 
           <FormInput label={'Category Name *'} name={'name'} />
 
-          {/* Add Subcategory Button */}
-          {/* <div className="mb-6">
-            <Button
-              icon={<PlusGray className="h-4 w-4" />}
-              className="round flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Add Subcategory
-            </Button>
-          </div> */}
-
           {/* Visible to Customers Toggle */}
           <div className="mb-8 flex items-center justify-between rounded-lg border border-gray-200 p-4">
             <div>
@@ -50,7 +40,6 @@ export default function CreateCategoryModal() {
               <p className="text-sm text-gray-500">Show this category on the store</p>
             </div>
             <FormSwitch className={'m-0!'} name={'isVisible'} />
-            {/* <Switch checked={isVisible} onChange={setIsVisible} size="default" /> */}
           </div>
 
           {/* Footer Buttons */}

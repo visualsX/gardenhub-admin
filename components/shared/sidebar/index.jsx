@@ -82,6 +82,19 @@ const Sidebar = () => {
       icon: <SidebarIcons.Coupons className="h-6 w-6" />,
     },
     {
+      key: 'configuration-menu',
+      href: '/configuration/attributes',
+      label: 'Configuration',
+      icon: <SidebarIcons.Settings className="h-6 w-6" />,
+      children: [
+        {
+          key: '/configuration/attributes',
+          label: 'Attributes',
+          icon: null,
+        },
+      ],
+    },
+    {
       key: '/reviews',
       label: 'Reviews & Feedback',
       icon: <SidebarIcons.Reviews className="h-6 w-6" />,
@@ -127,7 +140,7 @@ const Sidebar = () => {
             className="px-4!"
             mode="inline"
             selectedKeys={[pathname]}
-            defaultOpenKeys={['products-menu', 'bundles-menu']}
+            defaultOpenKeys={['products-menu', 'bundles-menu', 'configuration-menu']}
             items={renderMenuItems(menuItems)}
           />
         </div>
