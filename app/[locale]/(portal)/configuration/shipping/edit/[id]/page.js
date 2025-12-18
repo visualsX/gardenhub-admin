@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
-import ShippingZoneForm from '@/components/pages/shipping/ShippingZoneForm';
+import ShippingZoneForm from '@/components/pages/configurations/shipping/ShippingZoneForm';
 import { useUpdateShippingZone, useShippingZone } from '@/hooks/useShipping';
 import GoBack from '@/components/ui/go-back';
 

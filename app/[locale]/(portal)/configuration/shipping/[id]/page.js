@@ -8,7 +8,7 @@ import Edit from '@/public/shared/edit.svg';
 import Trash2 from '@/public/shared/trash-red.svg';
 import { Box } from '@/components/wrappers/box';
 import { useShippingZone, useDeleteShippingRate } from '@/hooks/useShipping';
-import ShippingRateModal from '@/components/pages/shipping/ShippingRateModal';
+import ShippingRateModal from '@/components/pages/configurations/shipping/ShippingRateModal';
 import LabelAndValue from '@/components/ui/label-value';
 import DataTable from '@/components/shared/data-table';
 

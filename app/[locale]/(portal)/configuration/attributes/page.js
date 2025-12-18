@@ -1,6 +1,6 @@
 'use client';
 
-import AttributesManagement from '@/components/pages/attributes/AttributesManagement';
+import AttributesManagement from '@/components/pages/configurations/attributes/AttributesManagement';
 
 export default function AttributesPage() {
   return (

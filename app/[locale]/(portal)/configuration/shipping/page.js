@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Plus } from '@/lib/const/icons';
 import { useShippingZones, useDeleteShippingZone } from '@/hooks/useShipping';
 import DataTable from '@/components/shared/data-table';
-import ShippingFilters from '@/components/pages/shipping/ShippingFilters';
+import ShippingFilters from '@/components/pages/configurations/shipping/ShippingFilters';
 import DeleteModal from '@/components/shared/delete-modal';
 import useUiStates from '@/store/useUiStates';
 import { useShippingFilters } from '@/hooks/shipping/useShippingFilters';
