@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { Upload, Form, message } from 'antd';
-import DeleteIcon from '@/public/shared/trash.svg';
-import { useDeleteProductImage, useUpdateProductImage } from '@/hooks/products/useProduct';
+// import DeleteIcon from '@/public/shared/trash.svg';
+// import { useDeleteProductImage, useUpdateProductImage } from '@/hooks/products/useProduct';
 
-const SingleImageUploader = ({
+const SingleImageUploader = forwardRef(({
   name = 'images',
   label = 'Images',
   className,
   existingImage,
   editPage = false,
-  productId,
-  onDeleteImage, // callback for delete API
-  onUploadImage, // callback for upload API
-  isFetching,
-}) => {
+  // productId,
+  // onDeleteImage, // callback for delete API
+  // onUploadImage, // callback for upload API
+  // isFetching,
+}, ref) => {
   const getInitialFile = () => {
     if (!editPage || !existingImage) return [];
     return [
@@ -22,54 +22,52 @@ const SingleImageUploader = ({
         name: existingImage?.imageUrl.split('/').pop() || 'existing-image',
         status: 'done',
         url: existingImage?.imageUrl, // MOST IMPORTANT for preview
+        isExisting: true, // Mark as existing image from API
       },
     ];
   };
 
   const [fileList, setFileList] = useState(getInitialFile());
-  console.log('filelist: ', fileList);
+  const [existingImageDeleted, setExistingImageDeleted] = useState(false);
+
+  // Expose method to parent component to get existing image URL if not deleted
+  useImperativeHandle(ref, () => ({
+    getExistingImageUrl: () => {
+      if (editPage && existingImage && !existingImageDeleted) {
+        return existingImage.imageUrl;
+      }
+      return null;
+    },
+    hasExistingImage: () => editPage && existingImage && !existingImageDeleted,
+  }));
+
   useEffect(() => {
     if (editPage && existingImage) {
       setFileList(getInitialFile());
+      setExistingImageDeleted(false);
     }
   }, [editPage, existingImage]);
 
-  // const deleteImage = useDeleteProductImage();
-  // const updateImage = useUpdateProductImage();
-
   const handleChange = async ({ file, fileList: newFileList }) => {
-    // If user uploads a new file
-    // console.log('uploading file: ', file);
-
-    setFileList(file);
-    if (file.status !== 'removed') {
-      // const formData = new FormData();
-      // formData.append('IsMain', String(true)); // booleans must be strings
-      // formData.append('ImageFile', file); // file object goes directly
-      // const payload = {
-      //   productId,
-      //   formData,
-      // };
-      // updateImage?.mutate(payload, {
-      //   onSuccess: () => {
-      //     return true; // allow removal
-      //   },
-      // });
+    // If user uploads a new file, replace the existing one
+    setFileList(newFileList);
+    
+    // If there was an existing image and user uploads new one, mark existing as deleted
+    if (editPage && existingImage && file.status !== 'removed') {
+      setExistingImageDeleted(true);
     }
-
-    // setFileList(latestFile);
   };
 
   const handleRemove = async (file) => {
-    if (editPage && existingImage) {
-      // const ids = { productId, imageId: existingImage?.id };
-      // deleteImage.mutate(ids, {
-      //   onSuccess: () => {
-      //     setFileList([]);
-      //     return true; // allow removal
-      //   },
-      // });
+    // If removing an existing image from API
+    if (file.isExisting && editPage && existingImage) {
+      setExistingImageDeleted(true);
+      setFileList([]);
+    } else {
+      // Removing a newly uploaded file
+      setFileList([]);
     }
+    return true;
   };
 
   const uploadProps = {
@@ -102,6 +100,8 @@ const SingleImageUploader = ({
       </Form.Item>
     </div>
   );
-};
+});
+
+SingleImageUploader.displayName = 'SingleImageUploader';
 
 export default SingleImageUploader;

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Form, Button, message, Typography } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
 import { FormSwitch } from '@/components/ui/inputs';
@@ -24,16 +24,19 @@ const ProductManagement = () => {
   const [form] = Form.useForm();
   const { id } = useParams();
 
+  // Create refs for image uploaders to access their methods
+  const mainImageRef = useRef(null);
+  const additionalImagesRef = useRef(null);
+
   const { data: realProductId, isLoading: productsLoading, isFetching } = useProductEdit(+id);
 
   const updateProduct = useUpdateProduct();
   const updateVariants = useUpdateVariants();
   // const { data, isLoading } = useAttributes();
 
-  console.log('productsById:', realProductId);
+  // console.log('productsById:', realProductId);
 
   const onSubmit = (values) => {
-    console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
 
     // Use transformVariantDataForUpdate to preserve IDs
@@ -70,6 +73,21 @@ const ProductManagement = () => {
       .flat()
       .filter(Boolean);
 
+    // Collect ExistingImageUrls from both image uploaders
+    const existingImageUrls = [];
+
+    // Get main image URL if it exists and wasn't deleted
+    const mainImageUrl = mainImageRef.current?.getExistingImageUrl();
+    if (mainImageUrl) {
+      existingImageUrls.push(mainImageUrl);
+    }
+
+    // Get additional image URLs that weren't deleted
+    const additionalImageUrls = additionalImagesRef.current?.getExistingImageUrls() || [];
+    existingImageUrls.push(...additionalImageUrls);
+
+    console.log('ExistingImageUrls to keep:', existingImageUrls);
+
     // Step 1: Build FormData
     const formData = new FormData();
 
@@ -80,6 +98,11 @@ const ProductManagement = () => {
           if (item?.originFileObj) {
             formData.append(key, item.originFileObj);
           } else if (item !== null && item !== undefined) {
+            // SKIP existing image objects which are plain objects with isExisting flag or just url
+            // We only want to append primitives (IDs) or Files
+            if (item.isExisting || (item.uid && item.url && !item.originFileObj)) {
+              return;
+            }
             formData.append(key, String(item));
           }
         });
@@ -95,6 +118,11 @@ const ProductManagement = () => {
       formData.append('FilterOptionIds', String(id));
     });
 
+    // Step 4: Append ExistingImageUrls
+    existingImageUrls.forEach((url) => {
+      formData.append('ExistingImageUrls', url);
+    });
+
     // Debugging
     // console.log('FormData entries:');
     // for (const [k, v] of formData.entries()) {
@@ -107,16 +135,16 @@ const ProductManagement = () => {
       { id: id, data: formData },
       {
         onSuccess: () => {
-          // Then update the variants
-          if (variantsWithIds.length > 0) {
-            updateVariants.mutate({
-              id: +id,
-              data: {
-                productId: +id,
-                variants: variantsWithIds,
-              },
-            });
-          }
+          // // Then update the variants
+          // if (variantsWithIds.length > 0) {
+          //   updateVariants.mutate({
+          //     id: +id,
+          //     data: {
+          //       productId: +id,
+          //       variants: variantsWithIds,
+          //     },
+          //   });
+          // }
         },
       }
     );
@@ -161,6 +189,18 @@ const ProductManagement = () => {
         FilterOptions: realProductId?.allFilterAttributesWithSelection,
         Variants: mapVariantsToForm(realProductId.variants),
         Options: mapOptionsToForm(realProductId.options),
+
+        // Populate AdditionalImages for UploaderMax
+        AdditionalImages: realProductId?.images
+          ?.filter(img => !img.isMain)
+          .map((img, index) => ({
+            uid: `existing-${img.id || index}`,
+            name: img.imageUrl.split('/').pop() || `existing-image-${index}`,
+            status: 'done',
+            url: img.imageUrl,
+            isExisting: true,
+            existingUrl: img.imageUrl,
+          })) || [],
       };
 
       // Map dynamic attributes to form fields
@@ -211,6 +251,7 @@ const ProductManagement = () => {
               </Title>
 
               <SingleImageUploader
+                ref={mainImageRef}
                 name={'MainImage'}
                 label="Main Image"
                 className={'products-main'}
@@ -221,9 +262,12 @@ const ProductManagement = () => {
               />
 
               <UploaderMax
+                ref={additionalImagesRef}
                 name="AdditionalImages"
                 label="Additional Images"
                 className={'products-additionals'}
+                editPage={id ? true : false}
+                existingImages={realProductId?.images || []}
               />
             </Box>
 
