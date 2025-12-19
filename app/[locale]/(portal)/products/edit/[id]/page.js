@@ -156,15 +156,15 @@ const ProductManagement = () => {
         IsShippingRequired: realProductId.isShippingRequired,
         CostPrice: realProductId.costPrice,
         CategoryIds: realProductId.categoriesWithPathsForEdit
-          .flatMap((item) => [...item.ancestors.map((a) => a.id), item.currentCategory.id])
+          ?.flatMap((item) => [...item.ancestors.map((a) => a.id), item.currentCategory.id])
           .sort((a, b) => a - b),
-        FilterOptions: realProductId.allFilterAttributesWithSelection,
+        FilterOptions: realProductId?.allFilterAttributesWithSelection,
         Variants: mapVariantsToForm(realProductId.variants),
         Options: mapOptionsToForm(realProductId.options),
       };
 
       // Map dynamic attributes to form fields
-      realProductId.allFilterAttributesWithSelection.forEach((attr, idx) => {
+      realProductId?.allFilterAttributesWithSelection?.forEach((attr, idx) => {
         if (attr.isMultiSelect) {
           initialValues[`idx_${idx}`] = attr.options
             .filter((opt) => opt.isSelected)

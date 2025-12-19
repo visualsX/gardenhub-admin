@@ -215,6 +215,7 @@ const VariantEditModal = ({ visible, onCancel, productId, initialVariants, optio
                 })) || [],
             })) || [];
 
+            console.log("payload: ", variantsWithIds)
             updateVariants.mutate(
                 {
                     id: productId,
@@ -363,7 +364,7 @@ const VariantEditModal = ({ visible, onCancel, productId, initialVariants, optio
                                                     <div className="grid grid-cols-3 gap-4">
                                                         <FormInputNumber {...restField} name={[name, 'price']} label="Retail Price" placeholder="Add Regular Price" />
                                                         <FormInputNumber {...restField} name={[name, 'salePrice']} label="Sale Price" placeholder="Add Sale Price" />
-                                                        <FormInputNumber {...restField} name={[name, 'discount']} label="Discount" placeholder="Add Discount" />
+                                                        <FormInputNumber rules={[]} {...restField} name={[name, 'discount']} label="Discount" placeholder="Add Discount" />
                                                     </div>
 
                                                     <Form.Item noStyle shouldUpdate={(prev, curr) => prev.Variants?.[name]?.trackInventory !== curr.Variants?.[name]?.trackInventory}>
@@ -372,7 +373,7 @@ const VariantEditModal = ({ visible, onCancel, productId, initialVariants, optio
                                                             return trackInventory ? (
                                                                 <div className="mt-4 grid grid-cols-2 gap-4">
                                                                     <FormInputNumber {...restField} name={[name, 'stockQuantity']} label="Stock Quantity" placeholder="Add Stock Quantity" />
-                                                                    <FormInputNumber {...restField} name={[name, 'lowStockThreshold']} label="Low Stock Threshold" placeholder="Add Value" />
+                                                                    <FormInputNumber rules={[]} {...restField} name={[name, 'lowStockThreshold']} label="Low Stock Threshold" placeholder="Add Value" />
                                                                 </div>
                                                             ) : null;
                                                         }}

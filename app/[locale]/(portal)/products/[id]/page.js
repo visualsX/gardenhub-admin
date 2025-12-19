@@ -13,7 +13,7 @@ import Package from '@/public/shared/stock.svg';
 import LabelAndValue from '@/components/ui/label-value';
 import Badge from '@/components/ui/badge';
 import { Box } from '@/components/wrappers/box';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useProduct } from '@/hooks/products/useProduct';
 import ImageGallery from '@/components/shared/image-gallery';
 import Link from 'next/link';
@@ -22,13 +22,14 @@ export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('general');
   const { id } = useParams();
   const { data, isLoading } = useProduct(+id);
+  const router = useRouter();
 
   const handleDelete = () => {
     message.success('Product deleted successfully');
   };
 
   const handleEdit = () => {
-    message.info('Edit mode activated');
+    router.push(`/products/edit/${id}`);
   };
 
   const tabItems = [
