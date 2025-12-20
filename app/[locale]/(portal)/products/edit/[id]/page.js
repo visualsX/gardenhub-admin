@@ -135,16 +135,16 @@ const ProductManagement = () => {
       { id: id, data: formData },
       {
         onSuccess: () => {
-          // // Then update the variants
-          // if (variantsWithIds.length > 0) {
-          //   updateVariants.mutate({
-          //     id: +id,
-          //     data: {
-          //       productId: +id,
-          //       variants: variantsWithIds,
-          //     },
-          //   });
-          // }
+          // Then update the variants
+          if (variantsWithIds.length > 0) {
+            updateVariants.mutate({
+              id: +id,
+              data: {
+                productId: +id,
+                variants: variantsWithIds,
+              },
+            });
+          }
         },
       }
     );
