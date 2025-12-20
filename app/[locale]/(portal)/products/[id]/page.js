@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Input, Switch, Tag, Rate, Tabs, Image, message } from 'antd';
+import { Button, Switch, message } from 'antd';
 // import { ArrowLeft, Trash2, Edit, DollarSign, TrendingUp, Star, Package } from 'lucide-react';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
 import Trash2 from '@/public/shared/trash-red.svg';
@@ -17,6 +17,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useProduct } from '@/hooks/products/useProduct';
 import ImageGallery from '@/components/shared/image-gallery';
 import Link from 'next/link';
+import DataTable from '@/components/shared/data-table';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 
 export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -35,6 +37,7 @@ export default function ProductDetailPage() {
   const tabItems = [
     { key: 'general', label: 'General' },
     { key: 'pricing', label: 'Pricing' },
+    { key: 'variations', label: 'Variations' },
     { key: 'inventory', label: 'Inventory' },
     { key: 'specifications', label: 'Specifications' },
     { key: 'analytics', label: 'Analytics & Reviews' },
@@ -138,19 +141,19 @@ export default function ProductDetailPage() {
 
           {/* Right Column - Product Details */}
           <div className="lg:col-span-2">
-            <div className="rounded-lg bg-white">
-              <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
+            <SegmentedTabs tabs={tabItems} activeTab={activeTab} onChange={setActiveTab} />
 
-              {activeTab === 'general' && <GeneralTab data={data} isLoading={isLoading} />}
+            {activeTab === 'general' && <GeneralTab data={data} isLoading={isLoading} />}
 
-              {activeTab === 'pricing' && <PricingTab data={data} isLoading={isLoading} />}
+            {activeTab === 'pricing' && <PricingTab data={data} isLoading={isLoading} />}
 
-              {activeTab === 'inventory' && <InventoryTab data={data} isLoading={isLoading} />}
+            {activeTab === 'variations' && <VariationsTab data={data} isLoading={isLoading} />}
 
-              {activeTab === 'specifications' && <SpecsTab data={data} isLoading={isLoading} />}
+            {activeTab === 'inventory' && <InventoryTab data={data} isLoading={isLoading} />}
 
-              {activeTab === 'analytics' && <AnalyticsTab data={data} isLoading={isLoading} />}
-            </div>
+            {activeTab === 'specifications' && <SpecsTab data={data} isLoading={isLoading} />}
+
+            {activeTab === 'analytics' && <AnalyticsTab data={data} isLoading={isLoading} />}
           </div>
         </div>
       </div>
@@ -192,6 +195,37 @@ function GeneralTab({ data, isLoading }) {
             </div>
           </div>
         </Box>
+
+        {/* Product Options */}
+        {data?.options && data.options.length > 0 && (
+          <Box loading={isLoading} header title={'Product Options'} description={'Variant options configured for this product'}>
+            <div className="space-y-6">
+              {data.options.map((option, idx) => (
+                <div key={idx}>
+                  <label className="mb-3 block text-sm font-semibold text-gray-900">
+                    {option.name} ({option.type})
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {option.values?.map((value, valueIdx) => (
+                      <div
+                        key={valueIdx}
+                        className="flex items-center gap-2 rounded-lg border border-smoke-light px-3 py-2"
+                      >
+                        {value.colorHex && (
+                          <div
+                            className="h-5 w-5 rounded border border-smoke-light"
+                            style={{ backgroundColor: value.colorHex }}
+                          />
+                        )}
+                        <span className="text-sm text-gray-900">{value.value || value.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Box>
+        )}
 
         {/* SEO Information */}
         <Box
@@ -514,3 +548,128 @@ function AnalyticsTab({ data, isLoading }) {
     </div>
   );
 }
+
+function VariationsTab({ data, isLoading }) {
+  const columns = [
+    {
+      title: 'Variant',
+      dataIndex: 'variant',
+      key: 'variant',
+      render: (_, record) => {
+        // Combine option values to create variant name
+        const variantName = record.optionValues
+          ?.map((ov) => ov.value)
+          .filter(Boolean)
+          .join(', ') || '-';
+        return <span className="text-gray-900">{variantName}</span>;
+      },
+    },
+    {
+      title: 'SKU',
+      dataIndex: 'sku',
+      key: 'sku',
+      render: (sku) => <span className="text-gray-600">{sku || '-'}</span>,
+    },
+    {
+      title: 'Prices (AED)',
+      dataIndex: 'price',
+      key: 'price',
+      render: (price, record) => {
+        const displayPrice = record.salePrice || price || 0;
+        return <span className="text-gray-900">{displayPrice.toLocaleString()}</span>;
+      },
+    },
+    {
+      title: 'Stock',
+      dataIndex: 'stockQuantity',
+      key: 'stockQuantity',
+      render: (stock) => <span className="text-gray-900">{stock || 0}</span>,
+    },
+    {
+      title: '',
+      key: 'action',
+      width: 60,
+      render: () => (
+        <button className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100">
+          <Edit className="h-4 w-4" />
+        </button>
+      ),
+    },
+  ];
+
+  const expandedRowRender = (record) => {
+    return (
+      <Box header title="Variation Details" description="Additional information" className="p-6">
+        <div className="grid grid-cols-3 gap-6">
+          {/* Pricing Information */}
+          <div className='border-with-radius p-4'>
+            <h4 className="mb-3 text-base font-semibold text-green-500">Pricing</h4>
+            <div className="space-y-2">
+              <LabelAndValue label="Regular Price" value={`${record.price || 0} AED`} />
+              <LabelAndValue label="Sale Price" value={`${record.salePrice || 0} AED`} />
+              <LabelAndValue label="Discount" value={`${record.discount || 0}%`} />
+            </div>
+          </div>
+
+          {/* Inventory Information */}
+          <div className='border-with-radius p-4'>
+            <h4 className="mb-3 text-base font-semibold text-green-500">Inventory</h4>
+            <div className="space-y-2">
+              <div className="space-y-2">
+                <span className="text-sm block font-semibold">Track Inventory</span>
+                <Switch disabled checked={record.trackInventory} size="small" />
+              </div>
+              <LabelAndValue label="Stock Quantity" value={record.stockQuantity || 0} />
+              <LabelAndValue label="Low Stock Threshold" value={record.lowStockThreshold || 0} />
+            </div>
+          </div>
+
+          {/* Variant Options */}
+          <div className='border-with-radius p-4'>
+            <h4 className="mb-3 text-base font-semibold text-green-500">Variant Options</h4>
+            <div className="space-y-2">
+              {record.optionValues?.map((option, idx) => (
+                <div key={idx} className="flex items-center justify-between ">
+                  <span className="text-sm font-semibold">{option.name}</span>
+                  <div className="flex items-center gap-2">
+                    {option.colorHex && (
+                      <div
+                        className="h-4 w-4 rounded border border-smoke-light"
+                        style={{ backgroundColor: option.colorHex }}
+                      />
+                    )}
+                    <span className="text-sm font-medium text-gray-900 ">{option.value}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Box>
+    );
+  };
+
+  return (
+    <div className="mt-6">
+      <Box
+        loading={isLoading}
+        header
+        title="All Variants"
+        description="Basic details about the product"
+      >
+        <DataTable
+          loading={isLoading}
+          rowKey="id"
+          columns={columns}
+          data={data?.variants || []}
+          pagination={false}
+          expandable={{
+            expandedRowRender,
+            rowExpandable: (record) => true,
+          }}
+        />
+      </Box>
+    </div>
+  );
+}
+
