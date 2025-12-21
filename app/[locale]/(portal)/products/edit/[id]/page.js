@@ -15,11 +15,12 @@ import {
   mapOptionsToForm,
   mapVariantsToForm,
 } from '@/lib/utils/productUtils';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
 const ProductManagement = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
   const { id } = useParams();
@@ -152,7 +153,7 @@ const ProductManagement = () => {
 
   const handleCancel = () => {
     form.resetFields();
-    message.info('Form reset to initial values');
+    router.back();
   };
 
   React.useEffect(() => {

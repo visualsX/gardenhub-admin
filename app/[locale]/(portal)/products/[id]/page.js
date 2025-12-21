@@ -19,6 +19,7 @@ import ImageGallery from '@/components/shared/image-gallery';
 import Link from 'next/link';
 import DataTable from '@/components/shared/data-table';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
+import GoBack from '@/components/ui/go-back';
 
 export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -48,20 +49,21 @@ export default function ProductDetailPage() {
       <div className="">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <Link href={'/products'} className="flex items-center gap-4">
-            <Button
+          {/* <Link href={'/products'} className="flex items-center gap-4"> */}
+          <GoBack href={'/products'} title="Products" desc="View all products" />
+          {/* <Button
               icon={<ArrowLeft className="h-4 w-4" />}
               type="text"
               className="flex items-center"
-            />
-            <div>
+            /> */}
+          {/* <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-semibold text-gray-900">{data?.name}</h1>
                 <Badge variant="success">In Stock</Badge>
               </div>
               <p className="text-sm text-gray-500">SKU: {data?.sku}</p>
-            </div>
-          </Link>
+            </div> */}
+          {/* </Link> */}
           <div className="flex gap-2">
             <Button danger icon={<Trash2 className="h-4 w-4" />} onClick={handleDelete}>
               Delete

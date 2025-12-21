@@ -12,10 +12,12 @@ import Link from 'next/link';
 import { getLastIdx } from '@/lib/utils/helpers';
 import ProductTabs from '@/components/pages/products/add/ProductTabs';
 import { transformVariantData } from '@/lib/utils/productUtils';
+import { useRouter } from 'next/navigation';
 
 const { Title, Text } = Typography;
 
 const ProductManagement = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
 
@@ -74,7 +76,7 @@ const ProductManagement = () => {
 
   const handleCancel = () => {
     form.resetFields();
-    message.info('Form reset to initial values');
+    router.push('/products');
   };
 
   return (
