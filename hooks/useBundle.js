@@ -75,6 +75,67 @@ export const useBundles = (filters = {}) => {
   };
 };
 
+// Get products for bundles (with variants)
+export const useProductsForBundles = (filters = {}) => {
+  const {
+    paginationKey,
+    pageSize = 10,
+    where = null,
+    order = null,
+    ...paginationFilters
+  } = filters;
+
+  const pageState = paginationKey ? useCursorPagination(paginationKey, { pageSize }) : null;
+  const { first = null, after = null, last = null, before = null } = pageState ?? paginationFilters;
+
+  const queryKeyFilters = {
+    paginationKey,
+    pageSize,
+    first,
+    after,
+    last,
+    before,
+    where,
+    order,
+  };
+
+  const query = useQuery({
+    queryKey: [...bundleKeys.all, 'products', queryKeyFilters],
+    queryFn: async () => {
+      const variables = {
+        first: first ?? null,
+        after: after ?? null,
+        last: last ?? null,
+        before: before ?? null,
+        where: where || null,
+        order: order || null,
+      };
+
+      const response = await graphqlClient.request(
+        BUNDLES_QUERIES.GET_PRODUCTS_FOR_BUNDLES,
+        variables
+      );
+      return response.products;
+    },
+    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+  });
+
+  const exposedPageState = pageState ?? {
+    first,
+    after,
+    last,
+    before,
+    pageSize,
+    page: 1,
+  };
+
+  return {
+    ...query,
+    pageState: exposedPageState,
+  };
+};
+
 // Get single bundle
 export const useBundle = (id) => {
   return useQuery({
@@ -95,10 +156,23 @@ const createBundleFormData = (data, isUpdate = false) => {
   const formData = new FormData();
   if (isUpdate && data.id) formData.append('Id', data.id);
   formData.append('Name', data.name);
-  if (data.description) formData.append('Description', data.description);
+  if (data.shortDescription) formData.append('ShortDescription', data.shortDescription);
   if (data.detailedDescription) formData.append('DetailedDescription', data.detailedDescription);
   formData.append('DiscountPercentage', data.discountPercentage || 0);
-  // Explicitly handle boolean as strings/booleans depending on client (axios handles boolean usually fine, but swagger says boolean)
+
+  if (data.expiryDate) {
+    // Handle Antd DatePicker value (Dayjs/Moment)
+    const dateStr = typeof data.expiryDate.toISOString === 'function'
+      ? data.expiryDate.toISOString()
+      : data.expiryDate;
+    formData.append('ExpiryDate', dateStr);
+  }
+
+  if (data.metaTitle) formData.append('MetaTitle', data.metaTitle);
+  if (data.metaDescription) formData.append('MetaDescription', data.metaDescription);
+  if (data.keywords) formData.append('Keywords', data.keywords);
+
+  // Explicitly handle boolean as strings/booleans depending on client
   formData.append('IsActive', data.isActive ?? true);
   formData.append('IsFeatured', data.isFeatured ?? false);
 
@@ -117,21 +191,32 @@ const createBundleFormData = (data, isUpdate = false) => {
     });
   }
 
-  // Items (Array of Objects)
-  if (data.items && data.items.length > 0) {
-    data.items.forEach((item, index) => {
-      if (item.productId) formData.append(`Items[${index}].productId`, item.productId);
-      // formData.append(`Items[${index}].productVariantId`, item.productVariantId || 0); // If exists
-      formData.append(`Items[${index}].quantity`, item.quantity || 1);
+  // Existing Image URLs (for Update)
+  if (data.existingImageUrls && data.existingImageUrls.length > 0) {
+    data.existingImageUrls.forEach((url) => {
+      formData.append('ExistingImageUrls', url);
     });
   }
 
-  // ExistingImageUrls (for Update)
-  if (isUpdate && data.existingImageUrls && data.existingImageUrls.length > 0) {
-    data.existingImageUrls.forEach((url, index) => {
-      formData.append(`ExistingImageUrls[${index}]`, url); // Or just same key if server supports
+  // Items (Array of Objects)
+  if (data.items && data.items.length > 0) {
+    data.items.forEach((item, index) => {
+      // Corrected payload structure based on Postman collection
+      // Uses indexed keys: Items[0].ProductId
+      // Uses PascalCase properties: ProductId, ProductVariantId, Quantity
+
+      formData.append(`Items[${index}].ProductId`, item.productId);
+
+      // Only append ProductVariantId if it exists (skip for simple products)
+      if (item.productVariantId) {
+        formData.append(`Items[${index}].ProductVariantId`, item.productVariantId);
+      }
+
+      formData.append(`Items[${index}].Quantity`, item.quantity || 1);
     });
   }
+
+
 
   return formData;
 };

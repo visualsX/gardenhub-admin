@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Form,
   Input,
   InputNumber,
   Switch,
   Button,
-  Table,
   Card,
   Row,
   Col,
   Avatar,
   Space,
+  Radio,
+  Tag,
+  Checkbox,
+  DatePicker,
 } from 'antd';
 import { useRouter } from 'next/navigation';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
@@ -20,10 +23,13 @@ import { Box } from '@/components/wrappers/box';
 import SingleImageUploader from '@/components/ui/singleUpload';
 import MultiImageUploader from '@/components/ui/uploaderM';
 import InputSearch from '@/components/ui/input-search';
-import { useProducts } from '@/hooks/products/useProduct';
+import { useProductsForBundles } from '@/hooks/useBundle';
 import Badge from '@/components/ui/badge';
 import Trash2 from '@/public/shared/trash-red.svg';
 import useUiStates from '@/store/useUiStates';
+import DataTable from '@/components/shared/data-table';
+import { PAGINATION_KEYS, DEFAULT_CURSOR_PAGE_SIZE } from '@/lib/const/pagination';
+import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
@@ -32,15 +38,22 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Image Upload refs
+  const mainImageRef = useRef(null);
+  const additionalImagesRef = useRef(null);
+
   // Product Selection State
   const [selectedProducts, setSelectedProducts] = useState(initialValues?.items || []);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch products for selection
-  const { data: productsData, isLoading: isProductsLoading } = useProducts({
-    first: 10,
+  // Fetch products for selection (with variants)
+  const { data: productsData, isLoading: isProductsLoading, pageState } = useProductsForBundles({
+    paginationKey: PAGINATION_KEYS.BUNDLE_PRODUCTS,
+    pageSize: DEFAULT_CURSOR_PAGE_SIZE,
     where: searchTerm ? { name: { contains: searchTerm } } : null,
   });
+
+  const pageInfo = productsData?.pageInfo ?? {};
 
   // Handle Form Submit
   const handleSubmit = async (values) => {
@@ -62,18 +75,20 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
         .map((f) => f.originFileObj);
     }
 
-    // Existing Image URLs (for Update)
-    // We need to pass the list of URLs that should be KEPT.
-    // Assuming values.additionalImages contains mixed new and existing.
-    // Existing ones usually don't have originFileObj but have 'url'.
-    const existingImageUrls =
-      values.additionalImages?.filter((f) => !f.originFileObj && f.url).map((f) => f.url) || [];
+    // Collect ExistingImageUrls from both image uploaders
+    const existingImageUrls = [];
 
-    // Add main image to existing if it wasn't changed?
-    // Logic depends on how backend handles "MainBundleImage" vs existing.
-    // If "MainBundleImage" is null, does it keep existing?
-    // Usually safer to assume if we don't send it, it might not change, OR we need to handle it.
-    // But for "ExistingImageUrls" typically that refers to the additional images collection.
+    // Get main image URL if it exists and wasn't deleted
+    const mainImageUrl = mainImageRef.current?.getExistingImageUrl();
+    if (mainImageUrl) {
+      existingImageUrls.push(mainImageUrl);
+    }
+
+    // Get additional image URLs that weren't deleted
+    const additionalImageUrls = additionalImagesRef.current?.getExistingImageUrls() || [];
+    existingImageUrls.push(...additionalImageUrls);
+
+    // console.log('ExistingImageUrls to keep:', existingImageUrls);
 
     const payload = {
       ...values,
@@ -82,7 +97,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
       existingImageUrls: existingImageUrls,
       items: selectedProducts.map((p) => ({
         productId: p.id || p.productId,
-        quantity: 1, // Start with 1
+        quantity: p.quantity || 1,
         productVariantId: p.productVariantId || null,
       })),
     };
@@ -92,7 +107,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
   // Calculate Summary
   const summary = useMemo(() => {
     const totalValue = selectedProducts.reduce(
-      (sum, p) => sum + (p.regularPrice || p.originalUnitPrice || 0),
+      (sum, p) => sum + ((p.regularPrice || p.originalUnitPrice || 0) * (p.quantity || 1)),
       0
     );
     // We need to watch discount/price from form to calculate the rest.
@@ -111,7 +126,8 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
     { label: 'Settings', key: 'settings' },
   ];
 
-  // Transform initial values for images
+
+  // Transform initial values for images and other fields
   const transformedInitialValues = useMemo(() => {
     if (!initialValues) return {};
 
@@ -120,16 +136,17 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
 
     return {
       ...initialValues,
+      shortDescription: initialValues.shortDescription, // Map description from API to shortDescription form field
+      expiryDate: initialValues.expiryDate ? dayjs(initialValues.expiryDate) : null,
       // Multi uploader expects fileList-like array
       additionalImages: addImgs?.map((img) => ({
         uid: img.id || img.imageUrl,
         name: 'image',
         status: 'done',
         url: img.imageUrl,
+        isExisting: true,
+        existingUrl: img.imageUrl,
       })),
-      // Single uploader handles its own initial state via existingImage prop,
-      // but we can also set it here if it used Form.Item value.
-      // However, SingleUploader uses a custom implementation with existingImage prop.
     };
   }, [initialValues]);
 
@@ -155,8 +172,15 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               label="Main Image"
               existingImage={mainImageObj}
               editPage={mode === 'edit'}
+              ref={mainImageRef}
             />
-            <MultiImageUploader name="additionalImages" label="Additional Images" />
+            <MultiImageUploader 
+              name="additionalImages" 
+              label="Additional Images" 
+              existingImages={initialValues?.images || []}
+              editPage={mode === 'edit'}
+              ref={additionalImagesRef}
+            />
           </Box>
 
           {/* Bundle Summary */}
@@ -227,7 +251,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               <Form.Item name="name" label="Bundle name *" rules={[{ required: true }]}>
                 <Input placeholder="Enter bundle name" />
               </Form.Item>
-              <Form.Item name="description" label="Short Description">
+              <Form.Item name="shortDescription" label="Short Description">
                 <TextArea rows={2} placeholder="Enter description" />
               </Form.Item>
               <Form.Item name="detailedDescription" label="Full Description">
@@ -258,6 +282,9 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               <Form.Item name="metaDescription" label="Meta Description">
                 <TextArea rows={2} placeholder="Brief description for search results" />
               </Form.Item>
+              <Form.Item name="keywords" label="Keywords">
+                <Input placeholder="Comma separated keywords (e.g. garden, summer, tools)" />
+              </Form.Item>
             </Box>
           </div>
 
@@ -276,21 +303,216 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                 />
               </div>
 
-              <Table
-                dataSource={productsData?.nodes || []}
+              <DataTable
+                data={productsData?.nodes || []}
                 loading={isProductsLoading}
                 rowKey="id"
-                pagination={false} // Simple list for now
+                pagination={false}
+                cursorPaginationProps={{
+                  paginationKey: PAGINATION_KEYS.BUNDLE_PRODUCTS,
+                  pageInfo,
+                  totalCount: productsData?.totalCount ?? 0,
+                  pageSize: pageState.pageSize,
+                  loading: isProductsLoading,
+                }}
+                expandable={{
+                  expandedRowRender: (record) => {
+                    // Only show variants if product has them
+                    if (!record.variants || record.variants.length === 0) {
+                      return <p className="text-gray-500 py-2">No variants available</p>;
+                    }
+
+                    // Get selected variant IDs for this product
+                    const selectedVariantIds = selectedProducts
+                      .filter((p) => p.productId === record.id && p.productVariantId)
+                      .map((p) => p.productVariantId);
+
+                    return (
+                      <div className="py-2">
+                        <p className="text-sm font-medium mb-2">Select Variant(s):</p>
+                        <Space direction="vertical" className="w-full">
+                          {record.variants.map((variant) => (
+                            <Checkbox
+                              key={variant.id}
+                              checked={selectedVariantIds.includes(variant.id)}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+
+                                setSelectedProducts((prev) => {
+                                  if (isChecked) {
+                                    // Add variant to selected products
+                                    return [
+                                      ...prev,
+                                      {
+                                        id: record.id,
+                                        productId: record.id,
+                                        productVariantId: variant.id,
+                                        name: record.name,
+                                        variantName: variant.name,
+                                        regularPrice: variant.price,
+                                        sku: variant.sku,
+                                        images: record.images,
+                                        quantity: 1,
+                                      },
+                                    ];
+                                  } else {
+                                    // Remove this specific variant
+                                    return prev.filter(
+                                      (p) =>
+                                        !(p.productId === record.id && p.productVariantId === variant.id)
+                                    );
+                                  }
+                                });
+                              }}
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div>
+                                  <span className="font-medium">{variant.name}</span>
+                                  {variant.optionValues && variant.optionValues.length > 0 && (
+                                    <div className="mt-1">
+                                      {variant.optionValues.map((opt, idx) => (
+                                        <Tag key={idx} className="mr-1">
+                                          {opt.name}: {opt.value}
+                                          {opt.colorHex && (
+                                            <span
+                                              className="ml-1 inline-block w-3 h-3 rounded-full border"
+                                              style={{ backgroundColor: opt.colorHex }}
+                                            />
+                                          )}
+                                        </Tag>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="font-medium">${variant.price?.toFixed(2)}</div>
+                                  <div className="text-xs text-gray-500">
+                                    SKU: {variant.sku} | Stock: {variant.stockQuantity}
+                                  </div>
+                                </div>
+                              </div>
+                            </Checkbox>
+                          ))}
+                        </Space>
+                      </div>
+                    );
+                  },
+                  rowExpandable: (record) => record.variants && record.variants.length > 0,
+                }}
                 rowSelection={{
                   type: 'checkbox',
-                  selectedRowKeys: selectedProducts.map((p) => p.id || p.productId),
-                  onChange: (_, selectedRows) => {
-                    // Merge new selection with existing (handle pagination case later if needed)
-                    // For now replacing selection based on current page view is tricky if paginated.
-                    // Standard AntD rowSelection helps.
-                    // But here we might want to accumulate.
-                    // Let's simplified: just use the passed rows for this simplified view.
-                    setSelectedProducts(selectedRows);
+                  selectedRowKeys: (() => {
+                    // Calculate which products should have their parent checkbox checked
+                    const keys = [];
+                    productsData?.nodes?.forEach((product) => {
+                      if (product.variants && product.variants.length > 0) {
+                        // Product with variants - check if all variants are selected
+                        const selectedVariantIds = selectedProducts
+                          .filter((p) => p.productId === product.id && p.productVariantId)
+                          .map((p) => p.productVariantId);
+                        
+                        if (selectedVariantIds.length === product.variants.length) {
+                          keys.push(product.id);
+                        }
+                      } else {
+                        // Product without variants - check if it's selected
+                        const isSelected = selectedProducts.some(
+                          (p) => p.productId === product.id && !p.productVariantId
+                        );
+                        if (isSelected) {
+                          keys.push(product.id);
+                        }
+                      }
+                    });
+                    return keys;
+                  })(),
+                  onChange: (selectedRowKeys, selectedRows) => {
+                    // Determine which row was clicked by comparing with current state
+                    const currentKeys = selectedProducts
+                      .filter((p) => {
+                        const product = productsData?.nodes?.find((n) => n.id === p.productId);
+                        if (!product) return false;
+                        if (product.variants && product.variants.length > 0) {
+                          // For products with variants, only count if all variants selected
+                          const variantCount = selectedProducts.filter(
+                            (sp) => sp.productId === p.productId && sp.productVariantId
+                          ).length;
+                          return variantCount === product.variants.length;
+                        }
+                        return !p.productVariantId;
+                      })
+                      .map((p) => p.productId);
+
+                    // Find the difference
+                    const added = selectedRowKeys.filter((key) => !currentKeys.includes(key));
+                    const removed = currentKeys.filter((key) => !selectedRowKeys.includes(key));
+
+                    setSelectedProducts((prev) => {
+                      let updated = [...prev];
+
+                      // Handle added products
+                      added.forEach((productId) => {
+                        const product = productsData?.nodes?.find((n) => n.id === productId);
+                        if (!product) return;
+
+                        if (product.variants && product.variants.length > 0) {
+                          // Remove any existing selections for this product
+                          updated = updated.filter((p) => p.productId !== productId);
+                          // Add all variants
+                          const variantSelections = product.variants.map((variant) => ({
+                            id: productId,
+                            productId: productId,
+                            productVariantId: variant.id,
+                            name: product.name,
+                            variantName: variant.name,
+                            regularPrice: variant.price,
+                            sku: variant.sku,
+                            images: product.images,
+                            quantity: 1,
+                          }));
+                          updated = [...updated, ...variantSelections];
+                        } else {
+                          // Add product without variant
+                          updated.push({
+                            id: productId,
+                            productId: productId,
+                            productVariantId: null,
+                            name: product.name,
+                            regularPrice: product.regularPrice,
+                            sku: product.sku,
+                            images: product.images,
+                            stockQuantity: product.stockQuantity,
+                            quantity: 1,
+                          });
+                        }
+                      });
+
+                      // Handle removed products
+                      removed.forEach((productId) => {
+                        updated = updated.filter((p) => p.productId !== productId);
+                      });
+
+                      return updated;
+                    });
+                  },
+                  getCheckboxProps: (record) => {
+                    // Calculate checkbox state based on variant selection
+                    const selectedVariantIds = selectedProducts
+                      .filter((p) => p.productId === record.id && p.productVariantId)
+                      .map((p) => p.productVariantId);
+
+                    const hasVariants = record.variants && record.variants.length > 0;
+
+                    if (hasVariants) {
+                      const allVariantsSelected = selectedVariantIds.length === record.variants.length;
+                      const someVariantsSelected = selectedVariantIds.length > 0;
+
+                      return {
+                        indeterminate: someVariantsSelected && !allVariantsSelected,
+                      };
+                    }
+
+                    return {};
                   },
                   preserveSelectedRowKeys: true,
                 }}
@@ -303,7 +525,14 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                         <Avatar shape="square" src={record.images?.[0]?.imageUrl} />
                         <div>
                           <p className="font-medium">{text}</p>
-                          <p className="text-xs text-gray-500">In Stock: {record.stockQuantity}</p>
+                          <p className="text-xs text-gray-500">
+                            In Stock: {record.stockQuantity}
+                            {record.variants && record.variants.length > 0 && (
+                              <Tag color="blue" className="ml-2">
+                                {record.variants.length} variants
+                              </Tag>
+                            )}
+                          </p>
                         </div>
                       </div>
                     ),
@@ -323,21 +552,58 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               description="Products included in this bundle"
               classRest="mt-6"
             >
-              <Table
-                dataSource={selectedProducts}
-                rowKey={(r) => r.id || r.productId}
+              <DataTable
+                data={selectedProducts}
+                rowKey={(r) => `${r.productId || r.id}-${r.productVariantId || 'base'}`}
                 pagination={false}
                 columns={[
                   {
                     title: 'Product',
                     dataIndex: 'name', // Or productName if coming from existing bundle items
-                    render: (text, record) => record.name || record.productName,
+                    render: (text, record) => (
+                      <div>
+                        <div className="font-medium">{record.name || record.productName}</div>
+                        {record.variantName && (
+                          <div className="text-xs text-gray-600 mt-1">
+                            <Tag color="blue" size="small">
+                              Variant: {record.variantName}
+                            </Tag>
+                          </div>
+                        )}
+                        {record.variantAttributes && (
+                          <div className="text-xs text-gray-500 mt-1">{record.variantAttributes}</div>
+                        )}
+                      </div>
+                    ),
                   },
                   {
                     title: 'Price',
                     dataIndex: 'regularPrice', // Or originalUnitPrice
                     render: (val, record) =>
                       `$${(val || record.originalUnitPrice || 0).toFixed(2)}`,
+                  },
+                  {
+                    title: 'Quantity',
+                    dataIndex: 'quantity',
+                    render: (val, record) => (
+                      <InputNumber
+                        min={1}
+                        value={val || 1}
+                        onChange={(newVal) => {
+                          setSelectedProducts((prev) =>
+                            prev.map((p) => {
+                              if (
+                                (p.id || p.productId) === (record.id || record.productId) &&
+                                (p.productVariantId || null) === (record.productVariantId || null)
+                              ) {
+                                return { ...p, quantity: newVal };
+                              }
+                              return p;
+                            })
+                          );
+                        }}
+                      />
+                    ),
                   },
                   {
                     title: 'Action',
@@ -350,7 +616,11 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                         onClick={() => {
                           setSelectedProducts((prev) =>
                             prev.filter(
-                              (p) => (p.id || p.productId) !== (record.id || record.productId)
+                              (p) =>
+                                !(
+                                  (p.id || p.productId) === (record.id || record.productId) &&
+                                  (p.productVariantId || null) === (record.productVariantId || null)
+                                )
                             )
                           );
                         }}
@@ -426,7 +696,9 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               description="Set bundle availability rules"
               classRest="mt-6"
             >
-              {/* Date Pickers would go here - using simple inputs as placeholders or use DatePicker from antd */}
+              <Form.Item name="expiryDate" label="Expiry Date">
+                <DatePicker className="w-full" showTime />
+              </Form.Item>
             </Box>
           </div>
         </div>

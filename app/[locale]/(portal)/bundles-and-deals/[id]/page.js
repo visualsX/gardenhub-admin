@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Switch, Table, Avatar, Tag } from 'antd';
+import { Button, Switch, Table, Tag } from 'antd';
 import ArrowLeft from '@/public/shared/arrow-left.svg';
 import Trash2 from '@/public/shared/trash-red.svg';
 import Edit from '@/public/shared/edit-white.svg';
 import TrendingUp from '@/public/shared/trending-up.svg';
 import DollarSign from '@/public/shared/dollar.svg';
-import Star from '@/public/shared/star.svg';
 import Package from '@/public/shared/stock.svg';
 import Badge from '@/components/ui/badge';
 import { Box } from '@/components/wrappers/box';
@@ -19,6 +18,7 @@ import SegmentedTabs from '@/components/ui/segmented-tabs';
 import LabelAndValue from '@/components/ui/label-value';
 import DeleteModal from '@/components/shared/delete-modal';
 import useUiStates from '@/store/useUiStates';
+import DataTable from '@/components/shared/data-table';
 
 export default function BundleDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -26,7 +26,7 @@ export default function BundleDetailPage() {
   const router = useRouter();
   const { data, isLoading } = useBundle(+id);
   const deleteBundle = useDeleteBundle();
-  const { openDeleteModal, isDeleteModalOpen } = useUiStates();
+  const { openDeleteModal, } = useUiStates();
 
   const handleDelete = () => {
     openDeleteModal(true, data);
@@ -170,7 +170,7 @@ export default function BundleDetailPage() {
         loading={deleteBundle?.isPending}
         entityName="bundle"
         onConfirm={() => {
-          deleteBundle.mutate(isDeleteModalOpen?.data?.id);
+          deleteBundle.mutate(+id);
         }}
       />
     </div>
@@ -188,7 +188,8 @@ function OverviewTab({ data, isLoading }) {
       >
         <div className="space-y-6">
           <LabelAndValue label="Bundle Name" value={data?.name} />
-          <LabelAndValue label="Description" value={data?.description} />
+          <LabelAndValue label="Short Description" value={data?.shortDescription} />
+          <LabelAndValue label="Detail Description" value={data?.detailedDescription} />
           <div className="grid grid-cols-2 gap-6">
             <LabelAndValue label="Bundle Price" value={`$${data?.bundlePrice}`} />
             <LabelAndValue label="Discount Percentage" value={`${data?.discountPercentage}%`} />
@@ -226,11 +227,49 @@ function OverviewTab({ data, isLoading }) {
           </div>
         </div>
       </Box>
+
+      {/* SEO Information */}
+      <Box
+        loading={isLoading}
+        header
+        title={'SEO Information'}
+        description={'Search engine optimization details'}
+      >
+        <div className="space-y-6">
+          <LabelAndValue label="SEO Title" value={data?.metaTitle} />
+          <LabelAndValue label="Meta Description" value={data?.metaDescription} />
+          <LabelAndValue label="Keywords" value={data?.keywords} />
+        </div>
+      </Box>
     </div>
   );
 }
 
 function ProductsTab({ data, isLoading }) {
+  // Group items by productId
+  const groupedItems = React.useMemo(() => {
+    if (!data?.items) return [];
+
+    const groups = data.items.reduce((acc, item) => {
+      if (!acc[item.productId]) {
+        acc[item.productId] = {
+          productId: item.productId,
+          productName: item.productName,
+          imageUrl: item.imageUrl,
+          items: [],
+          totalQuantity: 0,
+          totalPrice: 0,
+        };
+      }
+      acc[item.productId].items.push(item);
+      acc[item.productId].totalQuantity += item.quantity || 1;
+      acc[item.productId].totalPrice += (item.originalUnitPrice || 0) * (item.quantity || 1);
+      return acc;
+    }, {});
+
+    return Object.values(groups);
+  }, [data?.items]);
+
   const columns = [
     {
       title: 'Product',
@@ -245,22 +284,27 @@ function ProductsTab({ data, isLoading }) {
           </div>
           <div>
             <p className="font-medium text-gray-900">{text}</p>
-            <p className="text-sm text-gray-500">SKU: {record.productId}</p>{' '}
-            {/* ID as SKU for now if SKU not in items */}
+            <p className="text-sm text-gray-500">Product ID: {record.productId}</p>
+            {record.items.length > 1 && (
+              <Tag color="blue" size="small" className="mt-1">
+                {record.items.length} Variants Selected
+              </Tag>
+            )}
           </div>
         </div>
       ),
     },
     {
-      title: 'Individual Price',
-      dataIndex: 'originalUnitPrice',
-      key: 'originalUnitPrice',
-      render: (price) => `$${price?.toFixed(2)}`,
+      title: 'Total Quantity',
+      dataIndex: 'totalQuantity',
+      key: 'totalQuantity',
+      render: (qty) => <span className="text-gray-900">{qty}</span>,
     },
     {
-      title: 'Stock',
-      key: 'stock',
-      render: () => <Badge variant="success">In Stock</Badge>, // Placeholder as item stock not in query result yet
+      title: 'Total Value',
+      dataIndex: 'totalPrice',
+      key: 'totalPrice',
+      render: (price) => `$${price?.toFixed(2)}`,
     },
     {
       title: 'Actions',
@@ -270,11 +314,57 @@ function ProductsTab({ data, isLoading }) {
     },
   ];
 
-  const dataSource = data?.items || [];
-  const totalIndividualPrice = dataSource.reduce(
-    (acc, item) => acc + (item.originalUnitPrice || 0),
-    0
-  );
+  const totalIndividualPrice = groupedItems.reduce((acc, group) => acc + group.totalPrice, 0);
+
+  const expandedRowRender = (record) => {
+    return (
+      <Box
+        header
+        title="Included Variants"
+        description={`Variants of ${record.productName} in this bundle`}
+        className="p-6"
+      >
+        <div className="space-y-4">
+          {record.items.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
+            >
+              <div className="flex items-center gap-4">
+                {/* Variant Info */}
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {item.variantAttributes || item.displayName || 'Standard Variant'}
+                  </p>
+                  <div className="flex gap-2 text-xs text-gray-500">
+                    <span>ID: {item.productVariantId || item.productId}</span>
+                    {item.productVariantId && <span>• Variant</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-8">
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Unit Price</p>
+                  <p className="font-medium text-gray-900">${item.originalUnitPrice?.toFixed(2)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Quantity</p>
+                  <p className="font-medium text-gray-900">{item.quantity || 1}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Total</p>
+                  <p className="font-medium text-gray-900">
+                    ${((item.originalUnitPrice || 0) * (item.quantity || 1)).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Box>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -282,10 +372,19 @@ function ProductsTab({ data, isLoading }) {
         loading={isLoading}
         header
         title="Included Products"
-        description={`${dataSource.length} products in this bundle`}
+        description={`${data?.items?.length || 0} items from ${groupedItems.length} products`}
         extra={<Button icon={<span className="text-lg leading-none">+</span>}>Add Product</Button>}
       >
-        <Table columns={columns} dataSource={dataSource} pagination={false} rowKey="productId" />
+        <DataTable
+          columns={columns}
+          data={groupedItems}
+          pagination={false}
+          rowKey="productId"
+          expandable={{
+            expandedRowRender,
+            rowExpandable: (record) => record.items.some((item) => item.productVariantId),
+          }}
+        />
       </Box>
 
       <Box
@@ -295,10 +394,13 @@ function ProductsTab({ data, isLoading }) {
         description="Comparison of individual vs bundle pricing"
       >
         <div className="space-y-3">
-          {dataSource.map((item) => (
-            <div key={item.productId} className="flex justify-between text-gray-600">
-              <span>{item.productName}</span>
-              <span>${item.originalUnitPrice?.toFixed(2)}</span>
+          {groupedItems.map((group) => (
+            <div key={group.productId} className="flex justify-between text-gray-600">
+              <span>
+                {group.totalQuantity > 1 ? `${group.totalQuantity}x ` : ''}
+                {group.productName}
+              </span>
+              <span>${group.totalPrice.toFixed(2)}</span>
             </div>
           ))}
           <div className="flex justify-between border-t pt-3 font-semibold text-gray-900">
