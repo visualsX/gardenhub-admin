@@ -170,6 +170,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
             <SingleImageUploader
               name="mainImage"
               label="Main Image"
+              className={'products-main'}
               existingImage={mainImageObj}
               editPage={mode === 'edit'}
               ref={mainImageRef}
@@ -177,6 +178,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
             <MultiImageUploader 
               name="additionalImages" 
               label="Additional Images" 
+              className={'products-additionals'}
               existingImages={initialValues?.images || []}
               editPage={mode === 'edit'}
               ref={additionalImagesRef}
