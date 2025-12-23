@@ -192,16 +192,17 @@ const ProductManagement = () => {
         Options: mapOptionsToForm(realProductId.options),
 
         // Populate AdditionalImages for UploaderMax
-        AdditionalImages: realProductId?.images
-          ?.filter(img => !img.isMain)
-          .map((img, index) => ({
-            uid: `existing-${img.id || index}`,
-            name: img.imageUrl.split('/').pop() || `existing-image-${index}`,
-            status: 'done',
-            url: img.imageUrl,
-            isExisting: true,
-            existingUrl: img.imageUrl,
-          })) || [],
+        AdditionalImages:
+          realProductId?.images
+            ?.filter((img) => !img.isMain)
+            .map((img, index) => ({
+              uid: `existing-${img.id || index}`,
+              name: img.imageUrl.split('/').pop() || `existing-image-${index}`,
+              status: 'done',
+              url: img.imageUrl,
+              isExisting: true,
+              existingUrl: img.imageUrl,
+            })) || [],
       };
 
       // Map dynamic attributes to form fields

@@ -11,6 +11,7 @@ const ColumnActions = ({
   id,
   route = null,
   editHandlerExtra = () => {},
+  onEdit,
   path,
 }) => {
   // hooks and states
@@ -18,12 +19,21 @@ const ColumnActions = ({
   //jsx
   return (
     <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-3">
-      <button onClick={() => openDeleteModal(true, { id })} className="cursor-pointer">
-        <Trash2 size={18} />
-      </button>
-      <Link href={`/${path}/edit/${id}`} className="cursor-pointer">
-        <Edit2 size={18} />
-      </Link>
+      {trash && (
+        <button onClick={() => openDeleteModal(true, { id })} className="cursor-pointer">
+          <Trash2 size={18} />
+        </button>
+      )}
+      {edit &&
+        (onEdit ? (
+          <button onClick={onEdit} className="cursor-pointer">
+            <Edit2 size={18} />
+          </button>
+        ) : (
+          <Link href={`/${path}/edit/${id}`} className="cursor-pointer">
+            <Edit2 size={18} />
+          </Link>
+        ))}
     </div>
   );
 };

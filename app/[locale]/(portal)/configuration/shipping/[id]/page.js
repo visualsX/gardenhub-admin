@@ -146,11 +146,7 @@ export default function ShippingZoneDetailPage() {
                   width: '100px',
                   render: (_, record) => (
                     <div className="flex">
-                      <Button
-                        type="text"
-                        icon={<Edit />}
-                        onClick={() => handleRateEdit(record)}
-                      />
+                      <Button type="text" icon={<Edit />} onClick={() => handleRateEdit(record)} />
                       <Button
                         type="text"
                         danger

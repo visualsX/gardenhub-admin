@@ -26,7 +26,7 @@ export default function BundleDetailPage() {
   const router = useRouter();
   const { data, isLoading } = useBundle(+id);
   const deleteBundle = useDeleteBundle();
-  const { openDeleteModal, } = useUiStates();
+  const { openDeleteModal } = useUiStates();
 
   const handleDelete = () => {
     openDeleteModal(true, data);

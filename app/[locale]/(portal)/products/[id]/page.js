@@ -186,7 +186,12 @@ function GeneralTab({ data, isLoading }) {
 
         {/* Product Options */}
         {data?.options && data.options.length > 0 && (
-          <Box loading={isLoading} header title={'Product Options'} description={'Variant options configured for this product'}>
+          <Box
+            loading={isLoading}
+            header
+            title={'Product Options'}
+            description={'Variant options configured for this product'}
+          >
             <div className="space-y-6">
               {data.options.map((option, idx) => (
                 <div key={idx}>
@@ -197,11 +202,11 @@ function GeneralTab({ data, isLoading }) {
                     {option.values?.map((value, valueIdx) => (
                       <div
                         key={valueIdx}
-                        className="flex items-center gap-2 rounded-lg border border-smoke-light px-3 py-2"
+                        className="border-smoke-light flex items-center gap-2 rounded-lg border px-3 py-2"
                       >
                         {value.colorHex && (
                           <div
-                            className="h-5 w-5 rounded border border-smoke-light"
+                            className="border-smoke-light h-5 w-5 rounded border"
                             style={{ backgroundColor: value.colorHex }}
                           />
                         )}
@@ -545,10 +550,11 @@ function VariationsTab({ data, isLoading }) {
       key: 'variant',
       render: (_, record) => {
         // Combine option values to create variant name
-        const variantName = record.optionValues
-          ?.map((ov) => ov.value)
-          .filter(Boolean)
-          .join(', ') || '-';
+        const variantName =
+          record.optionValues
+            ?.map((ov) => ov.value)
+            .filter(Boolean)
+            .join(', ') || '-';
         return <span className="text-gray-900">{variantName}</span>;
       },
     },
@@ -590,7 +596,7 @@ function VariationsTab({ data, isLoading }) {
       <Box header title="Variation Details" description="Additional information" className="p-6">
         <div className="grid grid-cols-3 gap-6">
           {/* Pricing Information */}
-          <div className='border-with-radius p-4'>
+          <div className="border-with-radius p-4">
             <h4 className="mb-3 text-base font-semibold text-green-500">Pricing</h4>
             <div className="space-y-2">
               <LabelAndValue label="Regular Price" value={`${record.price || 0} AED`} />
@@ -600,11 +606,11 @@ function VariationsTab({ data, isLoading }) {
           </div>
 
           {/* Inventory Information */}
-          <div className='border-with-radius p-4'>
+          <div className="border-with-radius p-4">
             <h4 className="mb-3 text-base font-semibold text-green-500">Inventory</h4>
             <div className="space-y-2">
               <div className="space-y-2">
-                <span className="text-sm block font-semibold">Track Inventory</span>
+                <span className="block text-sm font-semibold">Track Inventory</span>
                 <Switch disabled checked={record.trackInventory} size="small" />
               </div>
               <LabelAndValue label="Stock Quantity" value={record.stockQuantity || 0} />
@@ -613,20 +619,20 @@ function VariationsTab({ data, isLoading }) {
           </div>
 
           {/* Variant Options */}
-          <div className='border-with-radius p-4'>
+          <div className="border-with-radius p-4">
             <h4 className="mb-3 text-base font-semibold text-green-500">Variant Options</h4>
             <div className="space-y-2">
               {record.optionValues?.map((option, idx) => (
-                <div key={idx} className="flex items-center justify-between ">
+                <div key={idx} className="flex items-center justify-between">
                   <span className="text-sm font-semibold">{option.name}</span>
                   <div className="flex items-center gap-2">
                     {option.colorHex && (
                       <div
-                        className="h-4 w-4 rounded border border-smoke-light"
+                        className="border-smoke-light h-4 w-4 rounded border"
                         style={{ backgroundColor: option.colorHex }}
                       />
                     )}
-                    <span className="text-sm font-medium text-gray-900 ">{option.value}</span>
+                    <span className="text-sm font-medium text-gray-900">{option.value}</span>
                   </div>
                 </div>
               ))}
@@ -660,4 +666,3 @@ function VariationsTab({ data, isLoading }) {
     </div>
   );
 }
-

@@ -47,7 +47,11 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch products for selection (with variants)
-  const { data: productsData, isLoading: isProductsLoading, pageState } = useProductsForBundles({
+  const {
+    data: productsData,
+    isLoading: isProductsLoading,
+    pageState,
+  } = useProductsForBundles({
     paginationKey: PAGINATION_KEYS.BUNDLE_PRODUCTS,
     pageSize: DEFAULT_CURSOR_PAGE_SIZE,
     where: searchTerm ? { name: { contains: searchTerm } } : null,
@@ -107,7 +111,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
   // Calculate Summary
   const summary = useMemo(() => {
     const totalValue = selectedProducts.reduce(
-      (sum, p) => sum + ((p.regularPrice || p.originalUnitPrice || 0) * (p.quantity || 1)),
+      (sum, p) => sum + (p.regularPrice || p.originalUnitPrice || 0) * (p.quantity || 1),
       0
     );
     // We need to watch discount/price from form to calculate the rest.
@@ -125,7 +129,6 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
     { label: 'Products', key: 'products' },
     { label: 'Settings', key: 'settings' },
   ];
-
 
   // Transform initial values for images and other fields
   const transformedInitialValues = useMemo(() => {
@@ -175,9 +178,9 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
               editPage={mode === 'edit'}
               ref={mainImageRef}
             />
-            <MultiImageUploader 
-              name="additionalImages" 
-              label="Additional Images" 
+            <MultiImageUploader
+              name="additionalImages"
+              label="Additional Images"
               className={'products-additionals'}
               existingImages={initialValues?.images || []}
               editPage={mode === 'edit'}
@@ -321,7 +324,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                   expandedRowRender: (record) => {
                     // Only show variants if product has them
                     if (!record.variants || record.variants.length === 0) {
-                      return <p className="text-gray-500 py-2">No variants available</p>;
+                      return <p className="py-2 text-gray-500">No variants available</p>;
                     }
 
                     // Get selected variant IDs for this product
@@ -331,7 +334,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
 
                     return (
                       <div className="py-2">
-                        <p className="text-sm font-medium mb-2">Select Variant(s):</p>
+                        <p className="mb-2 text-sm font-medium">Select Variant(s):</p>
                         <Space direction="vertical" className="w-full">
                           {record.variants.map((variant) => (
                             <Checkbox
@@ -361,13 +364,16 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                                     // Remove this specific variant
                                     return prev.filter(
                                       (p) =>
-                                        !(p.productId === record.id && p.productVariantId === variant.id)
+                                        !(
+                                          p.productId === record.id &&
+                                          p.productVariantId === variant.id
+                                        )
                                     );
                                   }
                                 });
                               }}
                             >
-                              <div className="flex items-center justify-between w-full">
+                              <div className="flex w-full items-center justify-between">
                                 <div>
                                   <span className="font-medium">{variant.name}</span>
                                   {variant.optionValues && variant.optionValues.length > 0 && (
@@ -377,7 +383,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                                           {opt.name}: {opt.value}
                                           {opt.colorHex && (
                                             <span
-                                              className="ml-1 inline-block w-3 h-3 rounded-full border"
+                                              className="ml-1 inline-block h-3 w-3 rounded-full border"
                                               style={{ backgroundColor: opt.colorHex }}
                                             />
                                           )}
@@ -386,7 +392,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                                     </div>
                                   )}
                                 </div>
-                                <div className="text-right ml-4">
+                                <div className="ml-4 text-right">
                                   <div className="font-medium">${variant.price?.toFixed(2)}</div>
                                   <div className="text-xs text-gray-500">
                                     SKU: {variant.sku} | Stock: {variant.stockQuantity}
@@ -412,7 +418,7 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                         const selectedVariantIds = selectedProducts
                           .filter((p) => p.productId === product.id && p.productVariantId)
                           .map((p) => p.productVariantId);
-                        
+
                         if (selectedVariantIds.length === product.variants.length) {
                           keys.push(product.id);
                         }
@@ -506,7 +512,8 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                     const hasVariants = record.variants && record.variants.length > 0;
 
                     if (hasVariants) {
-                      const allVariantsSelected = selectedVariantIds.length === record.variants.length;
+                      const allVariantsSelected =
+                        selectedVariantIds.length === record.variants.length;
                       const someVariantsSelected = selectedVariantIds.length > 0;
 
                       return {
@@ -566,14 +573,16 @@ export default function BundleForm({ initialValues, onSubmit, isLoading, mode = 
                       <div>
                         <div className="font-medium">{record.name || record.productName}</div>
                         {record.variantName && (
-                          <div className="text-xs text-gray-600 mt-1">
+                          <div className="mt-1 text-xs text-gray-600">
                             <Tag color="blue" size="small">
                               Variant: {record.variantName}
                             </Tag>
                           </div>
                         )}
                         {record.variantAttributes && (
-                          <div className="text-xs text-gray-500 mt-1">{record.variantAttributes}</div>
+                          <div className="mt-1 text-xs text-gray-500">
+                            {record.variantAttributes}
+                          </div>
                         )}
                       </div>
                     ),

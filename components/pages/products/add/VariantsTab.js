@@ -7,7 +7,6 @@ import Edit from '@/public/shared/edit.svg';
 import DownIcon from '@/public/shared/select-down.svg';
 import { generateCombinations, mergeVariants } from '@/lib/utils/productUtils';
 
-
 const VariantsTab = ({ editPage, productId }) => {
   const form = Form.useFormInstance();
   const [bulkActionModalVisible, setBulkActionModalVisible] = useState(false);
@@ -477,7 +476,7 @@ const VariantsTab = ({ editPage, productId }) => {
             </div>
           )}
         </Form.List>
-      </Box >
+      </Box>
 
       <Modal
         title={
@@ -528,7 +527,7 @@ const VariantsTab = ({ editPage, productId }) => {
           />
         </div>
       </Modal>
-    </div >
+    </div>
   );
 };
 

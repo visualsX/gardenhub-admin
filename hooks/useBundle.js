@@ -162,9 +162,10 @@ const createBundleFormData = (data, isUpdate = false) => {
 
   if (data.expiryDate) {
     // Handle Antd DatePicker value (Dayjs/Moment)
-    const dateStr = typeof data.expiryDate.toISOString === 'function'
-      ? data.expiryDate.toISOString()
-      : data.expiryDate;
+    const dateStr =
+      typeof data.expiryDate.toISOString === 'function'
+        ? data.expiryDate.toISOString()
+        : data.expiryDate;
     formData.append('ExpiryDate', dateStr);
   }
 
@@ -215,8 +216,6 @@ const createBundleFormData = (data, isUpdate = false) => {
       formData.append(`Items[${index}].Quantity`, item.quantity || 1);
     });
   }
-
-
 
   return formData;
 };

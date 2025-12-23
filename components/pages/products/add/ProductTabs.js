@@ -257,7 +257,13 @@ const ProductTabs = ({
           className="mb-4"
           rules={[]}
         />
-        <FormInput rules={[]} name="Keywords" label="Keywords" placeholder="Enter keywords" className="mb-0" />
+        <FormInput
+          rules={[]}
+          name="Keywords"
+          label="Keywords"
+          placeholder="Enter keywords"
+          className="mb-0"
+        />
       </Box>
     </div>
   );

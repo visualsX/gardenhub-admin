@@ -47,6 +47,11 @@ const Sidebar = () => {
           label: 'Add Product',
           icon: null,
         },
+        {
+          key: '/products/addons',
+          label: 'Addons',
+          icon: null,
+        },
       ],
     },
 
@@ -96,6 +101,11 @@ const Sidebar = () => {
         {
           key: '/configuration/shipping',
           label: 'Shipping',
+          icon: null,
+        },
+        {
+          key: '/configuration/addon-types',
+          label: 'Addon Types',
           icon: null,
         },
       ],
