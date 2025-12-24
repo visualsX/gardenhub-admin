@@ -226,3 +226,78 @@ export const useDeleteAddonOptionImage = () => {
     },
   });
 };
+
+// ==========================================
+// Product Addon Assignment Hooks
+// ==========================================
+
+export const useProductAddons = (productId, variantId = null) => {
+  return useQuery({
+    queryKey: ['productAddons', productId, variantId],
+    queryFn: async () => {
+      const variables = {
+        productId: parseInt(productId),
+        variantId: variantId ? parseInt(variantId) : null,
+      };
+      const response = await graphqlClient.request(
+        ADDON_QUERIES.GET_PRODUCT_ADDONS_FOR_DISPLAY,
+        variables
+      );
+      return response.productAddonsForDisplay;
+    },
+    enabled: !!productId,
+  });
+};
+
+export const useAssignProductAddon = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data) => {
+      const response = await apiClient.post(API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.ASSIGN, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['productAddons'] });
+      message.success('Addon assigned successfully');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to assign addon');
+    },
+  });
+};
+
+export const useUpdateProductAddonAssignment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data) => {
+      const response = await apiClient.put(API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.UPDATE, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['productAddons'] });
+      message.success('Assignment updated successfully');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to update assignment');
+    },
+  });
+};
+
+export const useDeleteProductAddonAssignment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (assignmentId) => {
+      await apiClient.delete(API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.DELETE(assignmentId));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['productAddons'] });
+      message.success('Assignment deleted successfully');
+    },
+    onError: (error) => {
+      message.error(error.response?.data?.message || 'Failed to delete assignment');
+    },
+  });
+};

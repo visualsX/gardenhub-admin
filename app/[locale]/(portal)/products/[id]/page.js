@@ -20,6 +20,7 @@ import Link from 'next/link';
 import DataTable from '@/components/shared/data-table';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import GoBack from '@/components/ui/go-back';
+import ProductAddonAssignment from '@/components/pages/products/ProductAddonAssignment';
 
 export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('general');
@@ -639,30 +640,46 @@ function VariationsTab({ data, isLoading }) {
             </div>
           </div>
         </div>
+
+        {/* Addon Assignment Section */}
+        <div className="mt-6">
+          <ProductAddonAssignment productId={data?.id} variantId={record.id} />
+        </div>
       </Box>
     );
   };
 
   return (
     <div className="mt-6">
-      <Box
-        loading={isLoading}
-        header
-        title="All Variants"
-        description="Basic details about the product"
-      >
-        <DataTable
+      {data?.variants && data.variants.length > 0 ? (
+        <Box
           loading={isLoading}
-          rowKey="id"
-          columns={columns}
-          data={data?.variants || []}
-          pagination={false}
-          expandable={{
-            expandedRowRender,
-            rowExpandable: (record) => true,
-          }}
-        />
-      </Box>
+          header
+          title="All Variants"
+          description="Basic details about the product"
+        >
+          <DataTable
+            loading={isLoading}
+            rowKey="id"
+            columns={columns}
+            data={data?.variants || []}
+            pagination={false}
+            expandable={{
+              expandedRowRender,
+              rowExpandable: (record) => true,
+            }}
+          />
+        </Box>
+      ) : (
+        <Box
+          loading={isLoading}
+          header
+          title="Product Addons"
+          description="This product has no variants. Manage addons at the product level."
+        >
+          <ProductAddonAssignment productId={data?.id} />
+        </Box>
+      )}
     </div>
   );
 }
