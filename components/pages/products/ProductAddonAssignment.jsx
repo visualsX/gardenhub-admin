@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Select, InputNumber, Switch, Popconfirm, Modal, Form } from 'antd';
+import { Button,  InputNumber, Popconfirm, Modal, Form } from 'antd';
 import { PlusOutlined, } from '@ant-design/icons';
 import { Box } from '@/components/wrappers/box';
 import {
@@ -34,11 +34,20 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
     setEditingAssignment(assignment);
     if (assignment) {
       // Populate form for editing
+      const selectedAddon = availableAddons?.find(a => a.id === assignment.globalAddonId);
+      const priceOverrides = assignment.options?.map(opt => ({
+        globalAddonOptionId: opt.id,
+        overridePrice: 0,
+        _optionName: opt.name,
+        _originalPrice: opt.defaultPrice || opt.salePrice || 0,
+      })) || [];
+
       form.setFieldsValue({
         globalAddonId: assignment.globalAddonId,
         isRequired: assignment.isRequired,
         displayOrder: assignment.displayOrder,
         isActive: assignment.isActive !== false,
+        priceOverrides: priceOverrides,
       });
     } else {
       // Reset form for new assignment
@@ -47,6 +56,7 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
         isRequired: false,
         displayOrder: 0,
         isActive: true,
+        priceOverrides: [],
       });
     }
     setIsModalOpen(true);
@@ -60,14 +70,20 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
 
   const handleSubmit = async (values) => {
     try {
+      // Clean price overrides - remove helper fields
+      const cleanedOverrides = (values.priceOverrides || []).map(override => ({
+        globalAddonOptionId: override.globalAddonOptionId,
+        overridePrice: override.overridePrice || 0,
+      }));
+
       if (editingAssignment) {
         // Update existing assignment
         await updateAssignment.mutateAsync({
-          id: editingAssignment.globalAddonId,
+          id: editingAssignment.productAddonAssignmentId,
           isRequired: values.isRequired,
           isActive: values.isActive,
           displayOrder: values.displayOrder,
-          priceOverrides: [],
+          priceOverrides: cleanedOverrides,
         });
       } else {
         // Create new assignment
@@ -78,7 +94,7 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
           isRequired: values.isRequired,
           isActive: values.isActive,
           displayOrder: values.displayOrder,
-          priceOverrides: [],
+          priceOverrides: cleanedOverrides,
         });
       }
       handleCloseModal();
@@ -196,7 +212,7 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
         onCancel={handleCloseModal}
         onOk={() => form.submit()}
         confirmLoading={assignAddon.isPending || updateAssignment.isPending}
-        width={600}
+        width={700}
       >
         <Form
           form={form}
@@ -214,6 +230,20 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
               value: addon.id,
             }))}
              disabled={!!editingAssignment}
+             onChange={(value) => {
+               // When addon changes, reset price overrides
+               const selectedAddon = availableAddons?.find(a => a.id === value);
+               if (selectedAddon?.options) {
+                 // Initialize with all options selected by default
+                 const initialOverrides = selectedAddon.options.map(opt => ({
+                   globalAddonOptionId: opt.id,
+                   overridePrice: 0,
+                   _optionName: opt.name,
+                   _originalPrice: opt.defaultPrice ||opt.salePrice || 0,
+                 }));
+                 form.setFieldValue('priceOverrides', initialOverrides);
+               }
+             }}
           />
           <FormInputNumber
           name="displayOrder"
@@ -234,6 +264,90 @@ export default function ProductAddonAssignment({ productId, variantId = null }) 
             valuePropName="checked"
             />
             </InputWrapper>
+
+            {/* Price Overrides Section */}
+            <Form.Item noStyle shouldUpdate={(prev, curr) => prev.globalAddonId !== curr.globalAddonId}>
+              {() => {
+                const selectedAddonId = form.getFieldValue('globalAddonId');
+                const selectedAddon = availableAddons?.find(a => a.id === selectedAddonId);
+                
+                if (!selectedAddon?.options || selectedAddon.options.length === 0) {
+                  return null;
+                }
+
+                return (
+                  <Box header title={"Option Price Overrides"} description={"Select which options to include and optionally override their prices"}>
+                    <Form.List name="priceOverrides">
+                      {(fields, { add, remove }) => (
+                        <div className="space-y-2 max-h-60 border-with-radius overflow-y-auto! p-3">
+                          {fields.map((field, index) => {
+                            const { key, ...restField } = field;
+                            const override = form.getFieldValue(['priceOverrides', field.name]);
+                            return (
+                              <div key={key} className="flex items-center gap-2 p-2 bg-gray-100 rounded-2xl">
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium">{override?._optionName}</div>
+                                  <div className="text-xs text-gray-500">
+                                    Original: {override?._originalPrice} AED
+                                  </div>
+                                </div>
+                                <Form.Item
+                                  {...restField}
+                                  name={[restField.name, 'overridePrice']}
+                                  label="Override Price"
+                                  className="mb-0 w-32"
+                                >
+                                  <InputNumber
+                                    min={0}
+                                    placeholder="Price"
+                                    className="w-52"
+                                    suffix="AED"
+                                  />
+                                </Form.Item>
+                                <Button
+                                  type="text"
+                                  danger
+                                  icon={<Trash2 />}
+                                  onClick={() => remove(restField.name)}
+                                />
+                                {/* Hidden fields to preserve option data */}
+                                <Form.Item {...restField} name={[restField.name, 'globalAddonOptionId']} hidden>
+                                  <input />
+                                </Form.Item>
+                              </div>
+                            );
+                          })}
+                          
+                          {fields.length < selectedAddon.options.length && (
+                            <Button
+                              type="dashed"
+                              block
+                              onClick={() => {
+                                const currentOverrides = form.getFieldValue('priceOverrides') || [];
+                                const usedOptionIds = currentOverrides.map(o => o.globalAddonOptionId);
+                                const availableOption = selectedAddon.options.find(
+                                  opt => !usedOptionIds.includes(opt.id)
+                                );
+                                if (availableOption) {
+                                  add({
+                                    globalAddonOptionId: availableOption.id,
+                                    overridePrice: 0,
+                                    _optionName: availableOption.name,
+                                    _originalPrice: availableOption.defaultPrice ||availableOption.salePrice || 0,
+                                  });
+                                }
+                              }}
+                            >
+                              Add Option
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </Form.List>
+                  </Box>
+                );
+              }}
+            </Form.Item>
             
         </Form>
       </Modal>
