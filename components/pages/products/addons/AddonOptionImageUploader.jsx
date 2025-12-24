@@ -5,7 +5,7 @@ import { useUploadAddonOptionImage, useDeleteAddonOptionImage } from '@/hooks/us
 
 const AddonOptionImageUploader = ({ optionId, imageUrl }) => {
   const [loading, setLoading] = useState(false);
-  
+
   const uploadImage = useUploadAddonOptionImage();
   const deleteImage = useDeleteAddonOptionImage();
 
@@ -42,15 +42,15 @@ const AddonOptionImageUploader = ({ optionId, imageUrl }) => {
   return (
     <div className="relative inline-block">
       {imageUrl ? (
-        <div className="relative h-24 w-24 rounded-md border border-gray-200 overflow-hidden group">
+        <div className="group relative h-24 w-24 overflow-hidden rounded-md border border-gray-200">
           <img src={imageUrl} alt="Option" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
             {loading ? (
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'white' }} spin />} />
             ) : (
-              <Button 
-                type="text" 
-                icon={<DeleteOutlined style={{ color: 'white', fontSize: 20 }} />} 
+              <Button
+                type="text"
+                icon={<DeleteOutlined style={{ color: 'white', fontSize: 20 }} />}
                 onClick={handleDelete}
               />
             )}

@@ -57,23 +57,26 @@ const AddonTypeModal = () => {
           </p>
         </div>
 
-       <div className="grid grid-cols-2 gap-x-4">
-         <FormInput
-          name="name"
-          label="Name"
-          placeholder="e.g. Gift Wrap"
-          rules={[{ required: true, message: 'Please enter a name' }]}
-        />
-        <FormInputNumber name="displayOrder" label="Display Order" min={0} />
-       </div>
+        <div className="grid grid-cols-2 gap-x-4">
+          <FormInput
+            name="name"
+            label="Name"
+            placeholder="e.g. Gift Wrap"
+            rules={[{ required: true, message: 'Please enter a name' }]}
+          />
+          <FormInputNumber name="displayOrder" label="Display Order" min={0} />
+        </div>
         <FormTextArea
           name="description"
           label="Description"
           placeholder="Description of the addon type"
           rows={3}
         />
-        <InputWrapper title={"Visible in Store"} desc={"If disabled, the addon type will not be visible in the store."}>
-            <FormSwitch name="isActive" className="mb-0!" />
+        <InputWrapper
+          title={'Visible in Store'}
+          desc={'If disabled, the addon type will not be visible in the store.'}
+        >
+          <FormSwitch name="isActive" className="mb-0!" />
         </InputWrapper>
 
         {/* Footer Buttons */}

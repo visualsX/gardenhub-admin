@@ -254,7 +254,10 @@ export const useAssignProductAddon = () => {
 
   return useMutation({
     mutationFn: async (data) => {
-      const response = await apiClient.post(API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.ASSIGN, data);
+      const response = await apiClient.post(
+        API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.ASSIGN,
+        data
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -272,7 +275,10 @@ export const useUpdateProductAddonAssignment = () => {
 
   return useMutation({
     mutationFn: async (data) => {
-      const response = await apiClient.put(API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.UPDATE, data);
+      const response = await apiClient.put(
+        API_ENDPOINTS.ADDONS.MAIN.PRODUCT_ASSIGNMENT.UPDATE,
+        data
+      );
       return response.data;
     },
     onSuccess: () => {

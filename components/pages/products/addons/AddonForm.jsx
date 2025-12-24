@@ -53,11 +53,7 @@ const AddonForm = () => {
         <FormTextArea name="description" label="Description" rows={3} rules={null} />
         <div className="mt-5">
           <InputWrapper title="Visible to Customers" desc="Show this addon on the store">
-            <FormSwitch
-              name="isActive"
-              checkedChildren="Yes"
-              unCheckedChildren="No"
-            />
+            <FormSwitch name="isActive" checkedChildren="Yes" unCheckedChildren="No" />
           </InputWrapper>
         </div>
       </div>
