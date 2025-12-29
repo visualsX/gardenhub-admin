@@ -66,7 +66,7 @@ export default function AttributeModal() {
             <p className="font-medium text-gray-900">Allow Multiple Selection</p>
             <p className="text-sm text-gray-500">Allow multiple options to be selected</p>
           </div>
-          <FormSwitch name="isMultiSelect" className="mb-0!" />
+          <FormSwitch disabled={isEdit} name="isMultiSelect" className="mb-0!" />
         </div>
 
         {/* Footer Buttons */}
