@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Tabs,
   Form,
@@ -277,6 +277,7 @@ const ProductTabs = ({
           placeholder="0.00"
           suffix="AED"
           className="mb-4"
+          rules={[]}
         />
         <FormInputNumber
           name="SalePrice"
@@ -284,6 +285,7 @@ const ProductTabs = ({
           placeholder="0.00"
           suffix="AED"
           className="mb-4"
+          rules={[]}
         />
         <FormInputNumber
           name="RegularPrice"
@@ -291,6 +293,7 @@ const ProductTabs = ({
           placeholder="0.00"
           suffix="AED"
           className="mb-4"
+          rules={[]}
         />
         <FormInputNumber
           name="Discount"
@@ -298,6 +301,7 @@ const ProductTabs = ({
           placeholder="0"
           suffix="%"
           className="mb-0"
+          rules={[]}
         />
       </div>
     </Box>
@@ -390,14 +394,22 @@ const ProductTabs = ({
   );
 
   const form = Form.useFormInstance();
+  const hasVariants = Form.useWatch('HasVariants', form);
 
   const tabItems = [
     { key: '1', label: 'General' },
-    { key: '2', label: 'Pricing' },
+    !hasVariants && { key: '2', label: 'Pricing' },
     { key: '3', label: 'Specifications' },
     { key: '4', label: 'Inventory' },
-    { key: '5', label: 'Variations' },
-  ];
+    hasVariants && { key: '5', label: 'Variations' },
+  ].filter(Boolean);
+
+  useEffect(() => {
+    const isCurrentTabVisible = tabItems.find((item) => item.key === activeTab);
+    if (!isCurrentTabVisible) {
+      setActiveTab('1');
+    }
+  }, [hasVariants, tabItems, activeTab, setActiveTab]);
 
   return (
     <div>
