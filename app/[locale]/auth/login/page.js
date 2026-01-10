@@ -68,7 +68,7 @@ const LoginPage = () => {
         {/* Footer */}
         <div className="mt-6 text-center">
           <Text type="secondary" className="text-sm">
-            © 2026 Your Company. All rights reserved.
+            © 2026 GardenHub. All rights reserved.
           </Text>
         </div>
       </div>
