@@ -104,9 +104,9 @@ export default function BannerForm({
                 <FormInput name="name" label="Internal Name" placeholder="e.g. Summer Sale 2024" rules={[{ required: true }]} />
                 <FormInput name="heading" label="Heading" placeholder="e.g. Fresh Garden Supplies" />
                 <FormInput name="subheading" label="Subheading" placeholder="e.g. Quality Plants & Tools" />
-                <FormInput name="videoUrl" label="Video URL" placeholder="Link to a background video (optional)" rules={[]} />
+                <FormInput rules={[]} name="videoUrl" label="Video URL" placeholder="Link to a background video (optional)" />
               </div>
-              <FormTextArea name="description" label="Description" placeholder="Short description for the banner" />
+              <FormTextArea rules={[]} name="description" label="Description" placeholder="Short description for the banner" />
             </Box>
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -117,9 +117,9 @@ export default function BannerForm({
                 header
               >
                 <div className="space-y-4">
-                  <FormInput name="primaryButtonText" label="Button Text" placeholder="e.g. Shop Now" />
-                  <FormInput name="primaryButtonLink" label="Button Link" placeholder="e.g. /shop" />
-                  <Form.Item name="primaryButtonStyle" label="Button Style">
+                  <FormInput rules={[]} name="primaryButtonText" label="Button Text" placeholder="e.g. Shop Now" />
+                  <FormInput rules={[]} name="primaryButtonLink" label="Button Link" placeholder="e.g. /shop" />
+                  <Form.Item rules={[]} name="primaryButtonStyle" label="Button Style">
                     <Select options={BUTTON_STYLES} placeholder="Select Style" />
                   </Form.Item>
                 </div>
@@ -131,9 +131,9 @@ export default function BannerForm({
                 header
               >
                 <div className="space-y-4">
-                  <FormInput name="secondaryButtonText" label="Button Text" placeholder="e.g. Learn More" />
-                  <FormInput name="secondaryButtonLink" label="Button Link" placeholder="e.g. /about" />
-                  <Form.Item name="secondaryButtonStyle" label="Button Style">
+                  <FormInput rules={[]} name="secondaryButtonText" label="Button Text" placeholder="e.g. Learn More" />
+                  <FormInput rules={[]} name="secondaryButtonLink" label="Button Link" placeholder="e.g. /about" />
+                  <Form.Item rules={[]} name="secondaryButtonStyle" label="Button Style">
                     <Select options={BUTTON_STYLES} placeholder="Select Style" />
                   </Form.Item>
                 </div>
@@ -155,8 +155,8 @@ export default function BannerForm({
                   <FormInputNumber className="mb-0!" name="overlayOpacity" label="Overlay Opacity (0-100)" min={0} max={100}/>
                   <FormInputNumber className="mb-0!" name="displayOrder" label="Display Order" min={0}/>
                 </div>
-                <FormDatePicker className="mb-0!" name="startDate" label="Start Date" showTime/>
-                <FormDatePicker className="mb-0!" name="endDate" label="End Date" showTime/>
+                <FormDatePicker className="mb-0!" name="startDate" label="Start Date" showTime rules={[]}/>
+                <FormDatePicker className="mb-0!" name="endDate" label="End Date" showTime rules={[]}/>
                 
               </div>
             </Box>
