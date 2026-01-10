@@ -3,7 +3,6 @@
 import { Form, Button, Typography } from 'antd';
 import { FormInput, FormPassword } from '@/components/ui/inputs';
 // import { Mail, Lock, Github, Chrome } from 'lucide-react';
-import Link from 'next/link';
 import { useLogin } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
@@ -64,22 +63,12 @@ const LoginPage = () => {
               {login.isPending ? 'Signing in...' : 'Sign In'}
             </Button>
           </Form>
-
-          {/* Sign Up Link */}
-          <div className="mt-6 text-center">
-            <Text type="secondary">
-              Don't have an account?{' '}
-              <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-700">
-                Sign up
-              </Link>
-            </Text>
-          </div>
         </div>
 
         {/* Footer */}
         <div className="mt-6 text-center">
           <Text type="secondary" className="text-sm">
-            © 2025 Your Company. All rights reserved.
+            © 2026 Your Company. All rights reserved.
           </Text>
         </div>
       </div>
