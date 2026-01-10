@@ -109,7 +109,7 @@ export const useCreateBanner = () => {
             queryClient.invalidateQueries({ queryKey: landingPageKeys.banners() });
             message.success('Banner created successfully');
             // Navigate to the edit page to upload images if needed, or back to list
-            router.push(`/configuration/landing-page/${data.id}`);
+            router.push(`/configuration/landing-page`);
         },
         onError: (error) => {
             message.error(error.response?.data?.message || 'Failed to create banner');

@@ -1,7 +1,7 @@
 import { Form, Button, DatePicker, InputNumber, Select, ColorPicker } from 'antd';
 import { useRouter } from 'next/navigation';
 import { Box } from '@/components/wrappers/box';
-import { FormDatePicker, FormInput, FormInputNumber, FormSelect, FormTextArea } from '@/components/ui/inputs';
+import { FormDatePicker, FormInput, FormInputNumber, FormSelect, FormTextArea, FormSwitch } from '@/components/ui/inputs';
 import dayjs from 'dayjs';
 import React from 'react';
 import { BUTTON_STYLES, TEXT_ALIGNMENT, TEXT_POSITIONS } from '@/lib/const/styling-dropdowns';
@@ -45,6 +45,7 @@ export default function BannerForm({
       startDate: initialValues.startDate ? dayjs(initialValues.startDate) : null,
       endDate: initialValues.endDate ? dayjs(initialValues.endDate) : null,
       backgroundOverlay: initialValues.backgroundOverlay || 'rgba(0,0,0,0.5)',
+      isActive: initialValues.isActive ?? true,
     };
   }, [initialValues, mode]);
 
@@ -88,6 +89,16 @@ export default function BannerForm({
               title="Banner Content"
               description="Define the text content for the banner"
               header
+              extra={mode === 'edit' && (
+                  <FormSwitch
+                    name="isActive"
+                    label="Status"
+                    checkedChildren="Active"
+                    unCheckedChildren="Inactive"
+                    className="mb-0!"
+                  />
+                )}
+              
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <FormInput name="name" label="Internal Name" placeholder="e.g. Summer Sale 2024" rules={[{ required: true }]} />
@@ -146,6 +157,7 @@ export default function BannerForm({
                 </div>
                 <FormDatePicker className="mb-0!" name="startDate" label="Start Date" showTime/>
                 <FormDatePicker className="mb-0!" name="endDate" label="End Date" showTime/>
+                
               </div>
             </Box>
            </div>
