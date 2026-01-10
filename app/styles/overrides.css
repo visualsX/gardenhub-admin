@@ -112,3 +112,8 @@
   align-items: start;
   justify-content: start;
 }
+..ant-color-picker-trigger {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+}

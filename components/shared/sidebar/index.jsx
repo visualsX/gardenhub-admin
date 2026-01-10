@@ -108,6 +108,11 @@ const Sidebar = () => {
           label: 'Addon Types',
           icon: null,
         },
+        {
+          key: '/configuration/landing-page',
+          label: 'Landing Page',
+          icon: null,
+        },
       ],
     },
     {

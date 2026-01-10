@@ -46,11 +46,11 @@ const SingleImageUploader = forwardRef(
     }));
 
     useEffect(() => {
-      if (editPage && existingImage) {
+      if (editPage && existingImage?.imageUrl) {
         setFileList(getInitialFile());
         setExistingImageDeleted(false);
       }
-    }, [editPage, existingImage]);
+    }, [editPage, existingImage?.imageUrl]);
 
     const handleChange = async ({ file, fileList: newFileList }) => {
       // If user uploads a new file, replace the existing one
