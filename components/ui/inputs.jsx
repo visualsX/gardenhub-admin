@@ -477,11 +477,13 @@ export const FormDatePicker = ({
   inputClassName,
   labelClassName,
   noStyle = false,
-  format = 'YYYY-MM-DD',
+  format,
   showTime = false,
   picker = 'date', // 'date' | 'week' | 'month' | 'quarter' | 'year'
   ...formItemProps
 }) => {
+  const datePickerFormat = format || (showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD');
+
   return (
     <Form.Item
       name={name}
@@ -494,7 +496,7 @@ export const FormDatePicker = ({
       <DatePicker
         placeholder={placeholder}
         disabled={disabled}
-        format={format}
+        format={datePickerFormat}
         showTime={showTime}
         picker={picker}
         style={{ width: '100%' }}
