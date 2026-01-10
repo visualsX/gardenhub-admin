@@ -4,7 +4,7 @@ import { Box } from '@/components/wrappers/box';
 import { FormDatePicker, FormInput, FormInputNumber, FormSelect, FormTextArea, FormSwitch } from '@/components/ui/inputs';
 import dayjs from 'dayjs';
 import React from 'react';
-import { BUTTON_STYLES, TEXT_ALIGNMENT, TEXT_POSITIONS } from '@/lib/const/styling-dropdowns';
+import { BUTTON_STYLES, TEXT_ALIGNMENT, TEXT_POSITIONS } from '@/lib/const/landing-dropdowns';
 
 export default function BannerForm({
   initialsLoading = false,

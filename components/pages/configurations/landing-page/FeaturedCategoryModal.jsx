@@ -6,7 +6,7 @@ import { FormInput, FormInputNumber, FormSelect } from '@/components/ui/inputs';
 import ModalWrapper from '@/components/wrappers/modal-wrapper';
 import { useCreateFeaturedCategory, useUpdateFeaturedCategory, useUpdateFeaturedCategoryImage } from '@/hooks/useLandingPage';
 import { useCategoryDropdown } from '@/hooks/useCategories';
-import { PLACEMENT_AREAS } from '@/lib/const/styling-dropdowns';
+import { PLACEMENT_AREAS } from '@/lib/const/landing-dropdowns';
 import useUiStates from '@/store/useUiStates';
 
 const FeaturedCategoryModal = () => {
