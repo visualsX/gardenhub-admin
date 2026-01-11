@@ -58,7 +58,7 @@ const ProductTabs = ({
           <CategoryCascader name="CategoryIds" label="Category" />
         </div>
         <FormTextArea
-          rules={[]}
+          // rules={[]}
           name="ShortDescription"
           label="Short Description"
           placeholder="Enter short description"
@@ -66,7 +66,7 @@ const ProductTabs = ({
           className="mb-4"
         />
         <FormTextArea
-          rules={[]}
+          // rules={[]}
           name="DetailedDescription"
           label="Detailed Description"
           placeholder="Enter detailed description"
