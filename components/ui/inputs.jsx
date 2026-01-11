@@ -138,7 +138,7 @@ export const FormTextArea = ({
   placeholder,
   rows = 3,
   disabled = false,
-  rules = validate(label, { required: true, minLength: 12, maxLength: 200 }),
+  rules = validate(label, { required: true, minLength: 12, maxLength: 1000 }),
   className,
   labelClassName,
   inputClassName,
