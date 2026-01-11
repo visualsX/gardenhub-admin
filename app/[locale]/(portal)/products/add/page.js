@@ -25,7 +25,6 @@ const ProductManagement = () => {
   const { data, isLoading } = useAttributes();
 
   const onSubmit = (values) => {
-    console.log('Form Values:', values);
     values['CategoryIds'] = getLastIdx(values.CategoryIds);
     values['OptionsJson'] = values.Options
       ? JSON.stringify(transformVariantData(values.Options))
@@ -82,7 +81,15 @@ const ProductManagement = () => {
   };
 
   return (
-    <Form requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">
+    <Form initialValues={{
+      Weight: 0,
+      Length: 0,
+      Width: 0,
+      Height: 0,
+      IsActive: true,
+      IsFeatured: false,
+      IsShippingRequired: true
+    }} requiredMark={false} form={form} onFinish={onSubmit} layout="vertical">
       <div className="flex items-center justify-between py-2">
         <Link href={'/products'} className="flex items-center gap-x-2">
           <div className="border-smoke rounded-full border bg-white p-1">
