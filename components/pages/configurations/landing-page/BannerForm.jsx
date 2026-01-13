@@ -1,7 +1,14 @@
 import { Form, Button, DatePicker, InputNumber, Select, ColorPicker } from 'antd';
 import { useRouter } from 'next/navigation';
 import { Box } from '@/components/wrappers/box';
-import { FormDatePicker, FormInput, FormInputNumber, FormSelect, FormTextArea, FormSwitch } from '@/components/ui/inputs';
+import {
+  FormDatePicker,
+  FormInput,
+  FormInputNumber,
+  FormSelect,
+  FormTextArea,
+  FormSwitch,
+} from '@/components/ui/inputs';
 import dayjs from 'dayjs';
 import React from 'react';
 import { BUTTON_STYLES, TEXT_ALIGNMENT, TEXT_POSITIONS } from '@/lib/const/landing-dropdowns';
@@ -41,7 +48,8 @@ export default function BannerForm({
       primaryButtonStyle: initialValues.primaryButtonStyle || initialValues.primaryButton?.style,
       secondaryButtonText: initialValues.secondaryButtonText || initialValues.secondaryButton?.text,
       secondaryButtonLink: initialValues.secondaryButtonLink || initialValues.secondaryButton?.link,
-      secondaryButtonStyle: initialValues.secondaryButtonStyle || initialValues.secondaryButton?.style,
+      secondaryButtonStyle:
+        initialValues.secondaryButtonStyle || initialValues.secondaryButton?.style,
       startDate: initialValues.startDate ? dayjs(initialValues.startDate) : null,
       endDate: initialValues.endDate ? dayjs(initialValues.endDate) : null,
       backgroundOverlay: initialValues.backgroundOverlay || 'rgba(0,0,0,0.5)',
@@ -59,11 +67,12 @@ export default function BannerForm({
   const handleFinish = (values) => {
     // format dates and colors
     const { startDate, endDate, backgroundOverlay, ...rest } = values;
-    
+
     // Support both Ant Design ColorPicker object and plain string
-    const colorValue = typeof backgroundOverlay === 'object' && backgroundOverlay?.toRgbString 
-      ? backgroundOverlay.toRgbString() 
-      : backgroundOverlay;
+    const colorValue =
+      typeof backgroundOverlay === 'object' && backgroundOverlay?.toRgbString
+        ? backgroundOverlay.toRgbString()
+        : backgroundOverlay;
 
     onSubmit({
       ...rest,
@@ -89,7 +98,8 @@ export default function BannerForm({
               title="Banner Content"
               description="Define the text content for the banner"
               header
-              extra={mode === 'edit' && (
+              extra={
+                mode === 'edit' && (
                   <FormSwitch
                     name="isActive"
                     label="Status"
@@ -97,70 +107,139 @@ export default function BannerForm({
                     unCheckedChildren="Inactive"
                     className="mb-0!"
                   />
-                )}
-              
+                )
+              }
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <FormInput name="name" label="Internal Name" placeholder="e.g. Summer Sale 2024" rules={[{ required: true }]} />
-                <FormInput name="heading" label="Heading" placeholder="e.g. Fresh Garden Supplies" />
-                <FormInput name="subheading" label="Subheading" placeholder="e.g. Quality Plants & Tools" />
-                <FormInput rules={[]} name="videoUrl" label="Video URL" placeholder="Link to a background video (optional)" />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                <FormInput
+                  name="name"
+                  label="Internal Name"
+                  placeholder="e.g. Summer Sale 2024"
+                  rules={[{ required: true }]}
+                />
+                <FormInput
+                  name="heading"
+                  label="Heading"
+                  placeholder="e.g. Fresh Garden Supplies"
+                />
+                <FormInput
+                  name="subheading"
+                  label="Subheading"
+                  placeholder="e.g. Quality Plants & Tools"
+                />
+                <FormInput
+                  rules={[]}
+                  name="videoUrl"
+                  label="Video URL"
+                  placeholder="Link to a background video (optional)"
+                />
               </div>
-              <FormTextArea rules={[]} name="description" label="Description" placeholder="Short description for the banner" />
+              <FormTextArea
+                rules={[]}
+                name="description"
+                label="Description"
+                placeholder="Short description for the banner"
+              />
             </Box>
 
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Box
-                loading={initialsLoading}
-                title="Primary Button"
-                header
-              >
-                <div className="space-y-4">
-                  <FormInput rules={[]} name="primaryButtonText" label="Button Text" placeholder="e.g. Shop Now" />
-                  <FormInput rules={[]} name="primaryButtonLink" label="Button Link" placeholder="e.g. /shop" />
-                  <Form.Item rules={[]} name="primaryButtonStyle" label="Button Style">
-                    <Select options={BUTTON_STYLES} placeholder="Select Style" />
-                  </Form.Item>
-                </div>
-              </Box>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <Box loading={initialsLoading} title="Primary Button" header>
+                  <div className="space-y-4">
+                    <FormInput
+                      rules={[]}
+                      name="primaryButtonText"
+                      label="Button Text"
+                      placeholder="e.g. Shop Now"
+                    />
+                    <FormInput
+                      rules={[]}
+                      name="primaryButtonLink"
+                      label="Button Link"
+                      placeholder="e.g. /shop"
+                    />
+                    <Form.Item rules={[]} name="primaryButtonStyle" label="Button Style">
+                      <Select options={BUTTON_STYLES} placeholder="Select Style" />
+                    </Form.Item>
+                  </div>
+                </Box>
 
-              <Box
-                loading={initialsLoading}
-                title="Secondary Button"
-                header
-              >
-                <div className="space-y-4">
-                  <FormInput rules={[]} name="secondaryButtonText" label="Button Text" placeholder="e.g. Learn More" />
-                  <FormInput rules={[]} name="secondaryButtonLink" label="Button Link" placeholder="e.g. /about" />
-                  <Form.Item rules={[]} name="secondaryButtonStyle" label="Button Style">
-                    <Select options={BUTTON_STYLES} placeholder="Select Style" />
-                  </Form.Item>
+                <Box loading={initialsLoading} title="Secondary Button" header>
+                  <div className="space-y-4">
+                    <FormInput
+                      rules={[]}
+                      name="secondaryButtonText"
+                      label="Button Text"
+                      placeholder="e.g. Learn More"
+                    />
+                    <FormInput
+                      rules={[]}
+                      name="secondaryButtonLink"
+                      label="Button Link"
+                      placeholder="e.g. /about"
+                    />
+                    <Form.Item rules={[]} name="secondaryButtonStyle" label="Button Style">
+                      <Select options={BUTTON_STYLES} placeholder="Select Style" />
+                    </Form.Item>
+                  </div>
+                </Box>
+              </div>
+
+              <Box loading={initialsLoading} title="Design & Scheduling" header>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <FormSelect
+                    className="mb-0!"
+                    name="textAlignment"
+                    label="Text Alignment"
+                    options={TEXT_ALIGNMENT}
+                    placeholder="Select Alignment"
+                  />
+                  <FormSelect
+                    className="mb-0!"
+                    name="textPosition"
+                    label="Text Position"
+                    options={TEXT_POSITIONS}
+                    placeholder="Select Position"
+                  />
+                  <div className="col-span-2 grid grid-cols-3 gap-x-4">
+                    <Form.Item
+                      className="mb-0!"
+                      name="backgroundOverlay"
+                      label="Background Overlay"
+                    >
+                      <ColorPicker className="h-[38px]! w-full" showText format="hex" />
+                    </Form.Item>
+                    <FormInputNumber
+                      className="mb-0!"
+                      name="overlayOpacity"
+                      label="Overlay Opacity (0-100)"
+                      min={0}
+                      max={100}
+                    />
+                    <FormInputNumber
+                      className="mb-0!"
+                      name="displayOrder"
+                      label="Display Order"
+                      min={0}
+                    />
+                  </div>
+                  <FormDatePicker
+                    className="mb-0!"
+                    name="startDate"
+                    label="Start Date"
+                    showTime
+                    rules={[]}
+                  />
+                  <FormDatePicker
+                    className="mb-0!"
+                    name="endDate"
+                    label="End Date"
+                    showTime
+                    rules={[]}
+                  />
                 </div>
               </Box>
             </div>
-            
-            <Box
-              loading={initialsLoading}
-              title="Design & Scheduling"
-              header
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormSelect className="mb-0!" name="textAlignment" label="Text Alignment" options={TEXT_ALIGNMENT} placeholder="Select Alignment" />
-                <FormSelect className="mb-0!" name="textPosition" label="Text Position" options={TEXT_POSITIONS} placeholder="Select Position" />
-                <div className="col-span-2 grid grid-cols-3 gap-x-4">
-                  <Form.Item className='mb-0!' name="backgroundOverlay" label="Background Overlay">
-                  <ColorPicker className="h-[38px]! w-full" showText format="hex" />
-                  </Form.Item>
-                  <FormInputNumber className="mb-0!" name="overlayOpacity" label="Overlay Opacity (0-100)" min={0} max={100}/>
-                  <FormInputNumber className="mb-0!" name="displayOrder" label="Display Order" min={0}/>
-                </div>
-                <FormDatePicker className="mb-0!" name="startDate" label="Start Date" showTime rules={[]}/>
-                <FormDatePicker className="mb-0!" name="endDate" label="End Date" showTime rules={[]}/>
-                
-              </div>
-            </Box>
-           </div>
           </div>
         </div>
 

@@ -83,7 +83,7 @@ export default function OptionModal({ attributes = [] }) {
         />
 
         <FormTextArea
-        rules={[]}
+          rules={[]}
           name="description"
           label="Description"
           placeholder="Optional description"

@@ -17,9 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <AntdRegistry>
-        <body className={`${outfit.variable} antialiased`}>
-          {children}
-        </body>
+        <body className={`${outfit.variable} antialiased`}>{children}</body>
       </AntdRegistry>
     </html>
   );
