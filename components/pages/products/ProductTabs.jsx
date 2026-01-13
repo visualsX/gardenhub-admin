@@ -6,14 +6,10 @@ import {
   Checkbox,
   Select,
   Button,
-  Divider,
   ColorPicker,
-  Collapse,
-  message,
 } from 'antd';
 import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
-import Edit from '@/public/shared/edit.svg';
 import PlusGreen from '@/public/shared/plus-green-dark.svg';
 import PlusGray from '@/public/shared/Plus-gray.svg';
 
@@ -34,6 +30,7 @@ const ProductTabs = ({
   attributesData,
   attributesLoading,
   productsById,
+  categories,
 }) => {
   const generalTab = (
     <div className="space-y-6">
@@ -55,7 +52,7 @@ const ProductTabs = ({
           />
         </div>
         <div className="grid grid-cols-1 gap-4">
-          <CategoryCascader name="CategoryIds" label="Category" />
+          <CategoryCascader name="CategoryIds" label="Category" categories={categories} />
         </div>
         <FormTextArea
           // rules={[]}

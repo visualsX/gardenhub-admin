@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Collapse, message, Select, Dropdown, Menu, Modal, InputNumber } from 'antd';
+import { Form, Button, Collapse, message, Select, Dropdown, Modal, InputNumber } from 'antd';
 import { Box } from '@/components/wrappers/box';
 import { FormInput, FormInputNumber, FormSwitch } from '@/components/ui/inputs';
 import Trash from '@/public/shared/trash-red.svg';

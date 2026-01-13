@@ -90,13 +90,14 @@ export const useCategoryTree = () => {
   });
 };
 
-export const useCategoryDropdown = () => {
+export const useCategoryDropdown = (initialData) => {
   return useQuery({
     queryKey: categoryKeys.dropdown(),
     queryFn: async () => {
       const response = await graphqlClient.request(CATEGORY_QUERIES.GET_CATEGORIES_DD);
       return response.categories?.nodes ?? [];
     },
+    initialData,
   });
 };
 

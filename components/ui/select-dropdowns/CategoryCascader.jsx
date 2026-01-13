@@ -1,7 +1,7 @@
 'use client';
 
 import { Skeleton } from 'antd';
-import { FormCascader } from '@/components/ui/inputs';
+import { FormCascader, CascaderInput } from '@/components/ui/inputs';
 import { useCategoryDropdown } from '@/hooks/useCategories';
 
 const mapToOptions = (nodes = []) =>
@@ -15,28 +15,39 @@ const CategoryCascader = ({
   name = 'category',
   label = 'Category',
   placeholder = 'Select category',
+  categories: initialCategories,
+  type = 'form', // 'form' | 'input'
   ...formProps
 }) => {
-  const { data, isLoading } = useCategoryDropdown();
+  const { data, isLoading } = useCategoryDropdown(initialCategories);
   const options = mapToOptions(data ?? []);
 
-  if (isLoading) {
+  if (!initialCategories && isLoading) {
     return <Skeleton.Input active block />;
   }
 
   const filter = (inputValue, path) =>
     path.some((option) => option.label.toLowerCase().includes(inputValue.toLowerCase()));
 
-  return (
-    <FormCascader
-      name={name}
-      label={label}
-      placeholder={placeholder}
-      options={options}
-      showSearch={{ filter, onSearch: (value) => console.log(value) }}
-      {...formProps}
-    />
-  );
+  const Component = type === 'input' ? CascaderInput : FormCascader;
+  const props =
+    type === 'input'
+      ? {
+          placeholder,
+          options,
+          showSearch: { filter, onSearch: (value) => console.log(value) },
+          ...formProps,
+        }
+      : {
+          name,
+          label,
+          placeholder,
+          options,
+          showSearch: { filter, onSearch: (value) => console.log(value) },
+          ...formProps,
+        };
+
+  return <Component {...props} />;
 };
 
 export default CategoryCascader;

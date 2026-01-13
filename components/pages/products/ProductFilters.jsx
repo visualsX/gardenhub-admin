@@ -1,15 +1,34 @@
 import { Select } from 'antd';
 import InputSearch from '@/components/ui/input-search';
-import { useCategories } from '@/hooks/useCategories';
+import CategoryCascader from '@/components/ui/select-dropdowns/CategoryCascader';
 
 const { Option } = Select;
+
+const findPath = (nodes, id) => {
+  for (const node of nodes) {
+    if (node.id === id) return [node.id];
+    if (node.subCategories?.length) {
+      const path = findPath(node.subCategories, id);
+      if (path) return [node.id, ...path];
+    }
+  }
+  return null;
+};
 
 /**
  * Product filters component with search, category, and stock status filters
  */
-export default function ProductFilters({ searchTerm, filters, onFilterChange }) {
-  const { data: categoriesData } = useCategories();
-  const categories = categoriesData?.nodes ?? [];
+export default function ProductFilters({
+  searchTerm,
+  filters,
+  onFilterChange,
+  categories,
+}) {
+  const handleCategoryChange = (value) => {
+    // Cascader returns array of values. We want the last one for our single-select filter.
+    const lastValue = value && value.length > 0 ? value[value.length - 1] : undefined;
+    onFilterChange.setCategory(lastValue);
+  };
 
   return (
     <div className="border-with-radius flex flex-col gap-4 p-6 md:flex-row">
@@ -20,23 +39,21 @@ export default function ProductFilters({ searchTerm, filters, onFilterChange }) 
           onSearchChange={onFilterChange.setSearch}
         />
       </div>
-      <Select
+
+      <CategoryCascader
+        type="input"
         placeholder="All Categories"
-        className="w-full md:w-48"
+        className="w-full md:w-96!"
         style={{ height: '40px' }}
-        value={+filters.selectedCategory || undefined}
-        onChange={onFilterChange.setCategory}
+        categories={categories}
+        onChange={handleCategoryChange}
+        changeOnSelect
         allowClear
-      >
-        {categories.map((category) => (
-          <Option key={category.id} value={category.id}>
-            {category.name}
-          </Option>
-        ))}
-      </Select>
+      />
+
       <Select
         placeholder="All stock status"
-        className="w-full md:w-48"
+        className="w-full md:w-64"
         style={{ height: '40px' }}
         value={filters.selectedStockStatus || undefined}
         onChange={onFilterChange.setStockStatus}

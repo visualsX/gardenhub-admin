@@ -308,6 +308,35 @@ export const FormAutoComplete = ({
   );
 };
 
+// ===== CascaderInput Component =====
+export const CascaderInput = ({
+  placeholder,
+  options,
+  disabled = false,
+  onChange,
+  changeOnSelect = false,
+  showSearch,
+  className,
+  value,
+  ...rest
+}) => {
+  return (
+    <Cascader
+      placeholder={placeholder}
+      disabled={disabled}
+      options={options}
+      suffixIcon={<DownIcon />}
+      expandIcon={<DownIcon className="-rotate-90" />}
+      onChange={onChange}
+      changeOnSelect={changeOnSelect}
+      className={`h-[38px]! w-full! ${className ?? ''}`}
+      showSearch={showSearch}
+      value={value}
+      {...rest}
+    />
+  );
+};
+
 // ===== FormCascader Component =====
 export const FormCascader = ({
   name,
@@ -320,10 +349,7 @@ export const FormCascader = ({
   labelClassName,
   inputClassName,
   noStyle = false,
-  onChange,
-  changeOnSelect = false,
-  showSearch,
-  ...formItemProps
+  ...rest
 }) => {
   return (
     <Form.Item
@@ -332,18 +358,13 @@ export const FormCascader = ({
       rules={rules}
       className={className}
       noStyle={noStyle}
-      {...formItemProps}
+      {...rest}
     >
-      <Cascader
+      <CascaderInput
         placeholder={placeholder}
-        disabled={disabled}
         options={options}
-        suffixIcon={<DownIcon />}
-        expandIcon={<DownIcon className="-rotate-90" />}
-        onChange={onChange}
-        changeOnSelect={changeOnSelect}
-        className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
-        showSearch={showSearch}
+        disabled={disabled}
+        className={inputClassName}
       />
     </Form.Item>
   );
