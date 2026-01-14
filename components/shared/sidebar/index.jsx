@@ -161,7 +161,6 @@ const Sidebar = () => {
             className="px-4!"
             mode="inline"
             selectedKeys={[pathname]}
-            defaultOpenKeys={['products-menu', 'bundles-menu', 'configuration-menu']}
             items={renderMenuItems(menuItems)}
           />
         </div>
