@@ -53,11 +53,14 @@ const ItemsTab = ({ order, isLoading }) => {
     if (!record.addons?.length) return null;
 
     return (
-      <div className="bg-gray-50 p-4 rounded-lg ml-12">
-        <h5 className="text-sm font-semibold mb-3 text-gray-700">Addons</h5>
+      <div className="ml-12 rounded-lg bg-gray-50 p-4">
+        <h5 className="mb-3 text-sm font-semibold text-gray-700">Addons</h5>
         <div className="space-y-3">
           {record.addons.map((addon) => (
-            <div key={addon.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+            <div
+              key={addon.id}
+              className="flex items-center justify-between border-b pb-2 last:border-0"
+            >
               <div className="flex items-center gap-3">
                 <div className="relative h-8 w-8 overflow-hidden rounded border">
                   <Image
@@ -84,10 +87,10 @@ const ItemsTab = ({ order, isLoading }) => {
   };
 
   return (
-    <Box 
-      loading={isLoading} 
-      header 
-      title="Ordered Items" 
+    <Box
+      loading={isLoading}
+      header
+      title="Ordered Items"
       description="List of products and their configurations"
     >
       <DataTable

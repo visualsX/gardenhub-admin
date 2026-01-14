@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Tabs,
-  Form,
-  Skeleton,
-  Checkbox,
-  Select,
-  Button,
-  ColorPicker,
-} from 'antd';
+import { Tabs, Form, Skeleton, Checkbox, Select, Button, ColorPicker } from 'antd';
 import Cross from '@/public/shared/cross-20.svg';
 import Trash from '@/public/shared/trash-red.svg';
 import PlusGreen from '@/public/shared/plus-green-dark.svg';

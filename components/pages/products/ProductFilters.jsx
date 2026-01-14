@@ -18,12 +18,7 @@ const findPath = (nodes, id) => {
 /**
  * Product filters component with search, category, and stock status filters
  */
-export default function ProductFilters({
-  searchTerm,
-  filters,
-  onFilterChange,
-  categories,
-}) {
+export default function ProductFilters({ searchTerm, filters, onFilterChange, categories }) {
   const handleCategoryChange = (value) => {
     // Cascader returns array of values. We want the last one for our single-select filter.
     const lastValue = value && value.length > 0 ? value[value.length - 1] : undefined;

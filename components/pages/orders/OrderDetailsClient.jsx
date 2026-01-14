@@ -44,13 +44,16 @@ const OrderDetailsClient = () => {
         trackingNumber: values.trackingNumber || '',
         expectedDelivery: values.expectedDelivery ? values.expectedDelivery.toISOString() : null,
       };
-      
-      updateStatus.mutate({ id, data: payload }, {
-        onSuccess: () => {
-          setStatusModalOpen(false);
-          statusForm.resetFields();
+
+      updateStatus.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setStatusModalOpen(false);
+            statusForm.resetFields();
+          },
         }
-      });
+      );
     } catch (error) {
       console.error('Validation failed:', error);
     }
@@ -64,13 +67,16 @@ const OrderDetailsClient = () => {
         refundAmount: parseFloat(values.refundAmount),
         refundReason: values.refundReason,
       };
-      
-      refundOrder.mutate({ id, data: payload }, {
-        onSuccess: () => {
-          setRefundModalOpen(false);
-          refundForm.resetFields();
+
+      refundOrder.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            setRefundModalOpen(false);
+            refundForm.resetFields();
+          },
         }
-      });
+      );
     } catch (error) {
       console.error('Validation failed:', error);
     }
@@ -91,20 +97,20 @@ const OrderDetailsClient = () => {
   return (
     <div className="min-h-screen space-y-6">
       <div className="flex items-center justify-between">
-        <GoBack 
-          href="/orders" 
-          title={`Order #${order?.orderNumber || '...'}`} 
-          desc="View and manage order details" 
+        <GoBack
+          href="/orders"
+          title={`Order #${order?.orderNumber || '...'}`}
+          desc="View and manage order details"
         />
         <div className="flex items-center gap-3">
-          <Button 
+          <Button
             type="primary"
             onClick={() => setStatusModalOpen(true)}
             loading={updateStatus.isPending}
           >
             Update Status
           </Button>
-          <Button 
+          <Button
             icon={<DollarIcon className="h-4 w-4" />}
             onClick={() => setRefundModalOpen(true)}
             loading={refundOrder.isPending}
@@ -116,7 +122,7 @@ const OrderDetailsClient = () => {
 
       <div className="space-y-6">
         <SegmentedTabs tabs={tabItems} activeTab={activeTab} onChange={setActiveTab} />
-        
+
         <div className="mt-6">
           {activeTab === 'general' && <GeneralTab order={order} isLoading={isLoading} />}
           {activeTab === 'items' && <ItemsTab order={order} isLoading={isLoading} />}
@@ -137,11 +143,7 @@ const OrderDetailsClient = () => {
         confirmLoading={updateStatus.isPending}
         width={600}
       >
-        <Form
-          form={statusForm}
-          layout="vertical"
-          initialValues={{ newStatus: order?.status }}
-        >
+        <Form form={statusForm} layout="vertical" initialValues={{ newStatus: order?.status }}>
           <Form.Item
             name="newStatus"
             label="New Status"
@@ -158,29 +160,16 @@ const OrderDetailsClient = () => {
             <Input.TextArea rows={3} placeholder="Enter notes about this status change" />
           </Form.Item>
 
-          <Form.Item
-            name="carrier"
-            label="Carrier"
-          >
+          <Form.Item name="carrier" label="Carrier">
             <Input placeholder="e.g., DHL, FedEx, UPS" />
           </Form.Item>
 
-          <Form.Item
-            name="trackingNumber"
-            label="Tracking Number"
-          >
+          <Form.Item name="trackingNumber" label="Tracking Number">
             <Input placeholder="Enter tracking number" />
           </Form.Item>
 
-          <Form.Item
-            name="expectedDelivery"
-            label="Expected Delivery Date"
-          >
-            <DatePicker 
-              className="w-full" 
-              showTime 
-              format="YYYY-MM-DD HH:mm:ss"
-            />
+          <Form.Item name="expectedDelivery" label="Expected Delivery Date">
+            <DatePicker className="w-full" showTime format="YYYY-MM-DD HH:mm:ss" />
           </Form.Item>
         </Form>
       </Modal>
@@ -197,31 +186,23 @@ const OrderDetailsClient = () => {
         confirmLoading={refundOrder.isPending}
         width={500}
       >
-        <Form
-          form={refundForm}
-          layout="vertical"
-        >
+        <Form form={refundForm} layout="vertical">
           <Form.Item
             name="refundAmount"
             label="Refund Amount (AED)"
             rules={[
               { required: true, message: 'Please enter refund amount' },
-              { 
+              {
                 validator: (_, value) => {
                   if (value && parseFloat(value) > order?.grandTotal) {
                     return Promise.reject('Refund amount cannot exceed order total');
                   }
                   return Promise.resolve();
-                }
-              }
+                },
+              },
             ]}
           >
-            <Input 
-              type="number" 
-              step="0.01"
-              placeholder="Enter refund amount" 
-              suffix="AED"
-            />
+            <Input type="number" step="0.01" placeholder="Enter refund amount" suffix="AED" />
           </Form.Item>
 
           <Form.Item
@@ -233,7 +214,9 @@ const OrderDetailsClient = () => {
           </Form.Item>
 
           <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
-            <p><strong>Order Total:</strong> {order?.grandTotal} AED</p>
+            <p>
+              <strong>Order Total:</strong> {order?.grandTotal} AED
+            </p>
           </div>
         </Form>
       </Modal>
