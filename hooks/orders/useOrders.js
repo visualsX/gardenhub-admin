@@ -49,9 +49,7 @@ export const useOrders = (filters = {}) => {
                 last: last ?? null,
                 before: before ?? null,
                 where: where || null,
-                order: {
-                    id: 'DESC',
-                },
+                order: order || null,
             };
 
             const response = await graphqlClient.request(ORDER_QUERIES.GET_ORDERS, variables);

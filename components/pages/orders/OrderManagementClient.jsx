@@ -23,7 +23,7 @@ const OrderManagementClient = () => {
     paginationKey: PAGINATION_KEYS.ORDERS,
     pageSize: DEFAULT_CURSOR_PAGE_SIZE,
     where,
-    // order: [{ createdAt: 'DESC' }],
+    order: [{ id: 'DESC' }],
   });
 
   const stats = [
