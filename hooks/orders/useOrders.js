@@ -92,8 +92,8 @@ export const useUpdateOrderStatus = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (data) => {
-            const response = await apiClient.patch(API_ENDPOINTS.ORDERS.UPDATE_STATUS(data.id), data);
+        mutationFn: async ({ id, data }) => {
+            const response = await apiClient.patch(API_ENDPOINTS.ORDERS.UPDATE_STATUS(id), data);
             return response;
         },
         onSuccess: (_, variables) => {
