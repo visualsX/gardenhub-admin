@@ -22,7 +22,7 @@ export function ReviewTableCols({ onApprove, onReject, approveLoading, rejectLoa
       render: (text, record) => (
         <div>
           <div className="font-medium text-gray-800">{text}</div>
-          <p className="text-sm text-gray-500 line-clamp-2">{record.description}</p>
+          <p className="line-clamp-2 text-sm text-gray-500">{record.description}</p>
         </div>
       ),
     },
@@ -66,31 +66,32 @@ export function ReviewTableCols({ onApprove, onReject, approveLoading, rejectLoa
             <>
               <Tooltip title="Approve">
                 <Button
-                    loading={approveLoading}
-                    onClick={() => onApprove(record.id)}
-                    className="h-7! w-9! rounded-full bg-green-100! text-green-600! hover:bg-green-100!"
-                    icon={<CheckIcon size={16} />}
-              />
+                  loading={approveLoading}
+                  onClick={() => onApprove(record.id)}
+                  className="h-7! w-9! rounded-full bg-green-100! text-green-600! hover:bg-green-100!"
+                  icon={<CheckIcon size={16} />}
+                />
               </Tooltip>
               <Tooltip title="Reject">
                 <Button
-                    danger
-                    loading={rejectLoading}
-                    onClick={() => onReject(record.id)}
-                    className="h-7! w-9! rounded-full bg-orange-100! text-orange-600! hover:bg-orange-100!"
-                    icon={<CloseIcon size={16} />}
-              />
+                  danger
+                  loading={rejectLoading}
+                  onClick={() => onReject(record.id)}
+                  className="h-7! w-9! rounded-full bg-orange-100! text-orange-600! hover:bg-orange-100!"
+                  icon={<CloseIcon size={16} />}
+                />
               </Tooltip>
             </>
           )}
-            <Trash2 className="cursor-pointer" onClick={() => openDeleteModal(true, { id: record.id })}/>
+          <Trash2
+            className="cursor-pointer"
+            onClick={() => openDeleteModal(true, { id: record.id })}
+          />
         </div>
       ),
     },
   ];
 }
-
-
 
 const CheckIcon = ({ size = 16, className = '' }) => (
   <svg
