@@ -11,7 +11,7 @@ export default function LabelAndValue({
       <label className="block text-sm font-semibold">
         <Tx>{label}</Tx>
       </label>
-      <p className="text-[#2D3748]/50">{currency ? value + CURRENCY : value}</p>
+      <div className="text-[#2D3748]/50">{currency ? value + CURRENCY : value}</div>
     </div>
   );
 }
