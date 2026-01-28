@@ -104,6 +104,11 @@ const Sidebar = () => {
           icon: null,
         },
         {
+          key: '/configuration/payment-methods',
+          label: 'Payment Methods',
+          icon: null,
+        },
+        {
           key: '/configuration/addon-types',
           label: 'Addon Types',
           icon: null,
