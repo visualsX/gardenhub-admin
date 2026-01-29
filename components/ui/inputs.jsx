@@ -258,7 +258,7 @@ export const FormSelect = ({
         filterOption={filterOption}
         className={`h-[38px]! w-full! ${inputClassName ?? ''}`}
       >
-        {options.map((option) => (
+        {options?.map((option) => (
           <Select.Option key={option.value} value={option.value}>
             {option.label}
           </Select.Option>
