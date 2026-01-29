@@ -8,7 +8,7 @@ const mapToOptions = (nodes = []) =>
   nodes.map((node) => ({
     value: node.id,
     label: node.name,
-    children: node.subCategories?.length ? mapToOptions(node.subCategories) : undefined,
+    children: node.children?.length ? mapToOptions(node.children) : undefined,
   }));
 
 const CategoryCascader = ({
@@ -19,6 +19,7 @@ const CategoryCascader = ({
   type = 'form', // 'form' | 'input'
   ...formProps
 }) => {
+  console.log("initialCategories", initialCategories);
   const { data, isLoading } = useCategoryDropdown(initialCategories);
   const options = mapToOptions(data ?? []);
 
