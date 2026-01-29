@@ -27,7 +27,9 @@ const orderColumns = [
         Cancelled: 'bg-red-50 text-red-700 border-red-100',
       };
       return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusConfig[status] || 'bg-gray-50 text-gray-600 border-gray-100'}`}>
+        <span
+          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusConfig[status] || 'border-gray-100 bg-gray-50 text-gray-600'}`}
+        >
           {status}
         </span>
       );
@@ -37,11 +39,7 @@ const orderColumns = [
     title: 'Date',
     dataIndex: 'createdAt',
     key: 'createdAt',
-    render: (date) => (
-      <span className="text-gray-500">
-        {new Date(date).toLocaleDateString()}
-      </span>
-    ),
+    render: (date) => <span className="text-gray-500">{new Date(date).toLocaleDateString()}</span>,
   },
   {
     title: 'Amount',
@@ -49,16 +47,16 @@ const orderColumns = [
     key: 'grandTotal',
     align: 'right',
     render: (total) => (
-      <span className="font-semibold text-gray-900">
-        AED {total?.toLocaleString()}
-      </span>
+      <span className="font-semibold text-gray-900">AED {total?.toLocaleString()}</span>
     ),
   },
 ];
 
 const RecentOrdersCard = ({ data, loading }) => {
   const extra = (
-    <button className="text-xs font-semibold text-green-700 hover:text-green-800">Manage Orders</button>
+    <button className="text-xs font-semibold text-green-700 hover:text-green-800">
+      Manage Orders
+    </button>
   );
 
   return (
@@ -66,7 +64,7 @@ const RecentOrdersCard = ({ data, loading }) => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 6 }} />
       ) : (
-        <div className="max-h-[400px] overflow-y-auto rounded-lg border border-gray-100 custom-scrollbar">
+        <div className="custom-scrollbar max-h-[400px] overflow-y-auto rounded-lg border border-gray-100">
           <Table
             columns={orderColumns}
             dataSource={data?.map((o) => ({ ...o, key: o.id }))}

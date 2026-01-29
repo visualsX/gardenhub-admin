@@ -20,10 +20,11 @@ const SalesAnalyticsCard = ({ data, loading, selectedPeriod, onPeriodChange }) =
         <button
           key={p}
           onClick={() => onPeriodChange(p)}
-          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${selectedPeriod === p.toLowerCase()
-            ? 'bg-white text-green-700 shadow-sm'
-            : 'text-gray-500 hover:text-gray-700'
-            }`}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+            selectedPeriod === p.toLowerCase()
+              ? 'bg-white text-green-700 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
         >
           {p}
         </button>
@@ -39,11 +40,17 @@ const SalesAnalyticsCard = ({ data, loading, selectedPeriod, onPeriodChange }) =
         <div className="flex-1">
           <div className="mb-8 flex gap-10">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Revenue</span>
-              <div className="text-2xl font-bold text-gray-900">AED {data?.totalRevenue?.toLocaleString()}</div>
+              <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                Revenue
+              </span>
+              <div className="text-2xl font-bold text-gray-900">
+                AED {data?.totalRevenue?.toLocaleString()}
+              </div>
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Orders</span>
+              <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                Orders
+              </span>
               <div className="text-2xl font-bold text-gray-900">{data?.totalOrders}</div>
             </div>
           </div>
@@ -68,12 +75,23 @@ const SalesAnalyticsCard = ({ data, loading, selectedPeriod, onPeriodChange }) =
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#64748b', fontSize: 11 }}
-                  tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}
+                  tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
                 />
                 <Tooltip
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  contentStyle={{
+                    borderRadius: '8px',
+                    border: 'none',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                  }}
                   formatter={(v) => [`AED ${v.toLocaleString()}`, 'Revenue']}
-                  labelStyle={{ color: '#64748b', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}
+                  labelStyle={{
+                    color: '#64748b',
+                    fontWeight: 600,
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '4px',
+                  }}
                 />
                 <Area
                   type="monotone"

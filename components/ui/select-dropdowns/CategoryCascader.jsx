@@ -19,7 +19,7 @@ const CategoryCascader = ({
   type = 'form', // 'form' | 'input'
   ...formProps
 }) => {
-  console.log("initialCategories", initialCategories);
+  console.log('initialCategories', initialCategories);
   const { data, isLoading } = useCategoryDropdown(initialCategories);
   const options = mapToOptions(data ?? []);
 

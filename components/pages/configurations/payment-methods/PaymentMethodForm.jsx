@@ -4,7 +4,13 @@ import React from 'react';
 import { Form, Button } from 'antd';
 import { useRouter } from 'next/navigation';
 import { Box } from '@/components/wrappers/box';
-import { FormInput, FormSelect, FormSwitch, FormInputNumber, FormTextArea } from '@/components/ui/inputs';
+import {
+  FormInput,
+  FormSelect,
+  FormSwitch,
+  FormInputNumber,
+  FormTextArea,
+} from '@/components/ui/inputs';
 import { UAE_EMIRATES } from '@/lib/const/regions';
 
 const PAYMENT_METHOD_TYPES = [
@@ -31,12 +37,7 @@ export default function PaymentMethodForm({
   const selectedType = Form.useWatch('type', form);
 
   // Common fields that are always treated as "known" and handled by the schema
-  const commonFields = [
-    'description',
-    'iconUrl',
-    'displayOrder',
-    'gatewayProvider',
-  ];
+  const commonFields = ['description', 'iconUrl', 'displayOrder', 'gatewayProvider'];
 
   // Type-specific known fields
   const typeSpecificKnownKeys = {
@@ -76,7 +77,10 @@ export default function PaymentMethodForm({
 
     Object.entries(config).forEach(([key, value]) => {
       if (!allKnownKeys.includes(key)) {
-        customFields.push({ key, value: typeof value === 'object' ? JSON.stringify(value) : value });
+        customFields.push({
+          key,
+          value: typeof value === 'object' ? JSON.stringify(value) : value,
+        });
       }
     });
 
@@ -131,7 +135,7 @@ export default function PaymentMethodForm({
         onFinish={handleFinish}
       >
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <Box
               loading={initialsLoading}
               title="Basic Information"
@@ -242,7 +246,11 @@ export default function PaymentMethodForm({
                 {selectedType === 'BankTransfer' && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <FormInput name={['config', 'bankName']} label="Bank Name" placeholder="ABC Bank" />
+                      <FormInput
+                        name={['config', 'bankName']}
+                        label="Bank Name"
+                        placeholder="ABC Bank"
+                      />
                       <FormInput
                         name={['config', 'accountName']}
                         label="Account Name"
@@ -261,7 +269,11 @@ export default function PaymentMethodForm({
                         placeholder="987654321"
                       />
                     </div>
-                    <FormInput name={['config', 'swiftCode']} label="SWIFT/BIC Code" placeholder="ABCBUS33" />
+                    <FormInput
+                      name={['config', 'swiftCode']}
+                      label="SWIFT/BIC Code"
+                      placeholder="ABCBUS33"
+                    />
                     <FormTextArea
                       name={['config', 'instructions']}
                       label="Payment Instructions"
@@ -282,7 +294,10 @@ export default function PaymentMethodForm({
                 {(fields, { add, remove }) => (
                   <div className="space-y-4">
                     {fields.map(({ key, name, ...restField }) => (
-                      <div key={key} className="flex items-end gap-4 bg-gray-50 p-4 rounded-xl relative">
+                      <div
+                        key={key}
+                        className="relative flex items-end gap-4 rounded-xl bg-gray-50 p-4"
+                      >
                         <div className="flex-1">
                           <FormInput
                             {...restField}
@@ -326,7 +341,12 @@ export default function PaymentMethodForm({
               header
             >
               <FormSwitch name="isActive" label="Is Active" />
-              <FormInputNumber name={['config', 'displayOrder']} label="Display Order" placeholder="0" min={0} />
+              <FormInputNumber
+                name={['config', 'displayOrder']}
+                label="Display Order"
+                placeholder="0"
+                min={0}
+              />
               <FormInput
                 name={['config', 'iconUrl']}
                 label="Icon URL"

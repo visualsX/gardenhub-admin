@@ -37,9 +37,9 @@ const Dashboard = () => {
 
   // Map period to API format
   const periodMap = {
-    'Year': 'year',
-    'Month': 'month',
-    'Week': 'week',
+    Year: 'year',
+    Month: 'month',
+    Week: 'week',
   };
 
   const handlePeriodChange = (period) => {
